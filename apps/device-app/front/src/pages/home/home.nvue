@@ -1,0 +1,950 @@
+<template>
+<view style="width: 100vw; height: 100vh; position: relative; overflow: hidden;">
+    <map
+      ref="map"
+      id="map"
+      style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;"
+      :scale="scale"
+      :enableBuilding="true"
+      :showLocation="showLocation"
+      :enableSatellite="enableSatellite"
+      :enableTraffic="enableTraffic"
+      :enableRotate="true"
+      :enableOverlooking="true"
+      :longitude="longitude"
+      :latitude="latitude"
+      :markers="markers"
+      :polyline="polyline"
+      @updated="updatedMap"
+      @markertap="markertap"
+    ></map>
+    <noticeNavBar
+      v-if="noticeData"
+      class="noticeBarClass"
+      style="width: 450rpx"
+      :style="{ top: noticeControl }"
+    ></noticeNavBar>
+    <view v-if="isAuditModeAndroid" class="androidMapCheck">
+      <text class="text-sm" append="tree">
+        审图号：{{ enableSatellite ? 'GS (2023)4047号' : 'GS (2023)551号 | GS (2023)2175号' }}
+      </text>
+      <text class="text-sm m-t" append="tree">
+        测绘资质：甲测资字11111093
+      </text>
+      <text class="text-sm m-t" append="tree">
+        地图服务由高德软件有限公司提供
+      </text>
+    </view>
+    <view class="map-left" :style="{ marginTop: mapControl }">
+      <view class="map-left-main">
+        <image
+          class="map-left-main-item"
+          :src="cdn + '/ikon/qzwl-refreshnew@2x.png'"
+          @click="debounceOnRefresh"
+         />
+        <image
+          v-if="3 != userType"
+          class="map-left-main-item"
+          :src="cdn + '/ikon/qzwl-cut@2x.png'"
+          @click="gotoPages('/pagesFunc/terminal/list/index')"
+         />
+        <image
+          class="map-left-main-item"
+          style="margin-top: 180rpx"
+          :src="cdn + '/ikon/qzwl-l-terminal@2x.png'"
+          @click="moveToTerminalLocate"
+         />
+        <image
+          class="map-left-main-item"
+          :src="cdn + '/ikon/qzwl-l-user@2x.png'"
+          @click="moveToMyLocate"
+         />
+      </view>
+    </view>
+    <view class="map-right" :style="{ marginTop: mapControl }">
+      <image
+        v-if="!(enableSatellite)"
+        class="map-right-item"
+        :src="cdn + '/ikon/qzwl-tier-on.png'"
+        @click="toggleLayer"
+       />
+      <image
+        v-if="enableSatellite"
+        class="map-right-item"
+        :src="cdn + '/ikon/qzwl-tier-normal.png'"
+        @click="toggleLayer"
+       />
+      <image
+        v-if="!(enableTraffic)"
+        class="map-right-item"
+        :src="cdn + '/ikon/qzwl-road-normal.png'"
+        @click="toggleTraffic"
+       />
+      <image
+        v-if="enableTraffic"
+        class="map-right-item"
+        :src="cdn + '/ikon/qzwl-road-on.png'"
+        @click="toggleTraffic"
+       />
+      <image class="map-right-item" :src="cdn + '/ikon/navIndex@2x.png'" @click="openNavigate" />
+      <image class="map-right-item" :src="cdn + '/ikon/qzwl-ranging@2x.png'" @click="ranging" />
+      <view class="up-map">
+        <view class="up-map-item" @click="changeMapScale(true)">
+          <u-icon name="plus" :bold="true" color="#6081C7" size="40rpx" @click="changeMapScale(true)"></u-icon>
+        </view>
+        <view class="up-map-item" @click="changeMapScale(false)">
+          <u-icon
+            name="minus"
+            :bold="true"
+            color="#6081C7"
+            size="40rpx"
+            @click="changeMapScale(false)"
+          ></u-icon>
+        </view>
+      </view>
+    </view>
+    <loginHint v-if="!(isAuthenticated)" class="loginHint" :style="loginHintBottom"></loginHint>
+    <terminalInfo ref="terminalInfo" :wxBrowser="wxBrowser" @openShare="openShare"></terminalInfo>
+    <qzwlShare ref="qzwlShare" @setShareMp="setShareMp"></qzwlShare>
+    <activationPopup v-if="activationState > 1"></activationPopup>
+    <payPopup
+      v-if="vipPopupShowHome"
+      :message="vipPopupDataHome"
+      :url="vipPopupUrlHome"
+      type="iccid"
+      @closeVipPopup="closeVipPopup"
+    ></payPopup>
+    <Advertising v-if="adShow"></Advertising>
+    <permissionPopup></permissionPopup>
+  </view>
+</template>
+
+<script>
+/*
+ * 页面: pages/home/home
+ * 反编译自 webpack 模块 552（nvue 编译空间）
+ * async/await 还原: 4 个已转换, 4 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 d 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 u 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import s from '@/.unpacked/nvue/22.js';
+import d from '@/.unpacked/nvue/23.js';
+import u from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import * as mod819 from '@/.unpacked/nvue/819.js';
+import mod15 from '../../common/config.nvue.js';
+import mod926 from '../../components/noticeNavBar/noticeNavBar.nvue';
+import mod933 from '../../components/activationPopup/activationPopup.nvue';
+import mod934 from '../../components/terminalInfo/terminalInfo.nvue';
+import mod935 from '../../components/loginHint/loginHint.nvue';
+import mod936 from '../../components/Advertising/Advertising.nvue';
+import mod816 from '../../components/qzwlShare/qzwlShare.nvue';
+import mod446 from '../../components/payPopup/payPopup.nvue';
+import mod941 from '../../components/permissionPopup/permissionPopup.nvue';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var a, i, o;
+var w = getApp().globalData, k = (a = {
+  components: {
+    activationPopup: mod933,
+    noticeNavBar: mod926,
+    terminalInfo: mod934,
+    qzwlShare: mod816,
+    loginHint: mod935,
+    payPopup: mod446,
+    Advertising: mod936,
+    permissionPopup: mod941
+  },
+  data: function () {
+    return {
+      activationEnable: mod15.activation.enable,
+      cdn: mod15.cdn,
+      titleColor: mod15.titleColor,
+      primaryColor: mod15.primaryColor,
+      scale: mod15.defaultScale,
+      secondsToRefresh: mod15.secondsToRefresh,
+      mapContext: null,
+      enableSatellite: false,
+      enableTraffic: false,
+      showLocation: false,
+      longitude: 116.4,
+      latitude: 39.91,
+      myLon: 0,
+      myLat: 0,
+      markers: [],
+      polyline: [],
+      deviceLatLonList: [],
+      wxBrowser: true,
+      vipPopupShowHome: false,
+      vipPopupDataHome: null,
+      vipPopupUrlHome: "",
+      shareTitle: "",
+      sharePath: "",
+      adShow: false
+    };
+  },
+  computed: {
+    /**
+     * 地图操作的统一入口。mapContext 要到 onReady 才创建，而 onShow、数据回调、
+     * 定时刷新都可能更早触发——每个调用点各写一遍判空既啰嗦又必然漏（原版 10 处
+     * 调用一处都没判，于是登录跳首页时 TypeError 打断渲染）。
+     *
+     * 未就绪时返回一个所有方法都是空操作的替身，并且**立刻执行 complete 回调**：
+     * 有些调用点靠 complete 推进后续流程（如 removeMarkers → setDeviceMarker），
+     * 光返回 noop 会让那条流程永远卡住。地图操作本身跳过是正确语义——onReady
+     * 之后数据变化会重新触发绘制。
+     */
+    mapCtx: function () {
+      if (this.mapContext) return this.mapContext;
+      return new Proxy(
+        {},
+        {
+          get: function () {
+            return function (opts) {
+              if (opts && typeof opts.complete === "function") {
+                opts.complete({ errMsg: "map not ready" });
+              }
+            };
+          }
+        }
+      );
+    },
+    ...mod25.mapGetters(["sysInfo", "isAuthenticated", "selectedTerminal", "terminals", "appConfig", "userType", "activationState", "noticeData", "isAuditMode", "advertisingState", "unBindMarkerId", "isAuditModeAndroid"]),
+    ...mod25.mapState("device", ["deviceIcons"]),
+    ...mod25.mapState("device", ["simState", "simData", "bindDeviceState", "defaultPasswordNotice"]),
+    ...mod25.mapState("terminal", ["deviceMarker", "initNeed"]),
+    noticeControl: function () {
+      return (this.sysInfo.windowHeight, "50rpx");
+    },
+    loginHintBottom: function () {
+      return {
+        bottom: "8rpx"
+      };
+    },
+    mapControl: function () {
+      return (this.sysInfo.windowHeight, "32rpx");
+    },
+    genDistance: function () {
+      return (mod819.getDistance(this.latitude, this.longitude, this.myLat, this.myLon) / 1e3).toFixed(3);
+    },
+    joinCluster: function () {
+      return 3 != this.userType;
+    }
+  },
+  onShareAppMessage: function () {
+    return {
+      title: w.$t("app.name"),
+      imageUrl: mod15.cdn + "/draw/qzwl-logo.png",
+      path: "/pages/home/home"
+    };
+  },
+  onLoad: function () {
+    var t = this;
+    (e("log", this.sysInfo, "this.sysInfo", " at pages/home/home.nvue:350"), this.isAuthenticated ? uni.showTabBar() : (this.adShow = this.advertisingState, uni.onNetworkStatusChange((function () {
+      var e = d(s.mark(function e(n) {
+        return s.wrap(function (e) {
+          for (; ; ) switch (e.prev = e.next) {
+            case 0:
+              if (!n.isConnected) {
+                e.next = 4;
+                break;
+              }
+              return (e.next = 3, t.GetAdvertising());
+            case 3:
+              t.adShow = t.advertisingState;
+            case 4:
+            case "end":
+              return e.stop();
+          }
+        }, e);
+      }));
+      return function (t) {
+        return e.apply(this, arguments);
+      };
+    })())));
+  },
+  /**
+   * onShow 在 onReady **之前**触发，而 mapContext 是在 onReady 里 createMapContext
+   * 出来的——所以这里必须判空。登录后跳进首页、或从未登录切到已登录时都会走到这个
+   * 时序：原版直接 `this.mapContext.addMarkers(...)`，mapContext 还是 null，
+   * TypeError 打断整个渲染，于是地图与设备卡片都画不出来，只剩几个浮动按钮
+   * （smoke 报告里这条错误出现 52 次，之前被误判成"未登录深链直达"的既有问题）。
+   */
+  onShow: function () {
+    var t = this;
+    this.sharePath = "/pages/home/home";
+    this.shareTitle = w.$t("app.name");
+    if (this.isAuthenticated) {
+      uni.showTabBar();
+      this.init();
+      return;
+    }
+    this.markers = [];
+    // 地图还没就绪就没有标记可清，setDeviceMarker 仍要调用（清掉本地记录）
+    if (!this.mapContext) {
+      this.setDeviceMarker();
+    } else if ("ios" == this.sysInfo.platform) {
+      this.mapCtx.removeMarkers({
+        markerIds: this.deviceMarker.map(function (e) {
+          return e.id;
+        }),
+        complete: function () {
+          t.setDeviceMarker();
+        }
+      });
+    } else {
+      this.mapCtx.addMarkers({
+        markers: [],
+        clear: true,
+        complete: function () {
+          t.setDeviceMarker();
+        }
+      });
+    }
+    this.markers = [];
+    uni.setNavigationBarTitle({ title: "\u9996\u9875" });
+  },
+  onReady: function () {
+    var t = this;
+    (e("log", "index-onReady", " at pages/home/home.nvue:434"), this.mapContext = uni.createMapContext("map", this), this.mapContext.initMarkerCluster({
+      enableDefaultStyle: false,
+      zoomOnClick: true,
+      gridSize: 60,
+      complete: function (t) {
+        e("log", "initMarkerCluster", t, " at pages/home/home.nvue:443");
+      }
+    }), this.mapContext.on("markerClusterCreate", function (e) {
+      var n = [];
+      (e.clusters.forEach(function (e, t) {
+        var r = e.center, a = e.clusterId, i = e.markerIds, o = {
+          clusterId: a,
+          ...r,
+          width: 0,
+          height: 0,
+          iconPath: "",
+          label: {
+            content: i.length + "",
+            fontSize: 16,
+            color: "#fff",
+            width: 50,
+            height: 50,
+            bgColor: "rgba(0, 128, 255, 0.4)",
+            borderRadius: 25,
+            textAlign: "center",
+            anchorX: -10,
+            anchorY: -35
+          }
+        };
+        n.push(o);
+      }), t.mapCtx.addMarkers({
+        markers: n,
+        clear: false
+      }));
+    }));
+  }
+}, u(a, "onShareAppMessage", function () {
+  return {
+    title: this.shareTitle,
+    imageUrl: mod15.cdn + "/draw/qzwl-logo.png",
+    path: this.sharePath
+  };
+}), u(a, "onHide", function () {
+  var e = this;
+  (this.deviceLatLonList = [], this.polyline = [], clearInterval(undefined), clearInterval(i), clearInterval(o), setTimeout(function () {
+    e.secondsToRefresh = 0;
+  }, 100), this.$refs.qzwlShare && (this.$refs.qzwlShare.shareLocationShow = false, this.$refs.qzwlShare.isToShare = false, this.$refs.qzwlShare.selectTime = false, this.$refs.qzwlShare.defaultIndex = [0], this.$refs.qzwlShare.shareTime = this.l("common.0.5-day"), this.$refs.qzwlShare.selectedTime = 720), this.$refs.terminalInfo && (this.$refs.terminalInfo.vipPopupShow = false));
+}), u(a, "methods", {
+  ...mod25.mapActions("terminal", ["GetTerminalList", "GetTerminalInfo", "GetTerminalInfos"]),
+  ...mod25.mapActions("device", ["GetDeviceInit", "GetValueAdded", "GetDeviceIcons"]),
+  ...mod25.mapActions("app", ["GetAdvertising"]),
+  ...mod25.mapMutations("device", ["setBindDeviceState", "setInfoBoxShow", "clearSelectedDevice", "setSelectedDevice", "setDefaultPasswordNotice", "setUnBindMarkerId"]),
+  ...mod25.mapMutations("terminal", ["setInitNeed", "setDeviceMarker"]),
+  l: function (e) {
+    return w.$t(e);
+  },
+  setShareMp: function (e) {
+    (this.sharePath = e.path, this.shareTitle = e.title);
+  },
+  setBadgeColor: function (e) {
+    return mod166.badgeBgColor(e);
+  },
+  toggleLayer: function () {
+    this.enableSatellite = !this.enableSatellite;
+  },
+  toggleTraffic: function () {
+    this.enableTraffic = !this.enableTraffic;
+  },
+  updatedMap: function () {
+    this.mapContext = uni.createMapContext("map", this);
+  },
+  changeMapScale: function (e) {
+    this.scale = e ? this.scale + .5 : this.scale - .5;
+  },
+  moveToTerminalLocate: function () {
+    var e = this.selectedTerminal;
+    e ? e.lon || e.lat ? e.lon && e.lat && (this.mapCtx.moveToLocation({
+      longitude: this.longitude,
+      latitude: this.latitude
+    }), this.scale = mod15.defaultScale, uni.showToast({
+      title: w.$t("common.Switched.to.terminal"),
+      icon: "none"
+    })) : uni.showToast({
+      title: w.$t("device.no-locate"),
+      icon: "none"
+    }) : uni.showToast({
+      title: w.$t("device.no.terminal"),
+      icon: "none"
+    });
+  },
+  moveToMyLocate: function () {
+    var e = this;
+    uni.getLocation({
+      type: "gcj02",
+      success: function (t) {
+        (e.showLocation = true, e.mapCtx.moveToLocation({
+          longitude: t.longitude,
+          latitude: t.latitude
+        }), e.scale = mod15.defaultScale, uni.showToast({
+          title: w.$t("common.Switched.to.mine"),
+          icon: "none"
+        }));
+      },
+      fail: function (e) {
+        uni.showToast({
+          title: w.$t("common.get.locate-fail"),
+          icon: "none"
+        });
+      }
+    });
+  },
+  ranging: function () {
+    var t = this, n = this.selectedTerminal;
+    n ? n.lon || n.lat ? uni.getLocation({
+      type: "gcj02",
+      success: function (r) {
+        (t.myLon = r.longitude, t.myLat = r.latitude);
+        var a = [{
+          longitude: n.lon,
+          latitude: n.lat
+        }, {
+          longitude: t.myLon,
+          latitude: t.myLat
+        }];
+        (t.mapCtx.includePoints({
+          points: a,
+          padding: [80, 30, 180, 30],
+          fail: function (t) {
+            e("log", t, " at pages/home/home.nvue:657");
+          }
+        }), uni.showToast({
+          title: "\u60a8\u8ddd\u79bb\u8bbe\u5907\u6709" + t.genDistance + "km",
+          icon: "none"
+        }));
+      },
+      fail: function (e) {
+        uni.showToast({
+          title: w.$t("common.get.locate-fail"),
+          icon: "none"
+        });
+      }
+    }) : uni.showToast({
+      title: w.$t("device.no-locate"),
+      icon: "none"
+    }) : uni.showToast({
+      title: w.$t("device.no.terminal"),
+      icon: "none"
+    });
+  },
+  loopMyLocation: function () {
+    var e = this;
+    if (this.myLon && this.myLat) 116.4 == this.longitude && 39.91 == this.latitude && (this.longitude = this.myLon, this.latitude = this.myLat); else var t = setTimeout(function () {
+      (uni.getLocation({
+        type: "gcj02",
+        success: function (t) {
+          (e.myLon = t.longitude, e.myLat = t.latitude, e.showLocation = true);
+        },
+        fail: function (n) {
+          (clearTimeout(t), 22 != n.code && e.loopMyLocation());
+        }
+      }), clearTimeout(t));
+    }, 1e3);
+  },
+  init: function () {
+    var e = this;
+    return (async function () {
+      // 6.7 图标表：store 里做了缓存，只有第一次真的发请求。设备列表要按 iconId
+      // 取图标，表没加载的话所有设备都会画成 default
+      e.GetDeviceIcons();
+      await e.terminalHangle();
+      (i && clearInterval(i), e.resetInterval());
+    })();
+  },
+  resetInterval: function () {
+    var e = this;
+    1 != this.userType && (clearInterval(i), this.secondsToRefresh = mod15.secondsToRefresh, i = setInterval(function () {
+      (e.secondsToRefresh = 0 === e.secondsToRefresh ? mod15.secondsToRefresh : e.secondsToRefresh - 1, 0 == e.secondsToRefresh && e.countDown());
+    }, 1e3));
+  },
+  countDown: function () {
+    var e = this;
+    return (async function () {
+      e.secondsToRefresh = 0;
+      clearInterval(i);
+      await e.fetchDataTerminal("terId");
+      e.resetInterval();
+    })();
+  },
+  debounceOnRefresh: function () {
+    if (!this.selectedTerminal) return mod166.qzwlToast(w.$t("device.no.terminal"), "none");
+    uni.$u.debounce(this.onRefresh, 500);
+  },
+  onRefresh: function () {
+    var e = this;
+    return (async function () {
+      await e.countDown();
+      return mod166.qzwlToast(w.$t("common.refurbish.success"), "none");
+    })();
+  },
+  terminalHangle: function () {
+    var t = this;
+    return d(s.mark(function n() {
+      return s.wrap(function (n) {
+        for (; ; ) switch (n.prev = n.next) {
+          case 0:
+            return (n.prev = 0, n.next = 3, t.fetchDataTerminal());
+          case 3:
+            n.next = 8;
+            break;
+          case 5:
+            (n.prev = 5, n.t0 = n.catch(0), e("log", n.t0, "eee", " at pages/home/home.nvue:759"));
+          case 8:
+            if ((n.prev = 8, 0 == t.terminals.length && t.bindDeviceState && t.isAuthenticated && uni.showModal({
+              title: w.$t("mine.bind.terminal"),
+              content: w.$t("device.not.terminal"),
+              cancelText: w.$t("device.not-go"),
+              confirmText: w.$t("device.go"),
+              success: function (e) {
+                (t.setBindDeviceState(false), e.cancel || uni.navigateTo({
+                  url: ("/pagesFunc/terminal/list/index?bind=").concat(true)
+                }));
+              }
+            }), !t.selectedTerminal)) {
+              n.next = 20;
+              break;
+            }
+            return (n.next = 13, t.getDeviceInit());
+          case 13:
+            if (!(t.activationState > 1 && t.isAuthenticated)) {
+              n.next = 18;
+              break;
+            }
+            return (uni.hideTabBar(), t.setInfoBoxShow(false), n.next = 18, t.GetValueAdded({
+              terminalId: t.selectedTerminal.id
+            }));
+          case 18:
+            (t.activationState <= 1 && t.isAuthenticated && (uni.showTabBar(), t.setInfoBoxShow(true), t.simState && t.isAuthenticated && t.$nextTick(function () {
+              (t.vipPopupShowHome = true, t.vipPopupDataHome = t.simData, t.vipPopupUrlHome = ("/pagesFunc/terminal/device-card?iccid=").concat(t.selectedTerminal.iccid));
+            })), t.defaultPasswordNotice && uni.showModal({
+              title: "\u6e29\u99a8\u63d0\u793a",
+              content: "\u60a8\u5f53\u524d\u8bbe\u5907\u7684\u5bc6\u7801\u4e3a\u9ed8\u8ba4\u5bc6\u7801\uff0c\u51fa\u4e8e\u5b89\u5168\u8003\u8651\uff0c\u5efa\u8bae\u60a8\u5c3d\u5feb\u4fee\u6539",
+              cancelText: "\u6682\u4e0d\u4fee\u6539",
+              confirmText: "\u524d\u5f80\u4fee\u6539",
+              success: function (e) {
+                (t.setDefaultPasswordNotice(false), e.cancel || t.gotoPages(("/pagesCore/account/revise-pwd?userType=").concat(3)));
+              }
+            }));
+          case 20:
+            return (t.$nextTick(function () {
+              t.adShow = t.advertisingState;
+            }), n.finish(8));
+          case 22:
+          case "end":
+            return n.stop();
+        }
+      }, n, null, [[0, 5, 8, 22]]);
+    }))();
+  },
+  fetchDataTerminal: function (e) {
+    var t = this;
+    return d(s.mark(function n() {
+      return s.wrap(function (n) {
+        for (; ; ) switch (n.prev = n.next) {
+          case 0:
+            return (n.next = 2, t.refreshTerminal(e));
+          case 2:
+            if (t.selectedTerminal) {
+              n.next = 4;
+              break;
+            }
+            return n.abrupt("return");
+          case 4:
+            t.setMapDetails();
+          case 5:
+          case "end":
+            return n.stop();
+        }
+      }, n);
+    }))();
+  },
+  setMapDetails: function () {
+    var t, n, r, a, i = this;
+    if ((this.selectedTerminal.lon && this.selectedTerminal.lat && (t = {
+      longitude: this.selectedTerminal.lon,
+      latitude: this.selectedTerminal.lat
+    }, (n = mod166.storeLocation(this.deviceLatLonList, t)) && this.deviceLatLonList.push(t), n && this.deviceLatLonList.length >= 2 ? (r = this.deviceLatLonList[this.deviceLatLonList.length - 2].longitude, a = this.deviceLatLonList[this.deviceLatLonList.length - 2].latitude) : (r = this.deviceLatLonList[this.deviceLatLonList.length - 1].longitude, a = this.deviceLatLonList[this.deviceLatLonList.length - 1].latitude)), this.longitude = r || 116.4, this.latitude = a || 39.91, this.drawMarkers(r, a), n && this.deviceLatLonList.length >= 2)) {
+      this.drawTrack();
+      var s = this.deviceLatLonList[this.deviceLatLonList.length - 2], d = this.deviceLatLonList[this.deviceLatLonList.length - 1];
+      if ("android" == this.sysInfo.platform) {
+        var u = {
+          markerId: this.selectedTerminal.id,
+          destination: d,
+          duration: 500
+        };
+        (this.mapCtx.removeMarkers({
+          markerIds: this.selectedTerminal.id,
+          complete: function (t) {
+            e("log", "resremoveMarkersremoveMarkers", t, " at pages/home/home.nvue:898");
+          }
+        }), this.mapCtx.translateMarker(u), this.mapCtx.moveToLocation(d));
+      } else o = setInterval(function () {
+        (i.moveCar(s, d, 500), clearInterval(o));
+      }, 500);
+    }
+  },
+  drawMarkers: function (e, t) {
+    var n = this, r = this.deviceMarker.map(function (r) {
+      if (r.lon && r.lat) {
+        var a;
+        a = 1 == r.deviceState ? r.motion ? r.deviceState : "02" : r.deviceState;
+        var i = mod166.getTerminalIconCode(r.iconType, n.deviceIcons);
+        return {
+          id: r.id,
+          longitude: r.id == n.selectedTerminal.id ? e : r.lon,
+          latitude: r.id == n.selectedTerminal.id ? t : r.lat,
+          width: 40,
+          height: 40,
+          anchor: {
+            x: .5,
+            y: .5
+          },
+          rotate: i.rotateState ? r.direction : 0,
+          iconPath: ("").concat(n.cdn, "/ikon/device/").concat(i.code, "-").concat(a, ".png"),
+          callout: {
+            content: ("").concat(r.terminalName || r.terminalNo),
+            display: "ALWAYS",
+            color: n.setBadgeColor(r.status),
+            bgColor: "#fff",
+            textAlign: "center",
+            padding: 8,
+            borderRadius: 10,
+            fontSize: 13
+          },
+          joinCluster: r.id != n.selectedTerminal.id && n.joinCluster
+        };
+      }
+    });
+    (this.markers = r.filter(function (e) {
+      return e;
+    }), this.markers = Array.from(this.markers.reduce(function (e, t) {
+      return e.set(t.id, t);
+    }, new Map()).values()));
+  },
+  drawTrack: function () {
+    var e = {
+      points: this.deviceLatLonList,
+      arrowLine: true,
+      colorList: this.deviceLatLonList.map(function (e) {
+        return mod15.primaryColor;
+      }),
+      borderWidth: 1,
+      width: 12,
+      arrowIconPath: this.cdn + "/draw/qzwl-trackPath-img.png"
+    };
+    this.polyline = [e];
+  },
+  moveCar: function (e, t, n) {
+    (this.mapCtx.moveAlong({
+      markerId: this.selectedTerminal.id,
+      path: [{
+        longitude: e.longitude,
+        latitude: e.latitude
+      }, {
+        longitude: t.longitude,
+        latitude: t.latitude
+      }],
+      autoRotate: true,
+      duration: n
+    }), this.mapCtx.moveToLocation(t));
+  },
+  refreshTerminal: function (e) {
+    var t = this;
+    return d(s.mark(function n() {
+      return s.wrap(function (n) {
+        for (; ; ) switch (n.prev = n.next) {
+          case 0:
+            if (t.terminals.length) {
+              n.next = 12;
+              break;
+            }
+            return (n.next = 3, t.GetTerminalList({
+              concat: false,
+              noLoading: true
+            }));
+          case 3:
+            if (3 != t.userType && "terId" != e) {
+              n.next = 8;
+              break;
+            }
+            return (n.next = 6, t.GetTerminalInfo());
+          case 6:
+            n.next = 10;
+            break;
+          case 8:
+            return (n.next = 10, t.GetTerminalInfos());
+          case 10:
+            n.next = 19;
+            break;
+          case 12:
+            if (3 != t.userType && "terId" != e) {
+              n.next = 17;
+              break;
+            }
+            return (n.next = 15, t.GetTerminalInfo());
+          case 15:
+            n.next = 19;
+            break;
+          case 17:
+            return (n.next = 19, t.GetTerminalInfos());
+          case 19:
+            (t.selectedTerminal ? uni.setNavigationBarTitle({
+              title: t.selectedTerminal.terminalName || t.selectedTerminal.terminalNo
+            }) : uni.setNavigationBarTitle({
+              title: "\u9996\u9875"
+            }), t.terminals.length && t.setBindDeviceState(false), t.initNeed && (t.deviceLatLonList = [], t.init(), t.setInitNeed(false)));
+          case 22:
+          case "end":
+            return n.stop();
+        }
+      }, n);
+    }))();
+  },
+  getDeviceInit: function () {
+    var e = this;
+    return (async function () {
+      await e.GetDeviceInit({
+        id: e.selectedTerminal.id,
+        iccid: e.selectedTerminal.iccid,
+        vipState: e.selectedTerminal.enableActivation,
+        userState: 1 != e.userType && e.activationEnable,
+        defaultPas: e.selectedTerminal.isDefaultPassword && e.appConfig.enableDefaultPasswordNotice && 1 != e.userType
+      }) && (e.scale = mod15.defaultScale);
+    })();
+  },
+  markertap: function (e) {
+    e.detail.markerId;
+    var t = this.deviceMarker.find(function (t) {
+      return t.id == e.detail.markerId;
+    });
+    (this.clearSelectedDevice(), this.setSelectedDevice(t), this.deviceLatLonList = [], this.init());
+  },
+  is_weixin: function () {
+    return "micromessenger" == navigator.userAgent.toLowerCase().match(/MicroMessenger/i);
+  },
+  gotoPages: function (e) {
+    if (!this.isAuthenticated) return mod166.qzwlToast(w.$t("device.no.terminal"), "none");
+    uni.navigateTo({
+      url: e
+    });
+  },
+  openNavigate: function () {
+    if (!this.selectedTerminal) return mod166.qzwlToast(w.$t("device.no.terminal"), "none");
+    this.selectedTerminal.lon && this.selectedTerminal.lat ? uni.openLocation({
+      longitude: this.selectedTerminal.lon,
+      latitude: this.selectedTerminal.lat,
+      name: this.selectedTerminal.terminalNo,
+      address: this.selectedTerminal.TextLocation,
+      fail: function () {
+        uni.showToast({
+          title: w.$t("device.open.locate.fail"),
+          icon: "none"
+        });
+      }
+    }) : uni.showToast({
+      title: w.$t("device.no-locate"),
+      icon: "none"
+    });
+  },
+  openShare: function () {
+    this.$refs.qzwlShare.shareLocationShow = true;
+  },
+  closeVipPopup: function () {
+    this.vipPopupShowHome = false;
+  }
+}), a);
+export default k;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.androidMapCheck {
+  position: fixed;
+  left: 110rpx;
+  top: 80rpx;
+}
+
+.map-main {
+  display: flex;
+  flex-direction: row;
+}
+
+.noticeBarClass {
+  position: absolute;
+  left: 160rpx;
+}
+
+.map-right {
+  position: absolute;
+  left: 630rpx;
+}
+
+.map-right-item {
+  width: 112rpx;
+  height: 112rpx;
+}
+
+.map-left {
+  position: absolute;
+}
+
+.map-left-main {
+  margin-left: 16rpx;
+}
+
+.map-left-main-item {
+  width: 112rpx;
+  height: 112rpx;
+}
+
+.up-map {
+  margin-top: 42rpx;
+  margin-left: 12rpx;
+  width: 88rpx;
+  height: 176rpx;
+  background-color: #ffffff;
+  box-shadow: 0 0 16rpx 0 rgba(0, 0, 0, 0.2);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 22rpx;
+  padding-right: 0;
+  padding-bottom: 22rpx;
+  padding-left: 0;
+}
+
+.up-map-item {
+  margin-left: 8rpx;
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.loginHint {
+  position: absolute;
+  width: 718rpx;
+  left: 16rpx;
+  background-color: rgba(58,86,71,0.6);
+  border-radius: 8rpx;
+  padding-top: 24rpx;
+  padding-right: 24rpx;
+  padding-bottom: 24rpx;
+  padding-left: 24rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.androidMapCheck {
+  position: fixed;
+  left: 14.6667vw;
+  top: 10.6667vw;
+}
+
+.map-main {
+  display: flex;
+  flex-direction: row;
+}
+
+.noticeBarClass {
+  position: absolute;
+  left: 21.3333vw;
+}
+
+.map-right {
+  position: absolute;
+  top: 8vw;
+  right: 2.1333vw;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.map-right-item {
+  width: 14.9333vw;
+  height: 14.9333vw;
+}
+
+.map-left {
+  position: absolute;
+  top: 8vw;
+  left: 0;
+  z-index: 10;
+}
+
+.map-left-main {
+  margin-left: 2.1333vw;
+}
+
+.map-left-main-item {
+  width: 14.9333vw;
+  height: 14.9333vw;
+}
+
+.up-map {
+  margin-top: 5.6vw;
+  margin-left: 1.6vw;
+  width: 11.7333vw;
+  height: 23.4667vw;
+  background-color: #ffffff;
+  box-shadow: 0 0 2.1333vw 0 rgba(0, 0, 0, 0.2);
+  border-radius: 2.1333vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2.9333vw;
+  padding-right: 0;
+  padding-bottom: 2.9333vw;
+  padding-left: 0;
+}
+
+.up-map-item {
+  margin-left: 1.0667vw;
+  width: 6.4vw;
+  height: 6.4vw;
+}
+
+.loginHint {
+  position: absolute;
+  width: 95.7333vw;
+  left: 2.1333vw;
+  background-color: rgba(58,86,71,0.6);
+  border-radius: 1.0667vw;
+  padding-top: 3.2vw;
+  padding-right: 3.2vw;
+  padding-bottom: 3.2vw;
+  padding-left: 3.2vw;
+}
+/* #endif */
+</style>

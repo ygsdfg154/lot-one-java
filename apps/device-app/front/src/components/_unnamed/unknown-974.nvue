@@ -1,0 +1,203 @@
+<template>
+<view style="position: relative; z-index: 10050;">
+  <u-popup
+    :show="isBind"
+    :closeable="true"
+    mode="bottom"
+    round="20"
+    :closeOnClickOverlay="true"
+    @close="closeSubmit"
+  >
+    <view style="padding: 36rpx 32rpx 48rpx 32rpx; background-color: #ffffff; position: relative; z-index: 10055;">
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 36rpx;" @click="popupClick">
+        <text style="font-size: 34rpx; font-weight: bold; color: #333333;" append="tree">
+          {{ l('mine.bind.terminal.submit') }}
+        </text>
+      </view>
+
+      <view style="margin-bottom: 24rpx;">
+        <text style="font-size: 28rpx; color: #333333; margin-bottom: 12rpx; display: block;" append="tree">
+          {{ l('add-device.deviceNo') }}
+        </text>
+        <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx; display: flex; flex-direction: row; align-items: center;">
+          <u--input
+            maxlength="20"
+            :placeholder="l('bind-device.please-SN')"
+            border="none"
+            v-model="deviceInfo.name"
+            clearable
+          >
+            <template v-if="!isAuditModeAndroid" slot="suffix">
+              <u-icon name="scan" color="#6081C7" size="44rpx" @click="scanCode"></u-icon>
+            </template>
+          </u--input>
+        </view>
+      </view>
+
+      <view style="margin-bottom: 32rpx;">
+        <text style="font-size: 28rpx; color: #333333; margin-bottom: 12rpx; display: block;" append="tree">
+          {{ l('bind-device.pwd') }}
+        </text>
+        <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx;">
+          <u--input
+            maxlength="20"
+            type="password"
+            :placeholder="l('bind-device.please-pwd')"
+            border="none"
+            v-model="deviceInfo.password"
+            clearable
+          ></u--input>
+        </view>
+      </view>
+
+      <view style="margin-top: 32rpx;">
+        <u-button
+          color="#6081C7"
+          shape="circle"
+          size="normal"
+          :text="l('mine.bind.submit')"
+          type="primary"
+          @click="submit"
+        ></u-button>
+      </view>
+
+      <view style="margin-top: 32rpx; background-color: #FFF9F9; border-radius: 12rpx; padding: 24rpx; border: 1rpx solid #FFEBEB;">
+        <text style="font-size: 26rpx; font-weight: bold; color: #F56C6C; margin-bottom: 8rpx; display: block;" append="tree">
+          {{ l('mine.bind.terminal.submit.prompt') }}:
+        </text>
+        <text style="font-size: 24rpx; color: #666666; line-height: 36rpx; word-break: break-all; display: block;" append="tree">
+          {{ l('bind-device.tip10') }}
+        </text>
+      </view>
+    </view>
+  </u-popup>
+  <!--
+    二次确认用 u-modal 而不是 uni.showModal：H5 端 uni.showModal 的层级低于
+    uview 的 u-popup（默认 z-index 10075），确认框会被绑定弹层盖住——用户看得到
+    却点不到"确定"，于是"点了绑定什么都没发生"。u-modal 的 zIndex 可控，压在
+    popup 之上。
+  -->
+  <u-modal
+    :show="confirmShow"
+    :title="l('mine.bind.terminal.submit')"
+    :content="content"
+    :showCancelButton="true"
+    :cancelText="l('common.cancel')"
+    :confirmText="l('common.ok')"
+    :zIndex="10080"
+    @confirm="confirmBind"
+    @cancel="confirmShow = false"
+  ></u-modal>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: unknown-974
+ * 反编译自 webpack 模块 670（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var _ = getApp().globalData, m = {
+  data: function () {
+    return {
+      pattern: mod5({
+        color: mod15.primaryColor,
+        backgroundColor: "#fff",
+        selectedColor: mod15.primaryColor,
+        buttonColor: mod15.primaryColor
+      }, "backgroundColor", mod15.primaryColor),
+      deviceInfo: {
+        name: "",
+        password: ""
+      },
+      confirmShow: false
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["userType", "isAuditModeAndroid"]),
+    content: function () {
+      return ("").concat(_.$t("bind-device.confim-bind"), " ").concat(this.deviceInfo.name);
+    }
+  },
+  props: ["isBind"],
+  methods: {
+    ...mod25.mapActions("device", ["BindTerminal"]),
+    l: function (e) {
+      return _.$t(e);
+    },
+    closeSubmit: function () {
+      (uni.hideKeyboard(), this.confirmShow = false, this.deviceInfo.name = "", this.deviceInfo.password = "", this.$emit("isBindChange", false));
+    },
+    submit: function () {
+      uni.hideKeyboard();
+      if (!this.deviceInfo.name || !this.deviceInfo.password) {
+        return mod166.qzwlToast("请输入内容", "none");
+      }
+      if (!uni.$u.test.rangeLength(this.deviceInfo.password, [6, 20])) {
+        return mod166.qzwlToast(_.$t("common.please.pwd.num"), "none");
+      }
+      this.confirmShow = true;
+    },
+    /** 确认框点"确定"：先收起确认框，再发绑定请求。 */
+    confirmBind: function () {
+      this.confirmShow = false;
+      this.bind();
+    },
+    bind: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (!(e.deviceInfo.name.length >= 7 && e.deviceInfo.name.length <= 20 && e.deviceInfo.password.length >= 6)) {
+                t.next = 7;
+                break;
+              }
+              return (t.next = 3, e.BindTerminal({
+                terminalNo: e.deviceInfo.name,
+                password: e.deviceInfo.password.trim()
+              }));
+            case 3:
+              // 失败不在这里 toast：业务错误（21008 设备已被绑定、21012 密码错误等）
+              // 由 request 层统一按后端 msg 提示，这里再弹一次会出现两条提示
+              (t.sent.succeeded && (mod166.qzwlToast(_.$t("common.bind.success"), "success"), e.$emit("bindRefresh"), e.$emit("isBindChange", false), e.deviceInfo.name = "", e.deviceInfo.password = ""), t.next = 8);
+              break;
+            case 7:
+              mod166.qzwlToast(_.$t("common.legal.content"), "none");
+            case 8:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    popupClick: function () {
+      uni.hideKeyboard();
+    },
+    scanCode: function () {
+      var e, t = this;
+      (uni.hideKeyboard(), uni.scanCode({
+        onlyFromCamera: false,
+        scanType: ["barCode", "qrCode", "datamatrix", "pdf417"],
+        success: (e = async function (n) {
+          await t.$nextTick();
+          setTimeout(function () {
+            t.$set(t.deviceInfo, "name", n.result);
+          }, 800);
+        }, function (t) {
+          return e.apply(this, arguments);
+        })
+      }));
+    }
+  }
+};
+export default m;
+
+</script>

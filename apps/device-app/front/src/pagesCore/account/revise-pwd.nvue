@@ -1,0 +1,219 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('mine.setup.revise.pwd') }}
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 32rpx;">
+      <view style="background-color: #ffffff; border-radius: 20rpx; padding: 32rpx 28rpx; margin-bottom: 40rpx; box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);">
+        <view style="margin-bottom: 24rpx;">
+          <text style="font-size: 26rpx; color: #666666; margin-bottom: 12rpx; display: block;" append="tree">
+            {{ l('mine.setup.old.pwd') }}
+          </text>
+          <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx;">
+            <u--input
+              type="password"
+              :placeholder="l('mine.setup.old.pwd')"
+              border="none"
+              v-model="oldUserPwd"
+              clearable
+            ></u--input>
+          </view>
+        </view>
+
+        <view style="margin-bottom: 24rpx;">
+          <text style="font-size: 26rpx; color: #666666; margin-bottom: 12rpx; display: block;" append="tree">
+            {{ l('mine.setup.new.pwd') }}
+          </text>
+          <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx;">
+            <u--input
+              type="password"
+              :placeholder="l('mine.setup.new.pwd')"
+              border="none"
+              v-model="repeatUserPwd"
+              clearable
+            ></u--input>
+          </view>
+        </view>
+
+        <view style="margin-bottom: 16rpx;">
+          <text style="font-size: 26rpx; color: #666666; margin-bottom: 12rpx; display: block;" append="tree">
+            {{ l('mine.setup.confirm.pwd') }}
+          </text>
+          <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx;">
+            <u--input
+              type="password"
+              :placeholder="l('mine.setup.confirm.pwd')"
+              border="none"
+              v-model="userPwd"
+              clearable
+            ></u--input>
+          </view>
+        </view>
+
+        <view v-if="3 == userState" style="margin-top: 20rpx; background-color: #FFF9F9; border-radius: 12rpx; padding: 16rpx 20rpx; border: 1rpx solid #FFEBEB;">
+          <text style="font-size: 24rpx; color: #F56C6C; line-height: 34rpx; display: block;" append="tree">
+            请输入该设备旧密码进行修改【默认密码:123456】
+          </text>
+        </view>
+      </view>
+
+      <view>
+        <u-button
+          color="#6081C7"
+          shape="circle"
+          type="primary"
+          size="large"
+          :text="l('mine.setup.save')"
+          @click="savePwd"
+        ></u-button>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/account/revise-pwd
+ * 反编译自 webpack 模块 715（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var l = getApp().globalData, m = {
+  data: function () {
+    return {
+      oldUserPwd: "",
+      repeatUserPwd: "",
+      userPwd: "",
+      userState: null
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["userId", "selectedTerminal", "userType"])
+  },
+  onLoad: function (e) {
+    this.userState = e.userType;
+  },
+  methods: {
+    ...mod25.mapActions("account", ["ChangeAuthPassword", "SignOut"]),
+    ...mod25.mapActions("terminal", ["ChangeTerminalPassword"]),
+    l: function (e) {
+      return l.$t(e);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    savePwd: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.oldUserPwd.trim() && e.repeatUserPwd.trim() && e.userPwd.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(l.$t("common.content"), "none"));
+            case 2:
+              if (e.userPwd == e.repeatUserPwd) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(l.$t("common.please.new.password"), "none"));
+            case 4:
+              if (uni.$u.test.rangeLength(e.userPwd, [6, 20])) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(l.$t("common.please.pwd.num"), "none"));
+            case 6:
+              if (3 == e.userState) {
+                t.next = 17;
+                break;
+              }
+              return (t.next = 9, e.ChangeAuthPassword({
+                oldPassword: e.oldUserPwd.trim(),
+                password: e.userPwd.trim()
+              }));
+            case 9:
+              if (!t.sent.succeeded) {
+                t.next = 17;
+                break;
+              }
+              return (mod166.qzwlToast(l.$t("common.change.pwd.yes"), "none"), t.next = 14, e.SignOut());
+            case 14:
+              return (t.next = 16, l.$sleep(1500));
+            case 16:
+              uni.reLaunch({
+                url: "/pagesCore/login/index"
+              });
+            case 17:
+              if (3 != e.userState) {
+                t.next = 34;
+                break;
+              }
+              return (t.next = 20, e.ChangeTerminalPassword({
+                oldPassword: e.oldUserPwd.trim(),
+                password: e.userPwd.trim(),
+                terminalNo: e.selectedTerminal.terminalNo
+              }));
+            case 20:
+              if (!t.sent.succeeded) {
+                t.next = 34;
+                break;
+              }
+              if ((mod166.qzwlToast(l.$t("common.change.pwd.yes"), "none"), 3 != e.userType)) {
+                t.next = 31;
+                break;
+              }
+              return (t.next = 26, e.SignOut());
+            case 26:
+              return (t.next = 28, l.$sleep(1500));
+            case 28:
+              (uni.reLaunch({
+                url: "/pagesCore/login/index"
+              }), t.next = 34);
+              break;
+            case 31:
+              return (t.next = 33, l.$sleep(1e3));
+            case 33:
+              uni.navigateBack();
+            case 34:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+.main {
+  padding-top: 15;
+  padding-right: 15;
+  padding-bottom: 15;
+  padding-left: 15;
+}
+</style>

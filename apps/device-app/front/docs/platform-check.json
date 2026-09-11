@@ -1,0 +1,204 @@
+{
+  "duplicates": [],
+  "fatal": [],
+  "warn": [
+    {
+      "file": ".unpacked\\nvue\\12.js",
+      "name": "weex",
+      "count": 1,
+      "why": "nvue 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\222.js",
+      "name": "weex",
+      "count": 1,
+      "why": "nvue 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\262.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\328.js",
+      "name": "weex",
+      "count": 1,
+      "why": "nvue 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\395.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\596.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\616.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\7.js",
+      "name": "weex",
+      "count": 1,
+      "why": "nvue 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\719.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\nvue\\742.js",
+      "name": "plus",
+      "count": 2,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\svc\\400f.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\svc\\8a65.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\svc\\918f.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\svc\\97e2.js",
+      "name": "plus",
+      "count": 4,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\svc\\bd05.js",
+      "name": "plus",
+      "count": 5,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\view\\2cc4.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": ".unpacked\\view\\b49c.js",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "components\\Pay\\Pay.nvue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "components\\Pay\\Pay.vue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pages\\app-updateVersions\\pages\\upgrade-popup.vue",
+      "name": "plus",
+      "count": 4,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pagesCore\\account\\account-safety.nvue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pagesCore\\login\\index.nvue",
+      "name": "plus",
+      "count": 2,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pagesCore\\webframe.vue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pagesMore\\my\\developers\\developers.nvue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "pagesPay\\list\\specifics.nvue",
+      "name": "plus",
+      "count": 1,
+      "why": "app-plus 专有"
+    },
+    {
+      "file": "uni_modules\\uni-ui\\components\\uni-icons\\uni-icons.nvue",
+      "name": "weex",
+      "count": 1,
+      "why": "nvue 专有"
+    }
+  ],
+  "unknown": [
+    {
+      "file": ".unpacked\\nvue\\17.js",
+      "name": "__channelId__",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\nvue\\2.js",
+      "name": "__VUE_SSR_CONTEXT__",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\svc\\481b.js",
+      "name": "ReferenceError",
+      "count": 1
+    },
+    {
+      "file": ".unpacked\\svc\\828b.js",
+      "name": "__VUE_SSR_CONTEXT__",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\svc\\8a57.js",
+      "name": "URLSearchParams",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\svc\\f3b9.js",
+      "name": "__channelId__",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\view\\828b.js",
+      "name": "__VUE_SSR_CONTEXT__",
+      "count": 2
+    },
+    {
+      "file": ".unpacked\\view\\b49c.js",
+      "name": "DEBUG",
+      "count": 2
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view>
+    <uni-nav-bar
+      :color="titleColor"
+      :title="headTitle"
+      :backgroundColor="primaryColor"
+      :border="false"
+      leftIcon="left"
+      :fixed="true"
+      :statusBar="true"
+      @clickLeft="gotoPages"
+    ></uni-nav-bar>
+    <view style="flex: 1" :style="{ height: sysInfo.windowHeight + 'px' }">
+      <map
+        ref="map"
+        :style="{ width: '750rpx', height: '100vh', flex: 1, justifyContent: 'space-between' }"
+        id="map"
+        :scale="scale"
+        :enableBuilding="true"
+        :longitude="longitude"
+        :latitude="latitude"
+        :markers="markers"
+      ></map>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/message/statement
+ * 反编译自 webpack 模块 603（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import s from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import '../../common/utils.nvue.js';
+"use strict";
+var l = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      titleColor: mod15.titleColor,
+      primaryColor: mod15.primaryColor,
+      scale: mod15.defaultScale,
+      markers: [],
+      longitude: 116.4,
+      latitude: 39.91,
+      alarmId: 0,
+      alarmInfo: null
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["sysInfo", "selectedTerminal", "appConfig"]),
+    headTitle: function () {
+      return this.alarmInfo ? this.alarmInfo.alarmTypeName : "\u544a\u8b66\u8be6\u60c5";
+    }
+  },
+  onLoad: function (e) {
+    if ((e.id && (this.alarmId = e.id, this.fetchData()), e.data)) {
+      var t = JSON.parse(e.data);
+      this.pushInit(t);
+    }
+  },
+  methods: {
+    ...mod25.mapActions("alarmLog", ["GetAlarmDetail"]),
+    ...mod25.mapActions("device", ["GetGeocode"]),
+    gotoPages: function (e) {
+      uni.navigateBack();
+    },
+    fetchData: function () {
+      var e = this;
+      return (async function () {
+        var n;
+        (n = await e.GetAlarmDetail({
+          alarmId: e.alarmId
+        })).succeeded && (e.alarmInfo = n.data, e.longitude = e.alarmInfo.beginLng || 116.4, e.latitude = e.alarmInfo.beginLat || 39.91, e.setMarker());
+      })();
+    },
+    pushInit: function (e) {
+      (this.longitude = e.coordinate[0] || 116.4, this.latitude = e.coordinate[1] || 39.91, this.alarmInfo = {
+        beginLng: e.coordinate[0],
+        beginLat: e.coordinate[1],
+        beginTime: e.beginTime,
+        terminalNo: e.terminalNo,
+        alarmTypeName: e.title,
+        beginLngWGS84: e.beginLngWGS84,
+        beginLatWGS84: e.beginLatWGS84
+      }, this.setMarker());
+    },
+    setMarker: function () {
+      var e = this;
+      return i(mod22.mark(function t() {
+        var n, a, i, s;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (!e.alarmInfo.beginLng || !e.alarmInfo.beginLat) {
+                t.next = 10;
+                break;
+              }
+              return (t.next = 3, e.GetGeocode({
+                longitude: e.alarmInfo.beginLngWGS84,
+                latitude: e.alarmInfo.beginLatWGS84
+              }));
+            case 3:
+              return (t.next = 5, t.sent);
+            case 5:
+              (a = t.sent, (n = a.succeeded ? a.address : "") && ((i = n.split("")).splice(18, 0, "\n\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0"), n = i.join("")), s = {
+                content: ("\u8bbe\u5907\u53f7:\xa0").concat(e.alarmInfo.terminalNo, "\n\u544a\u8b66\u5f00\u59cb\u65f6\u95f4:\xa0").concat(e.alarmInfo.beginTime).concat(e.alarmInfo.endTime ? "\n\u544a\u8b66\u7ed3\u675f\u65f6\u95f4:\xa0" + e.alarmInfo.endTime : "", "\n\u544a\u8b66\u5730\u5740:\xa0").concat(n),
+                display: "ALWAYS",
+                color: "#333",
+                bgColor: "#fff",
+                textAlign: "left",
+                padding: 8,
+                borderRadius: 10,
+                fontSize: 13
+              }, e.markers = [{
+                id: 0,
+                longitude: e.alarmInfo.beginLng,
+                latitude: e.alarmInfo.beginLat,
+                width: 30,
+                height: 30,
+                anchor: {
+                  x: .5,
+                  y: .5
+                },
+                iconPath: e.cdn + "/ikon/qzwl-msg-notice@2x.png",
+                callout: s
+              }]);
+            case 10:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    }
+  }
+};
+export default l;
+
+</script>

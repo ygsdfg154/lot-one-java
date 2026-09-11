@@ -1,0 +1,1392 @@
+{
+  "plan": {
+    "nvue:482": {
+      "file": "pages/msg/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "482",
+      "route": "pages/msg/index"
+    },
+    "nvue:483": {
+      "file": "pages/ability/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "483",
+      "route": "pages/ability/index"
+    },
+    "nvue:484": {
+      "file": "pages/my/my.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "484",
+      "route": "pages/my/my"
+    },
+    "nvue:485": {
+      "file": "pages/home/home.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "485",
+      "route": "pages/home/home"
+    },
+    "nvue:486": {
+      "file": "pagesMore/notice/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "486",
+      "route": "pagesMore/notice/index"
+    },
+    "nvue:487": {
+      "file": "pagesMore/my/setups/service_terms.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "487",
+      "route": "pagesMore/my/setups/service_terms"
+    },
+    "nvue:488": {
+      "file": "pagesMore/my/setups/privacy_notice.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "488",
+      "route": "pagesMore/my/setups/privacy_notice"
+    },
+    "nvue:489": {
+      "file": "pagesMore/my/developers/push-msgs.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "489",
+      "route": "pagesMore/my/developers/push-msgs"
+    },
+    "nvue:490": {
+      "file": "pagesMore/my/developers/developers.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "490",
+      "route": "pagesMore/my/developers/developers"
+    },
+    "nvue:491": {
+      "file": "pagesMore/my/support.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "491",
+      "route": "pagesMore/my/support"
+    },
+    "nvue:492": {
+      "file": "pagesMore/message/table.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "492",
+      "route": "pagesMore/message/table"
+    },
+    "nvue:493": {
+      "file": "pagesMore/message/statement.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "493",
+      "route": "pagesMore/message/statement"
+    },
+    "nvue:494": {
+      "file": "pagesMore/public/qzwl-authorize.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "494",
+      "route": "pagesMore/public/qzwl-authorize"
+    },
+    "nvue:495": {
+      "file": "pagesMore/public/locate.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "495",
+      "route": "pagesMore/public/locate"
+    },
+    "nvue:496": {
+      "file": "pagesPay/list/specifics.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "496",
+      "route": "pagesPay/list/specifics"
+    },
+    "nvue:497": {
+      "file": "pagesPay/list/indent-device.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "497",
+      "route": "pagesPay/list/indent-device"
+    },
+    "nvue:498": {
+      "file": "pagesPay/list/indent.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "498",
+      "route": "pagesPay/list/indent"
+    },
+    "nvue:499": {
+      "file": "pagesPay/card/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "499",
+      "route": "pagesPay/card/index"
+    },
+    "nvue:500": {
+      "file": "pagesPay/value-added/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "500",
+      "route": "pagesPay/value-added/index"
+    },
+    "nvue:501": {
+      "file": "pagesFunc/deviceInfo/set-icon.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "501",
+      "route": "pagesFunc/deviceInfo/set-icon"
+    },
+    "nvue:502": {
+      "file": "pagesFunc/deviceInfo/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "502",
+      "route": "pagesFunc/deviceInfo/index"
+    },
+    "nvue:503": {
+      "file": "pagesFunc/terminal/corral/info.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "503",
+      "route": "pagesFunc/terminal/corral/info"
+    },
+    "nvue:504": {
+      "file": "pagesFunc/terminal/corral/list.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "504",
+      "route": "pagesFunc/terminal/corral/list"
+    },
+    "nvue:505": {
+      "file": "pagesFunc/terminal/device-card.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "505",
+      "route": "pagesFunc/terminal/device-card"
+    },
+    "nvue:506": {
+      "file": "pagesFunc/terminal/self-detection.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "506",
+      "route": "pagesFunc/terminal/self-detection"
+    },
+    "nvue:507": {
+      "file": "pagesFunc/terminal/trip-report/detail.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "507",
+      "route": "pagesFunc/terminal/trip-report/detail"
+    },
+    "nvue:508": {
+      "file": "pagesFunc/terminal/list/enterprise.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "508",
+      "route": "pagesFunc/terminal/list/enterprise"
+    },
+    "nvue:509": {
+      "file": "pagesFunc/terminal/list/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "509",
+      "route": "pagesFunc/terminal/list/index"
+    },
+    "nvue:510": {
+      "file": "pagesFunc/terminal/remote-setup/list.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "510",
+      "route": "pagesFunc/terminal/remote-setup/list"
+    },
+    "nvue:511": {
+      "file": "pagesFunc/terminal/remote-setup/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "511",
+      "route": "pagesFunc/terminal/remote-setup/index"
+    },
+    "nvue:512": {
+      "file": "pagesFunc/terminal/locus/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "512",
+      "route": "pagesFunc/terminal/locus/index"
+    },
+    "nvue:513": {
+      "file": "pagesFunc/terminal/locate-mode/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "513",
+      "route": "pagesFunc/terminal/locate-mode/index"
+    },
+    "nvue:514": {
+      "file": "pagesFunc/terminal/alerts-set/messages.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "514",
+      "route": "pagesFunc/terminal/alerts-set/messages"
+    },
+    "nvue:515": {
+      "file": "pagesFunc/terminal/alerts-set/phone.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "515",
+      "route": "pagesFunc/terminal/alerts-set/phone"
+    },
+    "nvue:516": {
+      "file": "pagesFunc/terminal/alerts-set/wx-mp.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "516",
+      "route": "pagesFunc/terminal/alerts-set/wx-mp"
+    },
+    "nvue:517": {
+      "file": "pagesFunc/terminal/alerts-set/wx.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "517",
+      "route": "pagesFunc/terminal/alerts-set/wx"
+    },
+    "nvue:518": {
+      "file": "pagesFunc/terminal/alerts-set/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "518",
+      "route": "pagesFunc/terminal/alerts-set/index"
+    },
+    "nvue:519": {
+      "file": "pagesCore/account/revise-userInfo.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "519",
+      "route": "pagesCore/account/revise-userInfo"
+    },
+    "nvue:520": {
+      "file": "pagesCore/account/revise-pwd.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "520",
+      "route": "pagesCore/account/revise-pwd"
+    },
+    "nvue:521": {
+      "file": "pagesCore/account/account-safety.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "521",
+      "route": "pagesCore/account/account-safety"
+    },
+    "nvue:522": {
+      "file": "pagesCore/login/bind-tel-more.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "522",
+      "route": "pagesCore/login/bind-tel-more"
+    },
+    "nvue:523": {
+      "file": "pagesCore/login/logout.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "523",
+      "route": "pagesCore/login/logout"
+    },
+    "nvue:524": {
+      "file": "pagesCore/login/find-pas.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "524",
+      "route": "pagesCore/login/find-pas"
+    },
+    "nvue:525": {
+      "file": "pagesCore/login/bind-tel.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "525",
+      "route": "pagesCore/login/bind-tel"
+    },
+    "nvue:526": {
+      "file": "pagesCore/login/register.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "526",
+      "route": "pagesCore/login/register"
+    },
+    "nvue:527": {
+      "file": "pagesCore/login/index.nvue",
+      "kind": "page",
+      "space": "nvue",
+      "modId": "527",
+      "route": "pagesCore/login/index"
+    },
+    "svc:3f9b": {
+      "file": "pages/app-updateVersions/pages/upgrade-popup.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "3f9b",
+      "route": "pages/app-updateVersions/pages/upgrade-popup"
+    },
+    "svc:5aac": {
+      "file": "pagesMore/my/setups/as.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "5aac",
+      "route": "pagesMore/my/setups/as"
+    },
+    "svc:1a91": {
+      "file": "pagesPay/paySuccess/index.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "1a91",
+      "route": "pagesPay/paySuccess/index"
+    },
+    "svc:1807": {
+      "file": "pagesPay/appreciation/index.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "1807",
+      "route": "pagesPay/appreciation/index"
+    },
+    "svc:b00b": {
+      "file": "pagesFunc/terminal/audio/index.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "b00b",
+      "route": "pagesFunc/terminal/audio/index"
+    },
+    "svc:f870": {
+      "file": "pagesFunc/terminal/trip-report/list.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "f870",
+      "route": "pagesFunc/terminal/trip-report/list"
+    },
+    "svc:b20e": {
+      "file": "pagesCore/webframe.vue",
+      "kind": "page",
+      "space": "svc",
+      "modId": "b20e",
+      "route": "pagesCore/webframe"
+    },
+    "svc:d169": {
+      "file": "App.vue",
+      "kind": "app",
+      "space": "svc",
+      "modId": "d169"
+    },
+    "nvue:10": {
+      "file": "../docs/decompiled-uview/components/u-icon/u-icon.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "10",
+      "tag": "uIcon",
+      "cls": "uview"
+    },
+    "nvue:198": {
+      "file": "../docs/decompiled-uview/components/u-loading-icon/u-loading-icon.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "198",
+      "tag": "uLoadingIcon",
+      "cls": "uview"
+    },
+    "nvue:216": {
+      "file": "../docs/decompiled-uview/components/u-button/u-button.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "216",
+      "tag": "uButton",
+      "cls": "uview"
+    },
+    "nvue:219": {
+      "file": "../docs/decompiled-uview/components/u-transition/u-transition.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "219",
+      "tag": "uTransition",
+      "cls": "uview"
+    },
+    "nvue:229": {
+      "file": "../docs/decompiled-uview/components/u-popup/u-popup.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "229",
+      "tag": "uPopup",
+      "cls": "uview"
+    },
+    "nvue:231": {
+      "file": "../docs/decompiled-uview/components/u--input/u--input.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "231",
+      "tag": "u-Input",
+      "cls": "uview"
+    },
+    "nvue:247": {
+      "file": "../docs/decompiled-uview/components/u-overlay/u-overlay.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "247",
+      "tag": "uOverlay",
+      "cls": "uview"
+    },
+    "nvue:249": {
+      "file": "../docs/decompiled-uview/components/u-status-bar/u-status-bar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "249",
+      "tag": "uStatusBar",
+      "cls": "uview"
+    },
+    "nvue:251": {
+      "file": "../docs/decompiled-uview/components/u-safe-bottom/u-safe-bottom.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "251",
+      "tag": "uSafeBottom",
+      "cls": "uview"
+    },
+    "nvue:254": {
+      "file": "../docs/decompiled-uview/components/u-input/u-input.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "254",
+      "tag": "uvInput",
+      "cls": "uview"
+    },
+    "nvue:255": {
+      "file": "../docs/decompiled-uview/components/u-line/u-line.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "255",
+      "tag": "uLine",
+      "cls": "uview"
+    },
+    "nvue:307": {
+      "file": "../docs/decompiled-uview/components/u-empty/u-empty.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "307",
+      "tag": "uEmpty",
+      "cls": "uview"
+    },
+    "nvue:308": {
+      "file": "../docs/decompiled-uview/components/u-picker/u-picker.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "308",
+      "tag": "uPicker",
+      "cls": "uview"
+    },
+    "nvue:310": {
+      "file": "../docs/decompiled-uview/components/u-toolbar/u-toolbar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "310",
+      "tag": "uToolbar",
+      "cls": "uview"
+    },
+    "nvue:353": {
+      "file": "../docs/decompiled-uview/components/u-loadmore/u-loadmore.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "353",
+      "tag": "uLoadmore",
+      "cls": "uview"
+    },
+    "nvue:355": {
+      "file": "../docs/decompiled-uview/components/u--text/u--text.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "355",
+      "tag": "u-Text",
+      "cls": "uview"
+    },
+    "nvue:356": {
+      "file": "../docs/decompiled-uview/components/u-text/u-text.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "356",
+      "tag": "uvText",
+      "cls": "uview"
+    },
+    "nvue:357": {
+      "file": "../docs/decompiled-uview/components/u-link/u-link.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "357",
+      "tag": "uLink",
+      "cls": "uview"
+    },
+    "nvue:362": {
+      "file": "../docs/decompiled-uview/components/u--image/u--image.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "362",
+      "tag": "u-Image",
+      "cls": "uview"
+    },
+    "nvue:363": {
+      "file": "../docs/decompiled-uview/components/u-image/u-image.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "363",
+      "tag": "uvImage",
+      "cls": "uview"
+    },
+    "nvue:364": {
+      "file": "../docs/decompiled-uview/components/u-switch/u-switch.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "364",
+      "tag": "uSwitch",
+      "cls": "uview"
+    },
+    "nvue:366": {
+      "file": "../docs/decompiled-uview/components/u-code/u-code.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "366",
+      "tag": "uCode",
+      "cls": "uview"
+    },
+    "nvue:368": {
+      "file": "components/verificationCode/verificationCode.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "368",
+      "tag": "verificationCode",
+      "cls": "business"
+    },
+    "nvue:442": {
+      "file": "../docs/decompiled-uview/components/u-cell-group/u-cell-group.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "442",
+      "tag": "uCellGroup",
+      "cls": "uview"
+    },
+    "nvue:444": {
+      "file": "../docs/decompiled-uview/components/u-cell/u-cell.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "444",
+      "tag": "uCell",
+      "cls": "uview"
+    },
+    "nvue:446": {
+      "file": "components/payPopup/payPopup.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "446",
+      "tag": "payPopup",
+      "cls": "business"
+    },
+    "nvue:447": {
+      "file": "../docs/decompiled-uview/components/u-badge/u-badge.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "447",
+      "tag": "uBadge",
+      "cls": "uview"
+    },
+    "nvue:448": {
+      "file": "../docs/decompiled-uview/components/u-search/u-search.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "448",
+      "tag": "uSearch",
+      "cls": "uview"
+    },
+    "nvue:450": {
+      "file": "../docs/decompiled-uview/components/u-datetime-picker/u-datetime-picker.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "450",
+      "tag": "uDatetimePicker",
+      "cls": "uview"
+    },
+    "nvue:460": {
+      "file": "uni_modules/uni-ui/components/uni-nav-bar/uni-nav-bar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "460",
+      "tag": "uniNavBar",
+      "cls": "uniui"
+    },
+    "nvue:461": {
+      "file": "uni_modules/uni-ui/components/uni-icons/uni-icons.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "461",
+      "tag": "uniIcons",
+      "cls": "uniui"
+    },
+    "nvue:464": {
+      "file": "components/statusBar/statusBar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "464",
+      "tag": "statusBar",
+      "cls": "business"
+    },
+    "nvue:470": {
+      "file": "../docs/decompiled-uview/components/u--form/u--form.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "470",
+      "tag": "u-Form",
+      "cls": "uview"
+    },
+    "nvue:471": {
+      "file": "../docs/decompiled-uview/components/u-form/u-form.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "471",
+      "tag": "uvForm",
+      "cls": "uview"
+    },
+    "nvue:477": {
+      "file": "../docs/decompiled-uview/components/u-form-item/u-form-item.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "477",
+      "tag": "uFormItem",
+      "cls": "uview"
+    },
+    "nvue:815": {
+      "file": "components/directivePopup/directivePopup.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "815",
+      "tag": "directivePopup",
+      "cls": "business"
+    },
+    "nvue:816": {
+      "file": "components/qzwlShare/qzwlShare.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "816",
+      "tag": "qzwlShare",
+      "cls": "business"
+    },
+    "nvue:817": {
+      "file": "../docs/decompiled-uview/components/u-avatar/u-avatar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "817",
+      "tag": "uAvatar",
+      "cls": "uview"
+    },
+    "nvue:820": {
+      "file": "../docs/decompiled-uview/components/u-scroll-list/u-scroll-list.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "820",
+      "tag": "uScrollList",
+      "cls": "uview"
+    },
+    "nvue:823": {
+      "file": "../docs/decompiled-uview/components/u--textarea/u--textarea.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "823",
+      "tag": "u-Textarea",
+      "cls": "uview"
+    },
+    "nvue:824": {
+      "file": "../docs/decompiled-uview/components/u-textarea/u-textarea.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "824",
+      "tag": "uvTextarea",
+      "cls": "uview"
+    },
+    "nvue:825": {
+      "file": "../docs/decompiled-uview/components/u-radio-group/u-radio-group.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "825",
+      "tag": "uRadioGroup",
+      "cls": "uview"
+    },
+    "nvue:827": {
+      "file": "../docs/decompiled-uview/components/u-radio/u-radio.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "827",
+      "tag": "uRadio",
+      "cls": "uview"
+    },
+    "nvue:829": {
+      "file": "components/CustomerService/CustomerService.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "829",
+      "tag": "CustomerService",
+      "cls": "business"
+    },
+    "nvue:830": {
+      "file": "components/Pay/Pay.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "830",
+      "tag": "Pay",
+      "cls": "business"
+    },
+    "nvue:831": {
+      "file": "components/PayMode/PayMode.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "831",
+      "tag": "PayMode",
+      "cls": "business"
+    },
+    "nvue:832": {
+      "file": "components/GetBackApp/GetBackApp.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "832",
+      "tag": "GetBackApp",
+      "cls": "business"
+    },
+    "nvue:833": {
+      "file": "../docs/decompiled-uview/components/u-tabs/u-tabs.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "833",
+      "tag": "uTabs",
+      "cls": "uview"
+    },
+    "nvue:835": {
+      "file": "../docs/decompiled-uview/components/u-line-progress/u-line-progress.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "835",
+      "tag": "uLineProgress",
+      "cls": "uview"
+    },
+    "nvue:837": {
+      "file": "../docs/decompiled-uview/components/u-slider/u-slider.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "837",
+      "tag": "uSlider",
+      "cls": "uview"
+    },
+    "nvue:839": {
+      "file": "../docs/decompiled-uview/components/u-row/u-row.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "839",
+      "tag": "uRow",
+      "cls": "uview"
+    },
+    "nvue:841": {
+      "file": "../docs/decompiled-uview/components/u-col/u-col.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "841",
+      "tag": "uCol",
+      "cls": "uview"
+    },
+    "nvue:918": {
+      "file": "components/OrgMsg/OrgMsg.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "918",
+      "tag": "OrgMsg",
+      "cls": "business"
+    },
+    "nvue:919": {
+      "file": "../docs/decompiled-uview/components/u-subsection/u-subsection.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "919",
+      "tag": "uSubsection",
+      "cls": "uview"
+    },
+    "nvue:921": {
+      "file": "components/TerminalMsg/TerminalMsg.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "921",
+      "tag": "TerminalMsg",
+      "cls": "business"
+    },
+    "nvue:922": {
+      "file": "components/TerminalFilter/TerminalFilter.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "922",
+      "tag": "TerminalFilter",
+      "cls": "business"
+    },
+    "nvue:926": {
+      "file": "components/noticeNavBar/noticeNavBar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "926",
+      "tag": "noticeNavBar",
+      "cls": "business"
+    },
+    "nvue:927": {
+      "file": "../docs/decompiled-uview/components/u-notice-bar/u-notice-bar.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "927",
+      "tag": "uNoticeBar",
+      "cls": "uview"
+    },
+    "nvue:928": {
+      "file": "../docs/decompiled-uview/components/u-column-notice/u-column-notice.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "928",
+      "tag": "uColumnNotice",
+      "cls": "uview"
+    },
+    "nvue:930": {
+      "file": "../docs/decompiled-uview/components/u-row-notice/u-row-notice.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "930",
+      "tag": "uRowNotice",
+      "cls": "uview"
+    },
+    "nvue:933": {
+      "file": "components/activationPopup/activationPopup.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "933",
+      "tag": "activationPopup",
+      "cls": "business"
+    },
+    "nvue:934": {
+      "file": "components/terminalInfo/terminalInfo.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "934",
+      "tag": "terminalInfo",
+      "cls": "business"
+    },
+    "nvue:935": {
+      "file": "components/loginHint/loginHint.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "935",
+      "tag": "loginHint",
+      "cls": "business"
+    },
+    "nvue:936": {
+      "file": "components/Advertising/Advertising.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "936",
+      "tag": "Advertising",
+      "cls": "business"
+    },
+    "nvue:937": {
+      "file": "../docs/decompiled-uview/components/u-swiper/u-swiper.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "937",
+      "tag": "uSwiper",
+      "cls": "uview"
+    },
+    "nvue:938": {
+      "file": "../docs/decompiled-uview/components/u-swiper-indicator/u-swiper-indicator.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "938",
+      "tag": "uSwiperIndicator",
+      "cls": "uview"
+    },
+    "nvue:941": {
+      "file": "components/permissionPopup/permissionPopup.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "941",
+      "tag": "permissionPopup",
+      "cls": "business"
+    },
+    "nvue:953": {
+      "file": "../docs/decompiled-uview/components/u-action-sheet/u-action-sheet.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "953",
+      "tag": "uActionSheet",
+      "cls": "uview"
+    },
+    "nvue:954": {
+      "file": "../docs/decompiled-uview/components/u-gap/u-gap.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "954",
+      "tag": "uGap",
+      "cls": "uview"
+    },
+    "nvue:957": {
+      "file": "components/refundOrder/refundOrder.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "957",
+      "tag": "refundOrder",
+      "cls": "business"
+    },
+    "nvue:972": {
+      "file": "components/Tree/Tree.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "972",
+      "tag": "Tree",
+      "cls": "business"
+    },
+    "nvue:975": {
+      "file": "components/TerminalList/TerminalList.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "975",
+      "tag": "TerminalList",
+      "cls": "business"
+    },
+    "nvue:980": {
+      "file": "components/selectTime/selectTime.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "980",
+      "tag": "selectTime",
+      "cls": "business"
+    },
+    "nvue:981": {
+      "file": "components/locusPanel/locusPanel.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "981",
+      "tag": "locusPanel",
+      "cls": "business"
+    },
+    "nvue:983": {
+      "file": "components/xMode/xMode.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "983",
+      "tag": "xMode",
+      "cls": "business"
+    },
+    "svc:4405": {
+      "file": "../docs/decompiled-uview/components/u-overlay/u-overlay.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "4405",
+      "tag": "uOverlay",
+      "cls": "uview"
+    },
+    "svc:6313": {
+      "file": "../docs/decompiled-uview/components/u-status-bar/u-status-bar.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "6313",
+      "tag": "uStatusBar",
+      "cls": "uview"
+    },
+    "svc:9571": {
+      "file": "../docs/decompiled-uview/components/u-empty/u-empty.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "9571",
+      "tag": "uEmpty",
+      "cls": "uview"
+    },
+    "svc:9900": {
+      "file": "../docs/decompiled-uview/components/u-subsection/u-subsection.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "9900",
+      "tag": "uSubsection",
+      "cls": "uview"
+    },
+    "svc:a13b": {
+      "file": "uni_modules/uni-ui/components/uni-nav-bar/uni-nav-bar.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "a13b",
+      "tag": "uniNavBar",
+      "cls": "uniui"
+    },
+    "svc:a9fb": {
+      "file": "../docs/decompiled-uview/components/u-icon/u-icon.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "a9fb",
+      "tag": "uIcon",
+      "cls": "uview"
+    },
+    "svc:49dc": {
+      "file": "../docs/decompiled-uview/components/u-popup/u-popup.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "49dc",
+      "tag": "uPopup",
+      "cls": "uview"
+    },
+    "svc:59c8": {
+      "file": "../docs/decompiled-uview/components/u-button/u-button.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "59c8",
+      "tag": "uButton",
+      "cls": "uview"
+    },
+    "svc:8a98": {
+      "file": "../docs/decompiled-uview/components/u-loading-icon/u-loading-icon.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "8a98",
+      "tag": "uLoadingIcon",
+      "cls": "uview"
+    },
+    "svc:88ed": {
+      "file": "components/statusBar/statusBar.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "88ed",
+      "tag": "statusBar",
+      "cls": "business"
+    },
+    "svc:02b1": {
+      "file": "../docs/decompiled-uview/components/u-transition/u-transition.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "02b1",
+      "tag": "uTransition",
+      "cls": "uview"
+    },
+    "svc:d1c1": {
+      "file": "../docs/decompiled-uview/components/u-safe-bottom/u-safe-bottom.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "d1c1",
+      "tag": "uSafeBottom",
+      "cls": "uview"
+    },
+    "svc:ddf7": {
+      "file": "../docs/decompiled-uview/components/u-header/u-header.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "ddf7",
+      "tag": "uHeader",
+      "cls": "uview"
+    },
+    "svc:6ca4": {
+      "file": "../docs/decompiled-uview/components/u-month/u-month.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "6ca4",
+      "tag": "uMonth",
+      "cls": "uview"
+    },
+    "svc:741d": {
+      "file": "../docs/decompiled-uview/components/u-line/u-line.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "741d",
+      "tag": "uLine",
+      "cls": "uview"
+    },
+    "svc:cd45": {
+      "file": "uni_modules/uni-ui/components/uni-icons/uni-icons.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "cd45",
+      "tag": "uniIcons",
+      "cls": "uniui"
+    },
+    "svc:0929": {
+      "file": "../docs/decompiled-uview/components/u-image/u-image.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "0929",
+      "tag": "uvImage",
+      "cls": "uview"
+    },
+    "svc:699a": {
+      "file": "../docs/decompiled-uview/components/u-calendar/u-calendar.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "699a",
+      "tag": "uCalendar",
+      "cls": "uview"
+    },
+    "svc:fefc": {
+      "file": "components/audioAgree/audioAgree.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "fefc",
+      "tag": "audioAgree",
+      "cls": "business"
+    },
+    "svc:0978": {
+      "file": "components/audioBut/audioBut.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "0978",
+      "tag": "audioBut",
+      "cls": "business"
+    },
+    "svc:c2a6": {
+      "file": "components/calendarFrame/calendarFrame.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "c2a6",
+      "tag": "calendarFrame",
+      "cls": "business"
+    },
+    "svc:4dbc": {
+      "file": "../docs/decompiled-uview/components/u-sticky/u-sticky.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "4dbc",
+      "tag": "uSticky",
+      "cls": "uview"
+    },
+    "svc:ab04": {
+      "file": "../docs/decompiled-uview/components/u-loadmore/u-loadmore.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "ab04",
+      "tag": "uLoadmore",
+      "cls": "uview"
+    },
+    "svc:2f2d": {
+      "file": "../docs/decompiled-uview/components/u--image/u--image.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "2f2d",
+      "tag": "u-Image",
+      "cls": "uview"
+    },
+    "svc:9a8a": {
+      "file": "components/PayMode/PayMode.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "9a8a",
+      "tag": "PayMode",
+      "cls": "business"
+    },
+    "svc:a63f": {
+      "file": "components/CustomerService/CustomerService.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "a63f",
+      "tag": "CustomerService",
+      "cls": "business"
+    },
+    "svc:93a2": {
+      "file": "components/Pay/Pay.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "93a2",
+      "tag": "Pay",
+      "cls": "business"
+    },
+    "svc:d0ff": {
+      "file": "components/GetBackApp/GetBackApp.vue",
+      "kind": "component",
+      "space": "svc",
+      "modId": "d0ff",
+      "tag": "GetBackApp",
+      "cls": "business"
+    },
+    "nvue:962": {
+      "file": "components/_unnamed/unknown-962.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "962",
+      "tag": "unknown-962",
+      "cls": "business"
+    },
+    "nvue:974": {
+      "file": "components/_unnamed/unknown-974.nvue",
+      "kind": "component",
+      "space": "nvue",
+      "modId": "974",
+      "tag": "unknown-974",
+      "cls": "business"
+    },
+    "svc:6921": {
+      "file": "store/index.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "6921"
+    },
+    "svc:17c2": {
+      "file": "locale/messages.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "17c2"
+    },
+    "svc:fb73": {
+      "file": "store/modules/app.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "fb73"
+    },
+    "svc:04f1": {
+      "file": "store/modules/account.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "04f1"
+    },
+    "svc:4c62": {
+      "file": "store/modules/alarm.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "4c62"
+    },
+    "svc:9d79": {
+      "file": "store/modules/alarmLog.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "9d79"
+    },
+    "svc:beec": {
+      "file": "store/modules/device.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "beec"
+    },
+    "svc:da67": {
+      "file": "store/modules/dev.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "da67"
+    },
+    "svc:7318": {
+      "file": "store/modules/order.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "7318"
+    },
+    "svc:464b": {
+      "file": "store/modules/packageInfo.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "464b"
+    },
+    "svc:0083": {
+      "file": "store/modules/report.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "0083"
+    },
+    "svc:e73b": {
+      "file": "store/modules/sys.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "e73b"
+    },
+    "svc:9d7d": {
+      "file": "store/modules/terminal.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "9d7d"
+    },
+    "svc:4fb9": {
+      "file": "store/modules/user.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "4fb9"
+    },
+    "svc:17ea": {
+      "file": "store/modules/wechat.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "17ea"
+    },
+    "svc:d65a": {
+      "file": "store/modules/remoteSet.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "d65a"
+    },
+    "svc:7191": {
+      "file": "store/modules/audio.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "7191"
+    },
+    "svc:b366": {
+      "file": "store/modules/fence.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "b366"
+    },
+    "svc:27cd": {
+      "file": "store/modules/timingRefresh.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "27cd"
+    },
+    "svc:5691": {
+      "file": "common/request.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "5691"
+    },
+    "svc:e113": {
+      "file": "common/config.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "e113"
+    },
+    "nvue:15": {
+      "file": "common/config.nvue.js",
+      "kind": "module",
+      "space": "nvue",
+      "modId": "15"
+    },
+    "svc:2cc4": {
+      "file": "main.js",
+      "kind": "entry",
+      "space": "svc",
+      "modId": "2cc4"
+    },
+    "svc:4ddb": {
+      "file": "common/utils.js",
+      "kind": "module",
+      "space": "svc",
+      "modId": "4ddb"
+    },
+    "nvue:166": {
+      "file": "common/utils.nvue.js",
+      "kind": "module",
+      "space": "nvue",
+      "modId": "166"
+    }
+  },
+  "stats": {
+    "sfc": 159,
+    "tplOk": 158,
+    "tplFail": 1,
+    "styleOk": 93,
+    "noTemplate": 1
+  },
+  "failures": [
+    {
+      "file": "App.vue",
+      "reason": "template",
+      "warn": []
+    }
+  ],
+  "deminStats": {
+    "ok": 184,
+    "fallback": 0,
+    "regenLinear": 292,
+    "regenComplex": 17,
+    "failures": []
+  }
+}

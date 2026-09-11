@@ -1,0 +1,79 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view>
+    <u-cell-group>
+      <u-cell
+        v-for="(e, o) in pushMessages"
+        :key="o"
+        :title="e.title"
+        :value="e.type"
+        :label="e.time"
+        :arrow="false"
+        @click="showMessage(e)"
+      ></u-cell>
+    </u-cell-group>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/my/developers/push-msgs
+ * 反编译自 webpack 模块 593（nvue 编译空间）
+ * 辅助函数 n 仍被引用，保留原定义
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+
+function n(t, e) {
+  var i = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(t);
+    (e && (o = o.filter(function (e) {
+      return Object.getOwnPropertyDescriptor(t, e).enumerable;
+    })), i.push.apply(i, o));
+  }
+  return i;
+}
+
+"use strict";
+var l = {
+  data: function () {
+    return {};
+  },
+  computed: (function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var i = null != arguments[e] ? arguments[e] : {};
+      e % 2 ? n(Object(i), true).forEach(function (e) {
+        mod5(t, e, i[e]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(i)) : n(Object(i)).forEach(function (e) {
+        Object.defineProperty(t, e, Object.getOwnPropertyDescriptor(i, e));
+      });
+    }
+    return t;
+  })({}, require("vuex").mapState("dev", ["pushMessages"])),
+  onLoad: function () {},
+  methods: {
+    navigateToPage: function (t) {
+      uni.navigateTo({
+        url: t
+      });
+    },
+    showMessage: function (t) {
+      uni.navigateTo({
+        url: "/pages/dev/push-message",
+        success: function (e) {
+          e.eventChannel.emit("acceptDataFromOpenerPage", t);
+        }
+      });
+    }
+  }
+};
+export default l;
+
+</script>

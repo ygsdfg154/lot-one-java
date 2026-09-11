@@ -1,0 +1,59 @@
+<template>
+<view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+  <view style="display: flex; flex-direction: row; align-items: center;">
+    <image class="logoImg" :src="cdn + '/draw/qzwl-logo.png'" style="width: 80rpx; height: 80rpx; border-radius: 16rpx;" />
+    <view style="display: flex; flex-direction: column; margin-left: 20rpx;">
+      <text style="font-size: 32rpx; color: #ffffff; font-weight: bold;" append="tree">
+        登录{{ l('app.name') || '铭智物联' }}
+      </text>
+      <text style="font-size: 24rpx; color: #ffffff; margin-top: 4rpx;" append="tree">
+        享受GPS精准定位、轨迹服务等
+      </text>
+    </view>
+  </view>
+  <view>
+    <u-button
+      style="height: 60rpx; width: 150rpx"
+      type="primary"
+      text="立即登录"
+      @click="gotoLogin"
+    ></u-button>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: loginHint
+ * 反编译自 webpack 模块 571（nvue 编译空间）
+ */
+import mod15 from '../../common/config.nvue.js'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var c = getApp().globalData;
+var o = {
+  data: function () {
+    return {
+      cdn: mod15.cdn
+    };
+  },
+  methods: {
+    l: function (e) {
+      return c && c.$t ? c.$t(e) : '';
+    },
+    gotoLogin: function () {
+      mod166.gotoPagesLogin();
+    }
+  }
+};
+export default o;
+</script>
+
+<style scoped>
+.logoImg {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+}
+</style>

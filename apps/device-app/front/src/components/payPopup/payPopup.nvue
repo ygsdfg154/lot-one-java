@@ -1,0 +1,205 @@
+<template>
+<view>
+  <u-popup :show="true" mode="center" :safeAreaInsetBottom="false" :round="24" @close="gotoPages(false)">
+    <view style="width: 580rpx; background-color: #ffffff; border-radius: 36rpx; display: flex; flex-direction: column; align-items: center; overflow: hidden; box-sizing: border-box; padding-bottom: 36rpx;">
+      <view style="width: 100%; height: 200rpx; background-image: linear-gradient(to bottom, #bed3ff, #ffffff); display: flex; justify-content: center; align-items: center;">
+        <image
+          style="width: 176rpx; height: 180rpx; flex-shrink: 0;"
+          :src="('iccid' == type ? cdn + '/draw/qzwlVipImageSim.png' : cdn + '/draw/qzwlVipImage.png')"
+        />
+      </view>
+      
+      <view style="width: 100%; padding: 20rpx 36rpx 0 36rpx; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
+        <text style="font-size: 34rpx; font-weight: bold; color: #ee4240; text-align: center; line-height: 44rpx;" append="tree">
+          {{ (message && message.title) ? message.title : '秒速模式开通' }}
+        </text>
+        <text v-if="message && message.content" style="font-size: 26rpx; color: #333333; margin-top: 12rpx; text-align: center; line-height: 38rpx; word-break: break-all;" append="tree">
+          {{ message.content }}
+        </text>
+        <text v-if="message && message.description" style="font-size: 24rpx; color: #666666; margin-top: 20rpx; text-align: center; line-height: 34rpx;" append="tree">
+          将为您提供以下服务
+        </text>
+        <text v-if="message && message.description" style="font-size: 24rpx; color: #6081c7; margin-top: 8rpx; text-align: center; line-height: 36rpx; word-break: break-all;" append="tree">
+          {{ message.description }}
+        </text>
+      </view>
+      
+      <view style="width: 100%; padding: 36rpx 36rpx 0 36rpx; display: flex; flex-direction: row; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        <view style="width: 230rpx; height: 76rpx; border-radius: 38rpx; border: 2rpx solid #6081c7; background-color: #ffffff; display: flex; justify-content: center; align-items: center; box-sizing: border-box; cursor: pointer;" @click="gotoPages(false)">
+          <text style="font-size: 28rpx; color: #6081c7; font-weight: 500;" append="tree">以后再说</text>
+        </view>
+        <view style="width: 230rpx; height: 76rpx; border-radius: 38rpx; background-color: #6081c7; display: flex; justify-content: center; align-items: center; box-sizing: border-box; cursor: pointer;" @click="gotoPages(true)">
+          <text style="font-size: 28rpx; color: #ffffff; font-weight: 500;" append="tree">前往订购</text>
+        </view>
+      </view>
+    </view>
+  </u-popup>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: payPopup
+ * 已重构样式，适配 H5/App 居中卡片弹窗
+ */
+import mod15 from '../../common/config.nvue.js'
+import * as mod25 from 'vuex'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var l = {
+  name: "payPopup",
+  props: {
+    message: {
+      type: Object,
+      default: function () {
+        return {
+          title: "秒速模式开通",
+          content: "",
+          description: ""
+        };
+      }
+    },
+    url: {
+      type: String,
+      default: ""
+    },
+    type: {
+      type: String,
+      default: ""
+    }
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["sysInfo", "selectedTerminal", "access_token"])
+  },
+  methods: {
+    ...mod25.mapMutations("device", ["setSimState"]),
+    gotoPages: function (t) {
+      ("iccid" == this.type && this.setSimState(false), e("log", t, "gogo", " at components/payPopup.vue:106"), this.$emit("closeVipPopup"), this.$emit("close"), t && ("iccid" != this.type ? mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: this.url,
+        access_token: this.access_token
+      }) : uni.navigateTo({
+        url: this.url
+      })));
+    }
+  }
+};
+export default l;
+
+</script>
+
+<style scoped>
+.pay-popup-card {
+  width: 620rpx;
+  background-color: #ffffff;
+  border-radius: 36rpx;
+  padding-bottom: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.pay-popup-header {
+  width: 100%;
+  height: 200rpx;
+  background-image: linear-gradient(to bottom, #bed3ff, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pay-popup-img {
+  width: 176rpx !important;
+  height: 180rpx !important;
+  flex-shrink: 0;
+}
+
+.pay-popup-body {
+  width: 100%;
+  padding: 24rpx 48rpx 0 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.pay-popup-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ee4240;
+  text-align: center;
+}
+
+.pay-popup-content {
+  font-size: 28rpx;
+  color: #333333;
+  margin-top: 16rpx;
+  text-align: center;
+  line-height: 40rpx;
+}
+
+.pay-popup-desc-title {
+  font-size: 26rpx;
+  color: #666666;
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.pay-popup-desc {
+  font-size: 26rpx;
+  color: #6081c7;
+  margin-top: 8rpx;
+  text-align: center;
+}
+
+.pay-popup-actions {
+  width: 100%;
+  padding: 40rpx 40rpx 0 40rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.pay-popup-btn {
+  width: 250rpx;
+  height: 84rpx;
+  border-radius: 42rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  border: 2rpx solid #6081c7;
+  background-color: #ffffff;
+}
+
+.btn-cancel-text {
+  font-size: 30rpx;
+  color: #6081c7;
+  font-weight: 500;
+}
+
+.btn-confirm {
+  background-color: #6081c7;
+}
+
+.btn-confirm-text {
+  font-size: 30rpx;
+  color: #ffffff;
+  font-weight: 500;
+}
+</style>

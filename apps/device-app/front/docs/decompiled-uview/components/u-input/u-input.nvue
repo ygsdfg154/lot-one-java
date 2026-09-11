@@ -1,0 +1,221 @@
+<template>
+<view class="u-input" :class="inputClass" :style="[wrapperStyle]">
+  <view class="u-input__content">
+    <view v-if="prefixIcon || $slots.prefix" class="u-input__content__prefix-icon">
+      <slot name="prefix">
+        <u-icon :name="prefixIcon" size="18" :customStyle="prefixIconStyle"></u-icon>
+      </slot>
+    </view>
+    <view class="u-input__content__field-wrapper" @click="clickHandler">
+      <input
+        class="u-input__content__field-wrapper__field"
+        :style="[inputStyle]"
+        :type="type"
+        :focus="focus"
+        :cursor="cursor"
+        :value="innerValue"
+        :autoBlur="autoBlur"
+        :disabled="disabled || readonly"
+        :maxlength="maxlength"
+        :placeholder="placeholder"
+        :placeholderStyle="placeholderStyle"
+        :placeholderClass="placeholderClass"
+        :confirmType="confirmType"
+        :confirmHold="confirmHold"
+        :holdKeyboard="holdKeyboard"
+        :cursorSpacing="cursorSpacing"
+        :adjustPosition="adjustPosition"
+        :selectionEnd="selectionEnd"
+        :selectionStart="selectionStart"
+        :password="password || 'password' === type || void 0"
+        :ignoreCompositionEvent="ignoreCompositionEvent"
+        @input="onInput"
+        @blur="onBlur"
+        @focus="onFocus"
+        @confirm="onConfirm"
+        @keyboardheightchange="onkeyboardheightchange"
+       />
+    </view>
+    <view v-if="isShowClear" class="u-input__content__clear" @click="onClear">
+      <u-icon name="close" size="11" color="#ffffff" customStyle="line-height: 12px"></u-icon>
+    </view>
+    <view v-if="suffixIcon || $slots.suffix" class="u-input__content__subfix-icon">
+      <slot name="suffix">
+        <u-icon :name="suffixIcon" size="18" :customStyle="suffixIconStyle"></u-icon>
+      </slot>
+    </view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uvInput
+ * 反编译自 webpack 模块 189（nvue 编译空间）
+ * 变量 r 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import r from '@/.unpacked/nvue/227.js'
+
+"use strict";
+var i = {
+  name: "u-input",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, r],
+  data: function () {
+    return {
+      innerValue: "",
+      focused: false,
+      firstChange: true,
+      changeFromInner: false,
+      innerFormatter: function (e) {
+        return e;
+      }
+    };
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler: function (e, t) {
+        (this.innerValue = e, this.firstChange = false, this.changeFromInner = false);
+      }
+    }
+  },
+  computed: {
+    isShowClear: function () {
+      var e = this.clearable, t = this.readonly, n = this.focused, a = this.innerValue;
+      return !!e && !t && !!n && "" !== a;
+    },
+    inputClass: function () {
+      var e = [], t = this.border, n = (this.disabled, this.shape);
+      return ("surround" === t && (e = e.concat(["u-border", "u-input--radius"])), e.push(("u-input--").concat(n)), "bottom" === t && (e = e.concat(["u-border-bottom", "u-input--no-radius"])), e.join(" "));
+    },
+    wrapperStyle: function () {
+      var e = {};
+      return (this.disabled && (e.backgroundColor = this.disabledColor), "none" === this.border ? e.padding = "0" : (e.paddingTop = "6px", e.paddingBottom = "6px", e.paddingLeft = "9px", e.paddingRight = "9px"), uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    },
+    inputStyle: function () {
+      return {
+        color: this.color,
+        fontSize: uni.$u.addUnit(this.fontSize),
+        textAlign: this.inputAlign
+      };
+    }
+  },
+  methods: {
+    setFormatter: function (e) {
+      this.innerFormatter = e;
+    },
+    onInput: function (e) {
+      var t = this, n = (e.detail || ({})).value, a = undefined === n ? "" : n, r = (this.formatter || this.innerFormatter)(a);
+      (this.innerValue = a, this.$nextTick(function () {
+        (t.innerValue = r, t.valueChange());
+      }));
+    },
+    onBlur: function (e) {
+      var t = this;
+      (this.$emit("blur", e.detail.value), uni.$u.sleep(50).then(function () {
+        t.focused = false;
+      }), uni.$u.formValidate(this, "blur"));
+    },
+    onFocus: function (e) {
+      (this.focused = true, this.$emit("focus"));
+    },
+    onConfirm: function (e) {
+      this.$emit("confirm", this.innerValue);
+    },
+    onkeyboardheightchange: function () {
+      this.$emit("keyboardheightchange");
+    },
+    valueChange: function () {
+      var e = this, t = this.innerValue;
+      this.$nextTick(function () {
+        (e.$emit("input", t), e.changeFromInner = true, e.$emit("change", t), uni.$u.formValidate(e, "change"));
+      });
+    },
+    onClear: function () {
+      var e = this;
+      (this.innerValue = "", this.$nextTick(function () {
+        (e.valueChange(), e.$emit("clear"));
+      }));
+    },
+    clickHandler: function () {
+      if ("android" === uni.$u.os()) {
+        var e = uni.$u.$parent.call(this, "u-form-item");
+        e && e.clickHandler();
+      }
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-input {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.u-input--radius {
+  border-radius: 4;
+}
+
+.u-input--square {
+  border-radius: 4;
+}
+
+.u-input--no-radius {
+  border-radius: 0;
+}
+
+.u-input--circle {
+  border-radius: 100;
+}
+
+.u-input__content {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-input__content__field-wrapper {
+  position: relative;
+  flex-direction: row;
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  flex: 1;
+}
+
+.u-input__content__field-wrapper__field {
+  line-height: 26;
+  text-align: left;
+  color: #303133;
+  height: 24;
+  font-size: 15;
+  flex: 1;
+}
+
+.u-input__content__clear {
+  width: 20;
+  height: 20;
+  border-radius: 100;
+  background-color: #c6c7cb;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.82);
+  margin-left: 4;
+}
+
+.u-input__content__subfix-icon {
+  margin-left: 4;
+}
+
+.u-input__content__prefix-icon {
+  margin-right: 4;
+}
+</style>

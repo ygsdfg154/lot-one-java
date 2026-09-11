@@ -1,0 +1,166 @@
+<template>
+<view class="u-textarea" :class="textareaClass" :style="[textareaStyle]">
+  <textarea
+    class="u-textarea__field"
+    :style="{ height: $u.addUnit(height) }"
+    :value="innerValue"
+    :placeholder="placeholder"
+    :placeholderStyle="$u.addStyle(placeholderStyle, 'string')"
+    :placeholderClass="placeholderClass"
+    :disabled="disabled"
+    :focus="focus"
+    :autoHeight="autoHeight"
+    :fixed="fixed"
+    :cursorSpacing="cursorSpacing"
+    :cursor="cursor"
+    :showConfirmBar="showConfirmBar"
+    :selectionStart="selectionStart"
+    :selectionEnd="selectionEnd"
+    :adjustPosition="adjustPosition"
+    :disableDefaultPadding="disableDefaultPadding"
+    :holdKeyboard="holdKeyboard"
+    :maxlength="maxlength"
+    :confirmType="confirmType"
+    :ignoreCompositionEvent="ignoreCompositionEvent"
+    @focus="onFocus"
+    @blur="onBlur"
+    @linechange="onLinechange"
+    @input="onInput"
+    @confirm="onConfirm"
+    @keyboardheightchange="onKeyboardheightchange"
+  ></textarea>
+  <text
+    v-if="count"
+    class="u-textarea__count"
+    :style="{ 'background-color': disabled ? 'transparent' : '#fff' }"
+    append="tree"
+  >
+    {{ innerValue.length }}/{{ maxlength }}
+  </text>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uvTextarea
+ * 反编译自 webpack 模块 384（nvue 编译空间）
+ * 变量 r 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import r from '@/.unpacked/nvue/458.js'
+
+"use strict";
+var i = {
+  name: "u-textarea",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, r],
+  data: function () {
+    return {
+      innerValue: "",
+      focused: false,
+      firstChange: true,
+      changeFromInner: false,
+      innerFormatter: function (e) {
+        return e;
+      }
+    };
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler: function (e, t) {
+        (this.innerValue = e, this.firstChange = false, this.changeFromInner = false);
+      }
+    }
+  },
+  computed: {
+    textareaClass: function () {
+      var e = [], t = this.border, n = this.disabled;
+      this.shape;
+      return ("surround" === t && (e = e.concat(["u-border", "u-textarea--radius"])), "bottom" === t && (e = e.concat(["u-border-bottom", "u-textarea--no-radius"])), n && e.push("u-textarea--disabled"), e.join(" "));
+    },
+    textareaStyle: function () {
+      var e = {};
+      return ("android" === uni.$u.os() && (e.paddingTop = "6px", e.paddingLeft = "9px", e.paddingBottom = "3px", e.paddingRight = "6px"), uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    }
+  },
+  methods: {
+    setFormatter: function (e) {
+      this.innerFormatter = e;
+    },
+    onFocus: function (e) {
+      this.$emit("focus", e);
+    },
+    onBlur: function (e) {
+      (this.$emit("blur", e), uni.$u.formValidate(this, "blur"));
+    },
+    onLinechange: function (e) {
+      this.$emit("linechange", e);
+    },
+    onInput: function (e) {
+      var t = this, n = (e.detail || ({})).value, a = undefined === n ? "" : n, r = (this.formatter || this.innerFormatter)(a);
+      (this.innerValue = a, this.$nextTick(function () {
+        (t.innerValue = r, t.valueChange());
+      }));
+    },
+    valueChange: function () {
+      var e = this, t = this.innerValue;
+      this.$nextTick(function () {
+        (e.$emit("input", t), e.changeFromInner = true, e.$emit("change", t), uni.$u.formValidate(e, "change"));
+      });
+    },
+    onConfirm: function (e) {
+      this.$emit("confirm", e);
+    },
+    onKeyboardheightchange: function (e) {
+      this.$emit("keyboardheightchange", e);
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-textarea {
+  border-radius: 4;
+  background-color: #ffffff;
+  position: relative;
+  flex-direction: row;
+  flex: 1;
+  padding-top: 9;
+  padding-right: 9;
+  padding-bottom: 9;
+  padding-left: 9;
+}
+
+.u-textarea--radius {
+  border-radius: 4;
+}
+
+.u-textarea--no-radius {
+  border-radius: 0;
+}
+
+.u-textarea--disabled {
+  background-color: #f5f7fa;
+}
+
+.u-textarea__field {
+  flex: 1;
+  font-size: 15;
+  color: #606266;
+  width: 100;
+}
+
+.u-textarea__count {
+  position: absolute;
+  right: 5;
+  bottom: 2;
+  font-size: 12;
+  color: #909193;
+  background-color: #ffffff;
+  padding-top: 1;
+  padding-right: 4;
+  padding-bottom: 1;
+  padding-left: 4;
+}
+</style>

@@ -1,0 +1,776 @@
+# 分阶段迁移计划（可执行版）
+
+> 每个阶段包含：目标、前置条件、具体操作步骤、产出物、验收标准、回滚方案
+
+---
+
+## P0 准备阶段（第1周）
+
+### 目标
+搭建 Java 开发环境，生成项目骨架，配置代码生成器，所有服务能启动并注册到 Nacos。
+
+### 前置条件
+- JDK 17+ 已安装
+- Maven 3.8+ 已安装
+- MySQL 8.0、Redis、MongoDB、TDengine、Kafka、Nacos 已就绪（可复用原开发环境）
+- IDEA 已安装 Lombok、MyBatisX 插件
+
+### 操作步骤
+
+#### Step 1：启动基础设施
+```bash
+# 进入原项目 docker-env 目录，启动所有依赖
+cd D:\work\lot-one\docker-env
+docker-compose up -d
+
+# 验证
+# Nacos: http://localhost:8848/nacos  (nacos/nacos)
+# MySQL: localhost:3306
+# Redis: localhost:6379
+# MongoDB: localhost:27017
+# TDengine: localhost:6030
+# Kafka: localhost:9092
+```
+
+#### Step 2：导入 Java 项目到 IDEA
+```
+1. IDEA → Open → 选择 D:\work\lot-one-java
+2. 等待 Maven 依赖下载完成
+3. 确认 Project Structure → SDK = 17
+4. 安装 Lombok 插件并启用 Annotation Processing
+```
+
+#### Step 3：创建 Nacos 命名空间和配置
+```
+1. 登录 Nacos → 命名空间 → 新建命名空间：lot-one-dev
+2. 在该命名空间下创建各服务配置（见 docs/06-操作手册.md 配置模板）
+3. 配置 Data ID 规则：{service-name}-dev.yml
+```
+
+#### Step 4：验证服务启动
+```bash
+# 依次启动（每个服务验证能注册到 Nacos）
+1. lot-one-gateway    → http://localhost:8080
+2. lot-one-admin      → http://localhost:8081/doc.html
+3. lot-one-device     → http://localhost:8082/doc.html
+4. lot-one-iot-gateway
+5. lot-one-iot-worker
+6. lot-one-query-api  → http://localhost:8086/doc.html
+
+# Nacos 服务列表应能看到 6 个服务
+```
+
+#### Step 5：配置 MyBatis-Plus 代码生成器
+```
+1. 参考 lot-one-admin 中的 CodeGenerator.java
+2. 配置数据库连接指向开发库
+3. 配置表名列表（从 sys_user 开始，逐表生成）
+4. 运行生成器，生成 entity/mapper/service/controller
+```
+
+### 产出物
+- [x] Java 项目骨架（7个服务 + 1个公共模块）
+- [x] Nacos 配置中心就绪
+- [x] 所有服务能启动并注册
+- [x] 代码生成器配置完成
+
+### 验收标准
+- [ ] `mvn clean package -DskipTests` 全量编译通过
+- [ ] 6个服务全部启动，Nacos 服务列表可见
+- [ ] 网关能正常路由到 admin 服务的健康检查接口
+
+### 回滚方案
+本阶段不涉及线上，无需回滚。
+
+---
+
+## P1 系统管理模块迁移（第2-3周）
+
+### 目标
+迁移 admin-console 的 sys_ 系统管理模块，实现前端登录、用户管理、角色管理、菜单管理、权限控制。
+
+### 前置条件
+- P0 完成
+- 原 Go 服务仍在运行（用于接口对比）
+
+### 操作步骤
+
+#### Step 1：生成系统管理实体和基础代码
+```bash
+# 在 lot-one-admin 的 CodeGenerator 中配置以下表名，批量生成
+TABLES = [
+  "sys_user", "sys_authority", "sys_base_menu", "sys_authority_menu",
+  "sys_authority_btn", "sys_menu_btn", "sys_user_authority",
+  "sys_dictionary", "sys_dictionary_detail", "sys_api", "sys_api_token",
+  "sys_jwt_blacklist", "sys_login_log", "sys_operation_record",
+  "sys_params", "sys_dept", "sys_authority_dept"
+]
+# 运行 CodeGenerator.main()，生成 entity/mapper/service/serviceImpl/controller
+```
+
+#### Step 2：实现登录接口（最关键，前端第一个调用）
+```java
+// 对照原 Go 代码：admin-console/server/api/v1/system/sys_base.go
+// 1. 验证码生成接口 GET /api/base/captcha
+// 2. 登录接口 POST /api/base/login
+//    - 校验验证码
+//    - 校验用户名密码（BCrypt，原 Go 用的是啥？查原代码确认）
+//    - 生成 JWT Token
+//    - 返回格式必须与原 GVA 一致：{code:0, data:{token:"xxx"}, msg:"success"}
+// 3. 获取用户信息 GET /api/base/getUserInfo
+// 4. 获取菜单 GET /api/base/getMenu
+// 5. 退出登录 POST /api/base/logout
+```
+
+#### Step 3：实现 Sa-Token 权限拦截（替代 Casbin）
+```java
+// 原 Go 用 Casbin 做 RBAC，Java 用 Sa-Token
+// 1. 配置 Sa-Token 拦截器，拦截 /api/** （排除 /api/base/login, /api/base/captcha）
+// 2. 登录时调用 StpUtil.login(userId)，并加载角色和权限码
+// 3. 权限校验用 @SaCheckPermission("api:user:list") 注解
+// 4. 权限码格式与原 Casbin policy 保持一致
+```
+
+#### Step 4：逐模块实现 CRUD
+按以下顺序实现，每个模块完成后用前端页面对比测试：
+1. 用户管理（sys_user）— 增删改查、重置密码、分配角色
+2. 角色管理（sys_authority）— 增删改查、分配菜单、分配按钮
+3. 菜单管理（sys_base_menu）— 树形结构、增删改查
+4. 部门管理（sys_dept）— 树形结构
+5. 字典管理（sys_dictionary）— 字典+字典项
+6. API管理（sys_api）— 接口列表
+7. 操作日志（sys_operation_record）— 列表+查询
+8. 登录日志（sys_login_log）— 列表+查询
+
+#### Step 5：接口对比测试
+```bash
+# 对每个接口，分别调用原 Go 服务和 Java 服务，对比返回值
+# 原 Go: http://localhost:原端口/api/...
+# Java:  http://localhost:8080/admin/api/...
+# 重点对比：code、data 结构、字段名、分页格式
+```
+
+### 产出物
+- [x] 系统管理全量 API（25+张表，100+接口）
+- [x] JWT 登录 + Sa-Token 权限
+- [x] 前端能登录并使用系统管理所有页面
+
+### 验收标准
+- [ ] 前端登录成功，Token 有效
+- [ ] 用户/角色/菜单/部门/字典 增删改查全部可用
+- [ ] 权限控制生效（不同角色看到不同菜单）
+- [ ] 操作日志、登录日志正常记录
+- [ ] 与原 Go 服务接口返回结构 100% 一致
+
+### 回滚方案
+网关路由切回原 Go 服务：`/admin/api/**` → 原 Go 服务地址
+
+---
+
+## P2 业务核心模块迁移（第4-7周）
+
+### 目标
+迁移 lot_ 业务模块：设备管理、围栏、报警规则、订单、支付、VIP、商品、店铺、流量产品、客服、消息、App版本管理。
+
+### 前置条件
+- P1 完成，系统管理可用
+- 原 Go 业务服务仍在运行
+
+### 操作步骤
+
+#### Step 1：批量生成业务实体
+```bash
+# CodeGenerator 配置以下表名
+TABLES = [
+  "lot_device", "lot_device_change_log", "lot_device_cmd", "lot_device_cmd_log",
+  "lot_device_iccid_binding", "lot_fence", "lot_fence_device", "lot_fence_point",
+  "lot_alarm_rule", "lot_order", "lot_payment_package", "lot_payment_platform",
+  "lot_product", "lot_product_cmd", "lot_shop", "lot_traffic_product",
+  "lot_vip_config", "lot_vip_package", "lot_vip_type", "lot_message",
+  "lot_customer_service", "lot_app_menu", "lot_app_version", "lot_dept",
+  "lot_language_module", "lot_cmd"
+]
+```
+
+#### Step 2：按业务域逐模块迁移（每个域1-3天）
+
+| 业务域 | 核心表 | 关键逻辑 | 原Go代码位置 |
+|--------|--------|---------|-------------|
+| 设备管理 | lot_device, lot_device_cmd | 设备CRUD、指令下发、状态同步 | api/lot/lot_device.go |
+| 围栏管理 | lot_fence, lot_fence_device, lot_fence_point | 围栏CRUD、绑定设备、地理围栏判断 | api/lot/lot_fence.go |
+| 报警规则 | lot_alarm_rule | 规则CRUD、报警触发（与iot-worker联动） | api/lot/lot_alarm_rule.go |
+| 订单管理 | lot_order | 订单CRUD、支付回调、订单状态机 | api/lot/lot_order.go |
+| 支付配置 | lot_payment_package, lot_payment_platform | 支付套餐、支付平台配置 | api/lot/lot_payment_*.go |
+| 商品管理 | lot_product, lot_product_cmd | 商品CRUD、商品指令配置 | api/lot/lot_product.go |
+| VIP管理 | lot_vip_* | VIP配置、套餐、类型 | api/lot/lot_vip_*.go |
+| 流量产品 | lot_traffic_product | 流量卡产品配置 | api/lot/lot_traffic_product.go |
+| 店铺管理 | lot_shop | 店铺CRUD、店铺与部门关联 | api/lot/lot_shop.go |
+| 消息中心 | lot_message | 消息推送、消息已读 | api/lot/lot_message.go |
+| 客服管理 | lot_customer_service | 客服配置 | api/lot/lot_customer_service.go |
+| App版本 | lot_app_version, lot_app_menu | App版本管理、菜单配置 | api/lot/lot_app_*.go |
+
+#### Step 3：实现复杂业务逻辑
+以下模块不是简单CRUD，需要重点对照原Go代码实现：
+1. **设备指令下发**：调用 iot-gateway 的指令下发接口，记录指令日志
+2. **围栏判断**：点在多边形内算法（可复用原Go逻辑，翻译成Java）
+3. **订单支付**：对接支付宝/微信支付（P3详细实现，P2先做CRUD）
+4. **数据权限**：按部门/店铺过滤数据（Sa-Token + MyBatis-Plus 插件）
+
+#### Step 4：Dashboard 统计接口
+```java
+// 对照原 Go：router/lot/dashboard.go
+// 实现首页统计：设备总数、在线数、报警数、订单数、今日新增等
+// 注意：统计SQL要与原Go完全一致，确保数字对得上
+```
+
+### 产出物
+- [x] 业务管理全量 API（30+张表，150+接口）
+- [x] 管理后台所有业务页面可用
+
+### 验收标准
+- [ ] 管理后台所有业务页面增删改查正常
+- [ ] 设备指令下发能到达 iot-gateway（P5完成后验证）
+- [ ] Dashboard 统计数字与原系统一致
+- [ ] 接口返回结构与原 Go 100% 一致
+
+---
+
+## P3 设备App后端迁移（第8-10周）
+
+### 目标
+迁移 device-app/backend（Kratos 服务）：App用户注册登录、设备绑定、支付宝/微信支付、流量充值、VIP购买、位置分享、报警通知。
+
+### 前置条件
+- P2 完成
+- 原 device-app Go 服务仍在运行
+
+### 操作步骤
+
+#### Step 1：生成 App 端实体
+```bash
+# 注意：device-app 有独立的表（在 migrations/mysql/device-app/ 下）
+# 部分表与 admin 共用（如 lot_device），实体可复用 lot-one-common
+TABLES = [
+  "lot_app_user", "lot_app_user_device", "lot_app_user_device_log",
+  "lot_app_user_login_log", "lot_app_user_oauth", "lot_device_traffic",
+  "lot_device_vip", "lot_share_location", "lot_app_alarm_dismiss",
+  "lot_device_notify_channel", "lot_device_notify_tel", "lot_app_device_share",
+  "lot_vip_entitlement", "lot_traffic_snapshot"
+]
+```
+
+#### Step 2：实现 App 用户体系
+```java
+// 对照原 Go：device-app/backend/internal/biz/
+// 1. 手机号+密码注册/登录
+// 2. 短信验证码登录（如有用到）
+// 3. 第三方登录（微信/QQ OAuth）
+// 4. Token 刷新
+// 5. 设备绑定/解绑
+// 6. 设备列表（用户名下的设备）
+```
+
+#### Step 3：实现支付（重点难点）
+```java
+// 对照原 Go：device-app/backend/internal/service/payment.go
+// 1. 支付宝支付：AlipayClient（官方SDK）
+//    - 创建订单、调起支付、支付回调验签
+// 2. 微信支付：wechatpay-java（官方SDK）
+//    - JSAPI/APP支付、支付回调验签
+// 3. 支付成功后：更新订单、开通VIP/充值流量
+// 4. 退款接口
+// 注意：支付回调URL要与原系统一致，或在网关层做转发
+```
+
+#### Step 4：实现 App 业务功能
+1. 流量充值：调用运营商API（如有），记录流量快照
+2. VIP购买：支付成功后开通VIP权益
+3. 位置分享：生成分享链接，查询设备实时位置
+4. 报警通知：报警推送、已读标记、通知渠道配置
+5. 设备控制：指令下发（透传到 iot-gateway）
+6. 轨迹查询：调用 query-api 查询历史轨迹
+
+#### Step 5：App 端接口对比测试
+```bash
+# 用 Postman 或 Charles 抓取原 App 的所有请求
+# 逐个对比 Java 端返回值
+# 重点：响应格式、错误码、字段名
+```
+
+### 产出物
+- [x] App 后端全量 API（80+接口）
+- [x] 支付宝/微信支付完整链路
+- [x] 设备App所有功能可用
+
+### 验收标准
+- [ ] App 注册/登录/设备绑定正常
+- [ ] 支付宝支付沙箱测试通过
+- [ ] 微信支付沙箱测试通过
+- [ ] 流量充值/VIP购买正常
+- [ ] 位置分享/报警通知正常
+- [ ] 接口与原 Go 服务 100% 兼容
+
+---
+
+## P4 协议解析库迁移（第11-13周）
+
+### 目标
+将 Rust 的 JT808 + HLXT 协议解析库翻译成 Java，作为 lot-one-protocol 模块，被 iot-gateway 和 iot-worker 依赖。
+
+### 前置条件
+- 原 Rust 协议代码可正常编译运行
+- 有协议文档（JT808-2019 部标、HLXT 自定义协议）
+
+### 操作步骤
+
+#### Step 1：梳理协议消息清单
+```
+# 从 Rust 代码中提取所有消息ID和消息体结构
+# JT808 标准消息：注册、鉴权、心跳、位置上报、通用应答等
+# HLXT 自定义消息：厂商自定义的设备消息
+# 输出：docs/protocol/JT808消息清单.xlsx, HLXT消息清单.xlsx
+```
+
+#### Step 2：实现基础编解码框架
+```java
+// 对照 Rust：crates/protocol-jt808/src/
+// 1. JT808 消息头解析：消息ID、消息体属性、终端手机号、消息流水号
+// 2. 转义处理：0x7e → 0x7d02, 0x7d → 0x7d01
+// 3. 校验码：BCC 异或校验
+// 4. 消息分包处理（消息体属性第13位）
+// 5. 用 Netty ByteBuf 实现高性能二进制读写
+```
+
+#### Step 3：逐消息实现编解码（按使用频率排序）
+```
+优先级1（核心，必须先做）：
+- 0x0100 终端注册
+- 0x0102 终端鉴权
+- 0x0002 终端心跳
+- 0x0200 位置信息汇报（最频繁，性能关键）
+- 0x8001 平台通用应答
+- 0x8100 终端注册应答
+
+优先级2（常用）：
+- 0x0104 查询终端参数应答
+- 0x0500 车辆控制应答
+- 0x0704 批量位置上报
+- 0x0900 数据上行透传
+- 0x8103 设置终端参数
+- 0x8201 位置信息查询
+- 0x8300 文本信息下发
+
+优先级3（按需）：
+- 其他 JT808 消息
+- HLXT 自定义消息（对照 Rust crates/protocol-hlxt）
+```
+
+#### Step 4：单元测试（关键！）
+```java
+// 对每个消息类型，编写编解码单元测试
+// 测试数据来源：
+// 1. 从原 Rust 测试用例中提取二进制数据
+// 2. 从线上抓包中提取真实设备数据
+// 3. 用设备模拟器生成
+// 验收：编码→解码→编码，结果一致；解码原Rust生成的数据，结果一致
+```
+
+#### Step 5：性能基准测试
+```java
+// 位置上报消息（0x0200）是最频繁的，做性能对比
+// 目标：单线程解码吞吐量 >= Rust 版本的 70%
+// 优化：使用 Netty Recycler 对象池、避免内存拷贝、ByteBuf 直接操作
+```
+
+### 产出物
+- [x] lot-one-protocol.jar（JT808 + HLXT 全量消息编解码）
+- [x] 单元测试覆盖率 >= 90%
+- [x] 性能基准测试报告
+
+### 验收标准
+- [ ] 所有消息类型编解码单元测试通过
+- [ ] 用真实设备抓包数据测试，解码结果与 Rust 一致
+- [ ] 位置上报解码性能 >= 10万条/秒（单线程）
+
+---
+
+## P5 设备接入网关迁移（第14-16周）
+
+### 目标
+迁移 Rust access-gateway：用 Netty 实现 TCP/UDP 设备接入、设备认证、消息分发、指令下发、集群管理。
+
+### 前置条件
+- P4 协议解析库完成
+- 原 Rust 网关仍在运行（可对比）
+
+### 操作步骤
+
+#### Step 1：搭建 Netty 服务端
+```java
+// 对照 Rust：crates/gate-core, crates/gate-transport, bins/access-gateway
+// 1. TCP ServerBootstrap，监听设备端口（如 7700）
+// 2. UDP Bootstrap（如设备用UDP）
+// 3. ChannelPipeline：
+//    - IdleStateHandler（心跳超时检测）
+//    - ByteArrayDecoder（原始字节）
+//    - Jt808FrameDecoder（按0x7e分隔、转义、校验）
+//    - Jt808MessageDecoder（消息体解码）
+//    - DeviceAuthHandler（设备认证）
+//    - DeviceMessageHandler（业务处理）
+// 4. 线程模型：bossGroup(1) + workerGroup(Ncpu*2)
+```
+
+#### Step 2：实现设备认证流程
+```java
+// 对照 Rust：crates/gate-auth
+// 1. 终端注册(0x0100)：校验设备ID，分配鉴权码，返回注册应答
+// 2. 终端鉴权(0x0102)：校验鉴权码，建立会话
+// 3. 未认证设备只允许注册/鉴权消息，其他消息丢弃
+// 4. 会话信息存 Redis（支持集群）：deviceId → channelId, 鉴权状态, 最后心跳时间
+```
+
+#### Step 3：实现消息分发
+```java
+// 对照 Rust：crates/gate-core, crates/sink-kafka
+// 1. 位置上报(0x0200)：发送到 Kafka topic "device-telemetry"
+// 2. 其他上行消息：发送到 Kafka topic "device-event"
+// 3. 平台通用应答(0x8001)：直接回复设备
+// 4. 心跳(0x0002)：更新Redis最后心跳时间，回复通用应答
+```
+
+#### Step 4：实现指令下发
+```java
+// 对照 Rust：crates/command-registry
+// 1. 监听 Kafka topic "device-command"（admin/device 服务发指令）
+// 2. 根据 deviceId 找到对应 Channel，下发指令
+// 3. 记录指令流水号，等待设备应答，超时重试
+// 4. 指令结果回写到 Kafka topic "device-command-result"
+```
+
+#### Step 5：实现集群管理
+```java
+// 对照 Rust：crates/gate-cluster
+// 1. 网关节点注册到 Redis（节点ID、IP、端口、连接数）
+// 2. 设备会话共享（Redis）：任意节点都能下发指令到任意设备
+// 3. 节点下线处理：会话迁移或设备重连
+// 4. 负载均衡：设备DNS轮询或TCP代理分发
+```
+
+#### Step 6：实现管理接口（HTTP）
+```java
+// 网关提供 HTTP 管理接口（8084端口）
+// 1. GET /gateway/stats — 连接数、消息吞吐量
+// 2. POST /gateway/command/{deviceId} — 直接下发指令（调试用）
+// 3. GET /gateway/session/{deviceId} — 查询设备会话
+```
+
+### 产出物
+- [x] lot-one-iot-gateway 服务（Netty TCP/UDP + HTTP管理）
+- [x] 设备认证、消息分发、指令下发、集群管理
+- [x] 与原 Rust 网关功能对齐
+
+### 验收标准
+- [ ] 真实设备能连接、注册、鉴权、上报位置
+- [ ] 位置数据能写入 Kafka（iot-worker消费验证）
+- [ ] 指令下发能到达设备并收到应答
+- [ ] 支持 1万+ 设备并发连接（压测）
+- [ ] 多节点集群会话共享正常
+
+---
+
+## P6 数据处理服务迁移（第17-18周）
+
+### 目标
+迁移 Rust iot-worker + litebiz：消费 Kafka，数据写入 MongoDB/TDengine，报警规则判断，设备状态更新。
+
+### 前置条件
+- P5 网关完成，能产生 Kafka 消息
+- P4 协议库完成
+
+### 操作步骤
+
+#### Step 1：Kafka 消费者框架
+```java
+// 对照 Rust：crates/sink-kafka, bins/iot-worker
+// 1. @KafkaListener 消费 "device-telemetry"（位置数据）
+// 2. @KafkaListener 消费 "device-event"（其他事件）
+// 3. 手动提交 offset（处理成功后提交）
+// 4. 批量消费（max.poll.records=500）
+// 5. 消费者组：iot-worker-group
+```
+
+#### Step 2：数据写入 MongoDB
+```java
+// 对照 Rust：crates/sink-mongo
+// 1. 设备最新位置：collection "device_status"，按 deviceId upsert
+// 2. 报警事件：collection "alarm_event"
+// 3. 设备上下线日志：collection "device_online_log"
+// 4. 批量写入（BulkOperation），提升吞吐量
+```
+
+#### Step 3：数据写入 TDengine（时序）
+```java
+// 对照 Rust：crates/sink-tdengine
+// 1. 超级表：device_telemetry（时间戳、deviceId、经度、纬度、速度、方向、状态...）
+// 2. 子表：按 deviceId 自动创建（使用超级表 TAG）
+// 3. 批量 INSERT（一条SQL插入多条）
+// 4. 连接池：HikariCP + taos-jdbcdriver
+```
+
+#### Step 4：报警规则判断
+```java
+// 对照 Rust：crates/biz-litebiz
+// 1. 从 Redis/MySQL 加载设备的报警规则（围栏、超速、离线、SOS）
+// 2. 每条位置数据判断是否触发报警
+// 3. 触发报警：写入 MongoDB + 发送 Kafka "alarm-event" + 推送通知
+// 4. 报警去重：同一规则N分钟内不重复报警
+```
+
+#### Step 5：设备状态更新
+```java
+// 1. 在线状态：收到位置/心跳 → 在线；超时N分钟无消息 → 离线
+// 2. 离线检测：定时任务扫描 Redis，超时设备标记离线
+// 3. 状态变更：写入 MySQL lot_device 表 + MongoDB + 发送事件
+```
+
+#### Step 6：对象存储（音频/图片）
+```java
+// 对照 Rust：crates/sink-object-storage
+// 1. 设备上传的音频/图片数据，转存到 MinIO/阿里云OSS
+// 2. 生成访问URL，存到 MongoDB
+```
+
+### 产出物
+- [x] lot-one-iot-worker 服务
+- [x] Kafka消费、Mongo/TDengine写入、报警判断、状态更新
+
+### 验收标准
+- [ ] 设备位置数据能写入 MongoDB 和 TDengine
+- [ ] 报警规则能正确触发（围栏、超速、离线）
+- [ ] 设备上下线状态正确更新
+- [ ] 数据吞吐量 >= 1万条/秒（压测）
+- [ ] 数据不丢不重（offset 管理正确）
+
+---
+
+## P7 查询API迁移（第19-20周）
+
+### 目标
+迁移 Rust query-api：提供时序数据查询、轨迹查询、统计分析接口，供前端和App调用。
+
+### 前置条件
+- P6 完成，TDengine/MongoDB 有数据
+
+### 操作步骤
+
+#### Step 1：轨迹查询接口
+```java
+// 对照 Rust：crates/query-read-core, crates/api-rest, bins/query-api
+// 1. GET /query/api/track/{deviceId}?startTime=&endTime=
+//    - 从 TDengine 查询时间段内的位置点
+//    - 抽稀算法（距离阈值/时间阈值），避免返回过多点
+//    - 按时间排序返回
+// 2. GET /query/api/track/latest/{deviceId} — 最新位置
+// 3. 注意：返回格式要与原 Rust API 一致，前端轨迹回放直接用
+```
+
+#### Step 2：统计分析接口
+```java
+// 1. 设备里程统计：按天/周/月统计行驶里程
+// 2. 报警统计：按设备/时间统计报警次数和类型
+// 3. 在线时长统计：设备每日在线时长
+// 4. 超速统计：超速次数、最长超速时间
+// 5. 数据来源：TDengine 聚合查询 + MongoDB 补充
+```
+
+#### Step 3：实时数据接口
+```java
+// 1. WebSocket 实时位置推送（前端地图实时追踪）
+//    - 前端订阅设备ID，后端从 Kafka 消费并推送
+//    - 或用 Redis Pub/Sub
+// 2. 批量最新位置查询：一次查多个设备的最新位置（MongoDB）
+```
+
+#### Step 4：性能优化
+```java
+// 1. TDengine 查询优化：使用超级表查询、合理设置时间范围
+// 2. 热点数据缓存：最新位置缓存到 Redis（10秒过期）
+// 3. 大结果集分页：轨迹查询限制最大返回点数（如10000点）
+// 4. 连接池配置：TDengine HikariCP 最大连接数 = CPU核数*2
+```
+
+### 产出物
+- [x] lot-one-query-api 服务
+- [x] 轨迹查询、统计分析、实时数据接口
+
+### 验收标准
+- [ ] 前端轨迹回放正常（数据与原系统一致）
+- [ ] 统计报表数字与原系统一致
+- [ ] 实时位置推送延迟 < 1秒
+- [ ] 轨迹查询响应时间 < 500ms（1万点以内）
+
+---
+
+## P8 全链路联调测试（第21-22周）
+
+### 目标
+全链路联调、接口对比测试、性能测试、安全测试，确保新旧系统完全等价。
+
+### 操作步骤
+
+#### Step 1：接口全量对比测试
+```bash
+# 编写自动化对比脚本（Python/Java）
+# 1. 遍历所有 API 接口（从 Knife4j 文档获取）
+# 2. 对每个接口，用相同参数分别调用原 Go/Rust 和 Java
+# 3. 对比返回 JSON（忽略时间戳等动态字段）
+# 4. 输出差异报告，逐个修复
+# 目标：100% 接口返回结构一致，95% 以上接口数据一致
+```
+
+#### Step 2：业务流程端到端测试
+```
+1. 管理后台：登录 → 设备管理 → 创建设备 → 下发指令 → 查看日志
+2. 设备App：注册 → 登录 → 绑定设备 → 查看实时位置 → 购买VIP → 支付
+3. 设备链路：设备连接 → 注册 → 鉴权 → 上报位置 → 触发报警 → 收到通知
+4. 数据链路：位置上报 → Kafka → iot-worker → Mongo/TDengine → 查询API → 前端轨迹
+```
+
+#### Step 3：性能压测
+```bash
+# 1. API 压测：JMeter / wrk
+#    - 管理后台接口：目标 QPS >= 原系统
+#    - App 接口：目标 QPS >= 原系统
+# 2. 设备网关压测：
+#    - 并发连接数：1万+
+#    - 消息吞吐量：1万+ 条/秒
+# 3. 数据写入压测：
+#    - iot-worker 消费吞吐量：1万+ 条/秒
+#    - TDengine 写入：5万+ 条/秒
+# 4. 对比原 Rust/Go 系统性能，Java 达到 80% 以上视为达标
+```
+
+#### Step 4：稳定性测试
+```bash
+# 1. 72小时持续运行：设备模拟器持续上报，API持续调用
+# 2. 监控：内存、CPU、GC、连接数、消息堆积
+# 3. 故障注入：杀进程、断网、数据库重启，验证恢复能力
+# 4. 内存泄漏检测：长时间运行后内存不持续增长
+```
+
+#### Step 5：安全测试
+```
+1. 接口鉴权：未登录/无权限访问应被拒绝
+2. SQL注入：参数特殊字符测试
+3. XSS：富文本字段测试
+4. 支付安全：回调验签、金额篡改测试
+5. 设备认证：伪造设备注册/鉴权测试
+```
+
+### 产出物
+- [x] 接口对比测试报告
+- [x] 性能压测报告
+- [x] 稳定性测试报告
+- [x] 安全测试报告
+- [x] 所有问题修复完成
+
+### 验收标准
+- [ ] 接口对比 100% 通过
+- [ ] 核心业务流程端到端通过
+- [ ] 性能达到原系统 80% 以上
+- [ ] 72小时稳定性测试无重大问题
+- [ ] 安全测试无高危漏洞
+
+---
+
+## P9 上线切换（第23周）
+
+### 目标
+灰度切流、全量切换、旧系统下线。
+
+### 操作步骤
+
+#### Step 1：预发布环境验证
+```
+1. 部署 Java 全套服务到预发布环境
+2. 用生产数据快照（脱敏）做全量验证
+3. 预发布环境运行 3 天，观察稳定性
+```
+
+#### Step 2：灰度切流（按流量比例）
+```
+第1天：10% 流量切到 Java（网关层按用户ID/设备ID哈希分流）
+第2天：30% 流量
+第3天：50% 流量
+第4天：80% 流量
+第5天：100% 流量
+
+# 切流期间：
+# - 新旧系统并行运行，数据库共用
+# - 实时对比核心指标（错误率、响应时间、业务数据）
+# - 出现问题立即切回原系统
+```
+
+#### Step 3：设备网关切换（单独处理）
+```
+# 设备是长连接，不能按HTTP流量切
+# 方案：DNS 逐步切换 / TCP 代理分流
+# 1. 先切 10% 设备（按设备号段）
+# 2. 观察设备在线率、消息到达率
+# 3. 逐步增加比例，最终全量
+# 4. 旧网关保留 7 天，便于回滚
+```
+
+#### Step 4：全量切换后观察
+```
+1. 全量切到 Java 后，持续监控 7 天
+2. 重点监控：错误率、响应时间、设备在线率、数据完整性
+3. 旧系统保持运行但不接流量（热备）
+4. 7天无问题后，旧系统正式下线
+```
+
+#### Step 5：旧系统下线
+```
+1. 停止旧 Go/Rust 服务
+2. 清理旧服务的定时任务、监控告警
+3. 归档旧代码（分支标记，不删除）
+4. 更新运维文档
+5. 项目复盘总结
+```
+
+### 产出物
+- [x] 上线方案
+- [x] 灰度切流记录
+- [x] 全量切换完成
+- [x] 旧系统下线
+
+### 验收标准
+- [ ] 100% 流量运行在 Java 系统上
+- [ ] 核心业务指标不低于原系统
+- [ ] 7天稳定运行无重大故障
+- [ ] 旧系统正式下线
+
+---
+
+## 关键风险与应对
+
+| 风险 | 影响 | 应对措施 |
+|------|------|---------|
+| 协议解析有差异 | 设备数据错乱 | P4 单元测试 + 真实抓包对比，双写验证 |
+| 支付回调不兼容 | 支付失败 | P3 沙箱全链路测试，回调URL兼容 |
+| 性能不达标 | 设备连接数受限 | Netty 优化、异步非阻塞、连接池调优 |
+| 数据不一致 | 业务数据错误 | P8 全量接口对比，灰度期间双写对比 |
+| 迁移周期过长 | 业务停滞 | 按阶段交付，每阶段可独立上线，并行开发 |
+
+---
+
+## 人力配置建议
+
+| 角色 | 人数 | 职责 |
+|------|------|------|
+| 后端开发（Java） | 2人 | 业务模块迁移（P1-P3）、查询API（P7） |
+| 后端开发（Java/Netty） | 1人 | 协议解析（P4）、设备网关（P5）、数据处理（P6） |
+| 测试 | 1人 | P8 全链路测试、性能测试 |
+| 运维 | 0.5人 | 环境搭建、上线切换 |
+
+**2人全职后端 + 1人测试，约 4-5 个月可完成全量迁移。**

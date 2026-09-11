@@ -1,0 +1,251 @@
+<template>
+<view
+  class="u-button"
+  :class="bemClass"
+  :style="[baseColor, $u.addStyle(customStyle)]"
+  :hoverStartTime="Number(hoverStartTime)"
+  :hoverStayTime="Number(hoverStayTime)"
+  :hoverClass="disabled || loading || color || !plain && 'info' !== type ? disabled || loading || plain ? '' : 'u-button--active' : 'u-button--active--plain'"
+  @click="clickHandler"
+>
+  <u-loading-icon v-if="loading" :mode="loadingMode" :size="1.15 * loadingSize" :color="loadingColor"></u-loading-icon>
+  <text
+    class="u-button__loading-text"
+    :class="[plain && 'u-button__text--plain--' + type]"
+    :style="[nvueTextStyle]"
+    append="tree"
+  >
+    {{ loadingText || text }}
+  </text>
+  <u-icon v-if="icon" v-else :name="icon" :color="iconColorCom" :size="1.35 * textSize"></u-icon>
+  <text
+    class="u-button__text"
+    :class="[plain && 'u-button__text--plain--' + type]"
+    :style="[{ marginLeft: icon ? '2px' : 0 }, nvueTextStyle]"
+    append="tree"
+  >
+    {{ text }}
+  </text>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uButton
+ * 反编译自 webpack 模块 19（nvue 编译空间）
+ */
+import '@/.unpacked/nvue/217.js'
+import '@/.unpacked/nvue/218.js'
+import mod221 from '@/.unpacked/nvue/221.js'
+
+"use strict";
+var i = {
+  name: "u-button",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod221],
+  data: function () {
+    return {};
+  },
+  computed: {
+    bemClass: function () {
+      return this.color ? this.bem("button", ["shape", "size"], ["disabled", "plain", "hairline"]) : this.bem("button", ["type", "shape", "size"], ["disabled", "plain", "hairline"]);
+    },
+    loadingColor: function () {
+      return this.plain ? this.color ? this.color : uni.$u.config.color[("u-").concat(this.type)] : "info" === this.type ? "#c9c9c9" : "rgb(200, 200, 200)";
+    },
+    iconColorCom: function () {
+      return this.iconColor ? this.iconColor : this.plain ? this.color ? this.color : this.type : "info" === this.type ? "#000000" : "#ffffff";
+    },
+    baseColor: function () {
+      var e = {};
+      return (this.color && (e.color = this.plain ? this.color : "white", this.plain || (e["background-color"] = this.color), -1 !== this.color.indexOf("gradient") ? (e.borderTopWidth = 0, e.borderRightWidth = 0, e.borderBottomWidth = 0, e.borderLeftWidth = 0, this.plain || (e.backgroundImage = this.color)) : (e.borderColor = this.color, e.borderWidth = "1px", e.borderStyle = "solid")), e);
+    },
+    nvueTextStyle: function () {
+      var e = {};
+      return ("info" === this.type && (e.color = "#323233"), this.color && (e.color = this.plain ? this.color : "white"), e.fontSize = this.textSize + "px", e);
+    },
+    textSize: function () {
+      var e = 14, t = this.size;
+      return ("large" === t && (e = 16), "normal" === t && (e = 14), "small" === t && (e = 12), "mini" === t && (e = 10), e);
+    }
+  },
+  methods: {
+    clickHandler: function () {
+      var e = this;
+      this.disabled || this.loading || uni.$u.throttle(function () {
+        e.$emit("click");
+      }, this.throttleTime);
+    },
+    getphonenumber: function (e) {
+      this.$emit("getphonenumber", e);
+    },
+    getuserinfo: function (e) {
+      this.$emit("getuserinfo", e);
+    },
+    error: function (e) {
+      this.$emit("error", e);
+    },
+    opensetting: function (e) {
+      this.$emit("opensetting", e);
+    },
+    launchapp: function (e) {
+      this.$emit("launchapp", e);
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-button--active {
+  opacity: 0.75;
+}
+
+.u-button--active--plain {
+  background-color: #d9d9d9;
+}
+
+.u-button__loading-text {
+  margin-left: 4;
+  color: #FFFFFF;
+  font-size: 15;
+}
+
+.u-button__text {
+  color: #FFFFFF;
+  font-size: 15;
+}
+
+.u-button__text--plain--error {
+  color: #f56c6c;
+}
+
+.u-button__text--plain--warning {
+  color: #f9ae3d;
+}
+
+.u-button__text--plain--success {
+  color: #5ac725;
+}
+
+.u-button__text--plain--info {
+  color: #909399;
+}
+
+.u-button__text--plain--primary {
+  color: #6081C7;
+}
+
+.u-button {
+  height: 40;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.u-button--large {
+  height: 50;
+  padding-top: 0;
+  padding-right: 15;
+  padding-bottom: 0;
+  padding-left: 15;
+}
+
+.u-button--normal {
+  padding-top: 0;
+  padding-right: 12;
+  padding-bottom: 0;
+  padding-left: 12;
+  font-size: 14;
+}
+
+.u-button--small {
+  height: 30;
+  padding-top: 0;
+  padding-right: 8;
+  padding-bottom: 0;
+  padding-left: 8;
+  font-size: 12;
+}
+
+.u-button--mini {
+  height: 22;
+  font-size: 10;
+  padding-top: 0;
+  padding-right: 8;
+  padding-bottom: 0;
+  padding-left: 8;
+}
+
+.u-button--disabled {
+  opacity: 0.5;
+}
+
+.u-button--info {
+  color: #323233;
+  background-color: #ffffff;
+  border-color: #ebedf0;
+  border-width: 1;
+  border-style: solid;
+}
+
+.u-button--success {
+  color: #ffffff;
+  background-color: #5ac725;
+  border-color: #5ac725;
+  border-width: 1;
+  border-style: solid;
+}
+
+.u-button--primary {
+  color: #ffffff;
+  background-color: #6081C7;
+  border-color: #6081C7;
+  border-width: 1;
+  border-style: solid;
+}
+
+.u-button--error {
+  color: #ffffff;
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+  border-width: 1;
+  border-style: solid;
+}
+
+.u-button--warning {
+  color: #ffffff;
+  background-color: #f9ae3d;
+  border-color: #f9ae3d;
+  border-width: 1;
+  border-style: solid;
+}
+
+.u-button--block {
+  flex-direction: row;
+  width: 100;
+}
+
+.u-button--circle {
+  border-top-right-radius: 100;
+  border-top-left-radius: 100;
+  border-bottom-left-radius: 100;
+  border-bottom-right-radius: 100;
+}
+
+.u-button--square {
+  border-bottom-left-radius: 3;
+  border-bottom-right-radius: 3;
+  border-top-left-radius: 3;
+  border-top-right-radius: 3;
+}
+
+.u-button--plain {
+  background-color: #ffffff;
+}
+
+.u-button--hairline {
+  border-width: 0.5;
+}
+</style>

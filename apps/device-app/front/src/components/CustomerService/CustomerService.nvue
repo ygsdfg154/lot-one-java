@@ -1,0 +1,38 @@
+<template>
+<view>
+  <view class="flex-row m-t">
+    <text class="text" append="tree">
+      对订单有任何疑问，请联系
+    </text>
+    <text class="text text-primary m-l-mini" append="tree" @click="$data.contactService">
+      在线客服
+    </text>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: CustomerService
+ * 反编译自 webpack 模块 393（nvue 编译空间）
+ */
+import '../../common/config.nvue.js'
+
+"use strict";
+getApp().globalData;
+var r = {
+  props: {},
+  data: function () {
+    return {};
+  },
+  methods: {
+    contactService: function () {
+      uni.navigateTo({
+        url: "/pagesMore/my/support"
+      });
+    }
+  }
+};
+export default r;
+
+</script>

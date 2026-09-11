@@ -1,0 +1,52 @@
+<template>
+<uvTextarea
+  :value="value"
+  :placeholder="placeholder"
+  :height="height"
+  :confirmType="confirmType"
+  :disabled="disabled"
+  :count="count"
+  :focus="focus"
+  :autoHeight="autoHeight"
+  :fixed="fixed"
+  :cursorSpacing="cursorSpacing"
+  :cursor="cursor"
+  :showConfirmBar="showConfirmBar"
+  :selectionStart="selectionStart"
+  :selectionEnd="selectionEnd"
+  :adjustPosition="adjustPosition"
+  :disableDefaultPadding="disableDefaultPadding"
+  :holdKeyboard="holdKeyboard"
+  :maxlength="maxlength"
+  :border="border"
+  :customStyle="customStyle"
+  :formatter="formatter"
+  :ignoreCompositionEvent="ignoreCompositionEvent"
+  @focus="$emit('focus')"
+  @blur="$emit('blur')"
+  @linechange="$emit('linechange', t)"
+  @confirm="$emit('confirm')"
+  @input="$emit('input', t)"
+  @keyboardheightchange="$emit('keyboardheightchange')"
+></uvTextarea>
+</template>
+
+<script>
+/*
+ * 组件: u-Textarea
+ * 反编译自 webpack 模块 382（nvue 编译空间）
+ */
+import mod824 from 'uview-ui/components/u-textarea/u-textarea.vue'
+import mod458 from '@/.unpacked/nvue/458.js'
+
+"use strict";
+var o = {
+  name: "u--textarea",
+  mixins: [uni.$u.mpMixin, mod458, uni.$u.mixin],
+  components: {
+    uvTextarea: mod824
+  }
+};
+export default o;
+
+</script>

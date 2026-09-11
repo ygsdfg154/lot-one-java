@@ -1,0 +1,113 @@
+<template>
+<view>
+  <view class="flex-row justify-center m-t-xl">
+    <view class="p-h-xl p-b flex-row justify-center" style="width: 510rpx; height: 88rpx">
+      <u-subsection
+        :style="{ width: '510rpx', height: '88rpx' }"
+        :list="timeList"
+        :current="currentTime"
+        mode="subsection"
+        :activeColor="primaryColor"
+        @change="changeTime"
+      ></u-subsection>
+    </view>
+  </view>
+  <view class="flex-row flex-wrap justify-between">
+    <view v-for="(t, r) in statistics" :key="r" @click="gotoAlarmList(t.alarmType)">
+      <view v-if="t.count" class="m-t-xl b-grey alarm-list-item justify-center items-center">
+        <text class="text-lg text-link text-bold" append="tree">
+          {{ t.count }}
+        </text>
+        <text class="text-gray text m-t-md" append="tree">
+          {{ t.alarmTypeName }}
+        </text>
+      </view>
+    </view>
+  </view>
+  <u-empty
+    v-if="!(statisticsNotEmpty)"
+    :text="l('common.no.more')"
+    :icon="cdn + '/draw/qzwl-empty.png'"
+  ></u-empty>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: OrgMsg
+ * 反编译自 webpack 模块 534（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var c = getApp().globalData, _ = {
+  computed: {
+    ...mod25.mapState("alarmLog", ["statistics"]),
+    ...mod25.mapGetters(["userType"]),
+    statisticsNotEmpty: function () {
+      return this.statistics.some(function (e) {
+        return e.count;
+      });
+    }
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      timeList: [c.$t("message.today"), c.$t("message.this.week"), c.$t("message.this.month")],
+      currentTime: 0,
+      primaryColor: mod15.primaryColor
+    };
+  },
+  mounted: function () {
+    this.fetchData();
+  },
+  methods: {
+    ...mod25.mapActions("alarmLog", ["GetAlarmStatistics"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    fetchData: function () {
+      var e = this;
+      return (async function () {
+        await e.GetAlarmStatistics({
+          type: e.currentTime + 1
+        });
+        uni.stopPullDownRefresh();
+      })();
+    },
+    changeTime: function (e) {
+      (this.currentTime = e, this.fetchData());
+    },
+    gotoAlarmList: function (e) {
+      uni.navigateTo({
+        url: ("/pagesMore/message/table?alarmType=").concat(e, "&current=").concat(this.currentTime + 1)
+      });
+    }
+  }
+};
+export default _;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.alarm-list-item {
+  width: 300rpx;
+  height: 300rpx;
+  background-color: #ffffff;
+  border-radius: 28rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.alarm-list-item {
+  width: 40vw;
+  height: 40vw;
+  background-color: #ffffff;
+  border-radius: 3.7333vw;
+}
+/* #endif */
+</style>

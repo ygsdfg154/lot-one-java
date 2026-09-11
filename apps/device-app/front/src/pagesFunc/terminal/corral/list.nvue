@@ -1,0 +1,201 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <!-- Header -->
+  <view class="nav-bar" style="height: 88rpx; background-color: #6081C7; display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 0 30rpx; position: sticky; top: 0; z-index: 100;">
+    <view style="position: absolute; left: 24rpx; cursor: pointer; padding: 10rpx;" @click="goBack">
+      <u-icon name="arrow-left" color="#ffffff" size="40rpx"></u-icon>
+    </view>
+    <text style="color: #ffffff; font-size: 34rpx; font-weight: bold;">
+      {{ l('device.enclosure') || '地理围栏' }}
+    </text>
+  </view>
+
+  <view style="padding: 24rpx 32rpx 140rpx 32rpx; background-color: #f6f6f6;">
+    <view v-if="selectedTerminal" style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 32rpx; display: flex; flex-direction: row; align-items: center; margin-bottom: 24rpx;">
+      <u-icon :name="iconPath" size="80rpx"></u-icon>
+      <view style="display: flex; flex-direction: column; margin-left: 24rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #333333; margin-bottom: 8rpx;" append="tree">
+          {{ selectedTerminal.terminalName || selectedTerminal.terminalNo }}
+        </text>
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('device.terminal.no') }}：{{ selectedTerminal.terminalNo }}
+        </text>
+      </view>
+    </view>
+
+    <view v-if="fenceList.length" style="background-color: #ffffff; border-radius: 16rpx; padding: 0 24rpx;">
+      <view
+        v-for="t in fenceList"
+        :key="t.id"
+        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0; cursor: pointer;"
+        @click="gotoEnclosureInfo(t)"
+        @longpress="longpressHangle(t)"
+      >
+        <view style="display: flex; flex-direction: column;">
+          <text style="font-size: 30rpx; font-weight: bold; color: #333333; margin-bottom: 8rpx;" append="tree">
+            {{ t.name }}
+          </text>
+          <text style="font-size: 24rpx; color: #888888;" append="tree">
+            {{ l('enclosure.create.time') }}：{{ t.createTime }}
+          </text>
+        </view>
+        <u-icon name="arrow-right" color="#cccccc" size="28rpx"></u-icon>
+      </view>
+    </view>
+
+    <u-empty
+      v-else
+      style="margin-top: 80rpx;"
+      :text="l('common.no.enclosure')"
+      :icon="cdn + '/draw/qzwl-empty.png'"
+    ></u-empty>
+  </view>
+
+  <view v-if="1 != userType" style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 32rpx; background-color: #ffffff; box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <u-button color="#6081C7" type="primary" :text="l('enclosure.create.fence')" @click="getCreateEnclosure"></u-button>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/corral/list
+ * 反编译自 webpack 模块 648（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../../common/config.nvue.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+"use strict";
+var m = getApp().globalData, c = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      fenceList: [],
+      item: null,
+      iconPath: ""
+    };
+  },
+  onLoad: function () {
+    if (!this.selectedTerminal) return;
+    var e = mod166.getTerminalIconCode(this.selectedTerminal.iconType, this.deviceIcons);
+    this.iconPath = ("").concat(this.cdn, "/ikon/device/").concat(e.code, "-1.png");
+  },
+  onShow: function () {
+    this.getEnclosureList();
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "appConfig", "userType"]),
+    ...mod25.mapState("device", ["deviceIcons"])
+  },
+  methods: {
+    ...mod25.mapActions("fence", ["GetUserEnclosure", "DeleteFence"]),
+    goBack: function () {
+      uni.navigateBack({ delta: 1 });
+    },
+    l: function (e) {
+      return m.$t(e);
+    },
+    getEnclosureList: function () {
+      var e = this;
+      return (async function () {
+        var n;
+        (n = await e.GetUserEnclosure({
+          terminalId: e.selectedTerminal.id
+        })).succeeded && (e.fenceList = n.data.list);
+      })();
+    },
+    gotoEnclosureInfo: function (e) {
+      uni.navigateTo({
+        url: ("/pagesFunc/terminal/corral/info?fenceId=").concat(e.id)
+      });
+    },
+    getCreateEnclosure: function () {
+      uni.showActionSheet({
+        title: m.$t("enclosure.select.type"),
+        itemList: [m.$t("enclosure.round.fence"), m.$t("enclosure.polygon.fence"), m.$t("enclosure.district.fence")],
+        itemColor: mod15.primaryColor,
+        success: function (e) {
+          uni.navigateTo({
+            url: ("/pagesFunc/terminal/corral/info?enclosureType=").concat([0, 2, 3][e.tapIndex])
+          });
+        }
+      });
+    },
+    longpressHangle: function (e) {
+      var t, n = this;
+      (this.item = e, uni.showActionSheet({
+        title: m.$t("common.manipulation-menu"),
+        itemList: [m.$t("common.delete.but")],
+        itemColor: mod15.primaryColor,
+        success: (t = mod23(mod22.mark(function t(a) {
+          return mod22.wrap(function (t) {
+            for (; ; ) switch (t.prev = t.next) {
+              case 0:
+                if (a.tapIndex) {
+                  t.next = 5;
+                  break;
+                }
+                return (t.next = 3, n.DeleteFence(e.id));
+              case 3:
+                t.sent.succeeded && (n.getEnclosureList(), mod166.qzwlToast(m.$t("common.deleted.success"), "none"));
+              case 5:
+              case "end":
+                return t.stop();
+            }
+          }, t);
+        })), function (e) {
+          return t.apply(this, arguments);
+        }),
+        fail: function (e) {}
+      }));
+    }
+  }
+};
+export default c;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.list-icon {
+  width: 40rpx;
+  height: 40rpx;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #909399;
+  border-radius: 50;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+/* #endif */
+/* #ifdef H5 */
+.list-icon {
+  width: 5.3333vw;
+  height: 5.3333vw;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #909399;
+  border-radius: 50;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+/* #endif */
+</style>

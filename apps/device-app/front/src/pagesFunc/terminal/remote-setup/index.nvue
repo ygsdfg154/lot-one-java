@@ -1,0 +1,373 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="flex-1 bg-white">
+    <u-cell-group :customStyle="{ 'font-size': '32rpx' }">
+      <u-cell
+        v-if="terminalFuncShow(22)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('common.remote.onOff')"
+        @click="setDirective(0, 'common.remote.onOff', 'common.remote.onOff.introduce', 'OffOn')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(28)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('remote-setup.immediately.locate')"
+        @click="refreshLocate"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(1)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.g/r')"
+        @click="setDirective(0, 'alarm.setup.garrison', 'remote-setup.garrison', 'Garrison')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(45)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.dismantle')"
+        @click="setDirective(0, 'alarm.setup.dismantle', 'remote-setup.dismantle', 'TamperAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(43)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.vibration')"
+        @click="setDirective(0, 'alarm.setup.vibration', 'remote-setup.vibration', 'Vibration')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(44)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.speed')"
+        @click="setDirective(3, 'alarm.setup.speed', 'remote-setup.speed', 'SpeedAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(55)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.battery')"
+        @click="setDirective(0, 'alarm.setup.battery', 'remote-setup.lowBattery', 'LowBatteryAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(60)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm-setup.cut-power')"
+        @click="setDirective(0, 'alarm-setup.cut-power', 'remote-setup.cutPower', 'CutPowerAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(46)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm-setup.Voice')"
+        @click="setDirective(0, 'alarm-setup.Voice', 'remote-setup.voice', 'VoiceAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(59)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm.setup.sos-alarm')"
+        @click="setDirective(0, 'alarm.setup.sos-alarm', 'remote-setup.sos', 'SosAlarm')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(35)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('remote-setup.white.tel')"
+        @click="setDirective(2, 'remote-setup.white.tel', 'remote-setup.white.tel.describe', 'white')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(12)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('alarm-setup.buffer')"
+        @click="setDirective(0, 'alarm-setup.buffer', 'alarm-setup.buffer-text', 'Buffer')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(31)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('remote-setup.custom.instruct')"
+        @click="setDirective(1, 'remote-setup.custom.instruct', 'remote-setup.custom.instruct-describe', 'custom')"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(29)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('remote-setup.terminal-restart')"
+        @click="resetTerminal"
+      ></u-cell>
+      <!-- 契约用"定位模式档位"表达上报频率（8.4 / 9.4.1），不是原厂的自由秒数 -->
+      <u-cell
+        v-if="terminalFuncShow(10001)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        title="定位模式"
+        :value="posModeName"
+        @click="setUploadTime"
+      ></u-cell>
+      <u-cell
+        v-if="terminalFuncShow(42)"
+        class="flex-col justify-center"
+        size="large"
+        :isLink="true"
+        :title="l('remote-setup.factory-reset')"
+        @click="factoryReset"
+      ></u-cell>
+    </u-cell-group>
+    <u-picker
+      style="position: absolute"
+      :show="showUploadTime"
+      keyName="label"
+      :columns="posModeColumns"
+      :closeOnClickOverlay="true"
+      @confirm="timeConfirm"
+      @cancel="showUploadTime = false"
+    ></u-picker>
+    <u-popup
+      style="position: absolute"
+      :show="funcPopupShow"
+      round="15"
+      :closeable="true"
+      mode="bottom"
+      :closeOnClickOverlay="true"
+      @close="funcPopupShow = false"
+    >
+      <directivePopup
+        v-if="funcPopupShow"
+        :popupType="popupType"
+        :directive="directive"
+        :describe="describe"
+        :param="param"
+      ></directivePopup>
+    </u-popup>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/remote-setup/index
+ * 反编译自 webpack 模块 680（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 4 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import mod815 from '../../../components/directivePopup/directivePopup.nvue';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../../common/utils.nvue.js';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var c = getApp().globalData, m = {
+  components: {
+    directivePopup: mod815
+  },
+  data: function () {
+    return {
+      funcPopupShow: false,
+      popupType: 0,
+      directive: "",
+      describe: "",
+      param: "",
+      showUploadTime: false,
+      // 8.4.1 的当前档位与可选档位。选项一律由后端给（availableModes），
+      // 原版在这里硬编码了 10/20/30/60/120 秒——那是厂商模型，本平台按档位下发
+      posMode: null,
+      posModes: []
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "terminalFuncs"]),
+    /** 当前档位名（未取到时留空，不显示"0秒"这种假值）。 */
+    posModeName: function () {
+      var cur = this.posModes.find(function (m) {
+        return m.level === this.posMode;
+      }, this);
+      return cur ? cur.name : "";
+    },
+    /** u-picker 的列数据：档位说明拼在名字后面，用户才知道选的是多久上报一次。 */
+    posModeColumns: function () {
+      return [this.posModes.map(function (m) {
+        return { id: m.level, label: m.desc ? m.name + "（" + m.desc + "）" : m.name };
+      })];
+    }
+  },
+  onLoad: function () {
+    // 定位模式入口（原"上传间隔"）由 posMode 能力位决定，见 adapters/funcs.js
+    this.terminalFuncShow(10001) && this.getTimeInterval();
+  },
+  methods: {
+    ...mod25.mapActions("remoteSet", ["SetResetTerminal", "SetFactoryReset", "Locateing", "GetLocationMode", "SetLocationMode"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    setDirective: function (e, t, n, a) {
+      (this.popupType = e, this.directive = c.$t(t), this.describe = c.$t(n), this.param = a, this.funcPopupShow = true);
+    },
+    back: function () {
+      uni.navigateBack();
+    },
+    gotoSetList: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    },
+    terminalFuncShow: function (e) {
+      return mod166.funcShowHandler(this.terminalFuncs, e);
+    },
+    factoryReset: function () {
+      var e, t = this;
+      uni.showModal({
+        title: c.$t("remote-setup.confirm-factory-reset"),
+        cancelText: c.$t("common.cancel"),
+        confirmText: c.$t("common.ok"),
+        success: (e = i(mod22.mark(function e(n) {
+          return mod22.wrap(function (e) {
+            for (; ; ) switch (e.prev = e.next) {
+              case 0:
+                if (n.cancel) {
+                  e.next = 6;
+                  break;
+                }
+                return (e.next = 3, t.SetFactoryReset({
+                  TerminalId: t.selectedTerminal.id
+                }));
+              case 3:
+                if (!e.sent.succeeded) {
+                  e.next = 6;
+                  break;
+                }
+                return e.abrupt("return", mod166.qzwlToast(t.l("common.factory.reset"), "none"));
+              case 6:
+              case "end":
+                return e.stop();
+            }
+          }, e);
+        })), function (t) {
+          return e.apply(this, arguments);
+        })
+      });
+    },
+    resetTerminal: function () {
+      var e = this;
+      return i(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              uni.showModal({
+                title: "\u786e\u5b9a\u5c06\u8bbe\u5907\u91cd\u542f\u5417",
+                cancelText: c.$t("common.cancel"),
+                confirmText: c.$t("common.ok"),
+                success: (function () {
+                  var t = i(mod22.mark(function t(n) {
+                    return mod22.wrap(function (t) {
+                      for (; ; ) switch (t.prev = t.next) {
+                        case 0:
+                          if (n.cancel) {
+                            t.next = 5;
+                            break;
+                          }
+                          return (t.next = 3, e.SetResetTerminal({
+                            TerminalId: e.selectedTerminal.id
+                          }));
+                        case 3:
+                          t.sent.succeeded && mod166.qzwlToast(e.l("common.device.restart"), "none");
+                        case 5:
+                        case "end":
+                          return t.stop();
+                      }
+                    }, t);
+                  }));
+                  return function (e) {
+                    return t.apply(this, arguments);
+                  };
+                })()
+              });
+            case 1:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    refreshLocate: function () {
+      var e = this;
+      return (async function () {
+        (await e.Locateing(e.selectedTerminal.id)).succeeded && mod166.qzwlToast(e.l("common.refurbish.locate"), "none");
+      })();
+    },
+    setUploadTime: function () {
+      this.showUploadTime = true;
+    },
+    timeConfirm: function (e) {
+      var self = this;
+      if (!e.value.length) return;
+      var level = e.value[0].id;
+      return (async function () {
+        var res = await self.SetLocationMode({
+          terminalId: self.selectedTerminal.id,
+          level: level
+        });
+        if (!res.succeeded) return;
+        self.showUploadTime = false;
+        self.getTimeInterval();
+        return mod166.qzwlToast("定位模式指令下发成功，状态稍后更新", "none");
+      })();
+    },
+    /** 8.4.1：当前档位 + 可选档位一起回来，不用另外拉定义。 */
+    getTimeInterval: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetLocationMode({
+          terminalId: self.selectedTerminal.id
+        });
+        if (!res.succeeded || !res.data) return;
+        self.posMode = res.data.modeLevel;
+        self.posModes = res.data.availableModes || [];
+      })();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.custom-cell {
+  height: 196rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.custom-cell {
+  height: 26.1333vw;
+}
+/* #endif */
+</style>

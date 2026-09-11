@@ -1,0 +1,806 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view style="flex: 1; height: 100vh">
+    <view style="flex: 1; height: 100vh; position: relative">
+      <map
+        ref="map"
+        :style="{ width: '750rpx', flex: 1, height: '100vh', justifyContent: 'space-between' }"
+        id="map"
+        :scale="scale"
+        :showLocation="true"
+        :enableBuilding="true"
+        :enableSatellite="enableSatellite"
+        :enableTraffic="enableTraffic"
+        :longitude="longitude"
+        :latitude="latitude"
+        :markers="markers"
+      ></map>
+      <view class="map-left">
+        <view class="map-left-main">
+          <image
+            class="map-left-main-item2"
+            :src="cdn + '/ikon/qzwl-refreshnew@2x.png'"
+            @click="debounceRefreshDeviceInfo"
+           />
+          <image
+            class="map-left-main-item2"
+            :src="cdn + '/ikon/qzwl-l-terminal@2x.png'"
+            @click="moveToDeviceLocation"
+           />
+          <image
+            class="map-left-main-item2"
+            :src="cdn + '/ikon/qzwl-l-user@2x.png'"
+            @click="moveToMyLocation"
+           />
+        </view>
+      </view>
+      <view class="map-control">
+        <image class="map-control-item" :src="cdn + '/ikon/qzwl-ranging@2x.png'" @click="ranging" />
+        <view class="up-map">
+          <view class="up-map-item" @click="changeMapScale(true)">
+            <u-icon
+              name="plus"
+              :bold="true"
+              color="#6081C7"
+              size="40rpx"
+              @click="changeMapScale(true)"
+            ></u-icon>
+          </view>
+          <view class="up-map-item" @click="changeMapScale(false)">
+            <u-icon
+              name="minus"
+              :bold="true"
+              color="#6081C7"
+              size="40rpx"
+              @click="changeMapScale(false)"
+            ></u-icon>
+          </view>
+        </view>
+      </view>
+      <view v-if="deviceInfoShart" class="map-panel">
+        <view class="flex-row justify-between items-center" style="flex-direction: row">
+          <view class="mapTitleLeft">
+            <text class="text-title text-md" append="tree">
+              {{ selectedDeviceName }}
+            </text>
+            <view class="mapStatus m-l-mini" :style="{ 'background-color': backgroundColor }">
+              <text class="text-sm text-white" append="tree">
+                {{ l(deviceInfoShart.status) }}
+              </text>
+            </view>
+            <text class="text-sm m-l-mini" append="tree">
+              {{ deviceInfoShart.terTypeName }}
+            </text>
+          </view>
+          <view class="flex-row items-center">
+            <view v-if="WLSignalIcon" class="flex-row items-center m-r">
+              <u-icon :name="WLSignalIcon" size="36rpx" :stop="true"></u-icon>
+              <text class="text-ssm" style="margin: 3rpx 0 0 3rpx" append="tree">
+                {{ l('common.gsm') }}
+              </text>
+            </view>
+            <view v-if="GNSSCountIcon" class="flex-row items-center m-r">
+              <u-icon :name="GNSSCountIcon" size="36rpx" :stop="true"></u-icon>
+              <text class="text-ssm" append="tree">
+                {{ l('self-test.satellite') }}
+              </text>
+            </view>
+            <view class="genBettery">
+              <u-icon style="margin-top: -5rpx" :name="genBetteryIcon" size="36rpx"></u-icon>
+              <text class="text-title text-sm m-l-mini" append="tree">
+                {{ deviceInfoShart.battery || 100 }}%
+              </text>
+            </view>
+          </view>
+        </view>
+        <view class="flex-row m-t-mini">
+          <u-icon name="map" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" append="tree">
+            {{ l('device.locate.way') }}：{{ LBSMode || '-' }}
+          </text>
+        </view>
+        <view class="flex-row">
+          <u-icon name="clock" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" append="tree">
+            {{ l('common.communication.time') }}: {{ genTime || '-' }}
+          </text>
+        </view>
+        <view class="flex-row">
+          <u-icon name="map" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" append="tree">
+            {{ l('device.location-time') }}: {{ deviceInfoShart.locateTime || '-' }}
+          </text>
+        </view>
+        <view class="flex-row">
+          <u-icon name="share" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" append="tree">
+            {{ l('common.share-start-time') }}: {{ deviceShareRecord.shareBeginTime || '-' }}
+          </text>
+        </view>
+        <view class="flex-row">
+          <u-icon name="share" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" append="tree">
+            {{ l('common.share-end-time') }}: {{ deviceShareRecord.shareEndTime || '-' }}
+          </text>
+        </view>
+        <view class="flex-row items-center">
+          <u-icon name="map" size="28rpx"></u-icon>
+          <text class="text-desc text-sm m-l-mini" style="width: 580rpx" append="tree">
+            {{ genAddress || '-' }}
+          </text>
+        </view>
+        <view
+          class="m-t-md flex-row p-mini"
+          style="background-color: #e8f3ff; border-radius: 16rpx; width: 210rpx"
+          @click="openNavigation"
+        >
+          <u-icon :name="cdn + '/draw/qzwl-locationNav.png'" size="40rpx"></u-icon>
+          <text class="text-desc text-md m-l-mini" append="tree">
+            {{ l('common.navigation') }}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/public/locate
+ * 反编译自 webpack 模块 607（nvue 编译空间）
+ * async/await 还原: 3 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 u 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import s from '@/.unpacked/nvue/5.js';
+import * as o from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import * as u from '@/.unpacked/nvue/819.js';
+import mod15 from '../../common/config.nvue.js';
+import mod0 from 'moment';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var h, f = getApp().globalData, p = (uni.getSystemInfoSync(), {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      mapContext: null,
+      enableSatellite: false,
+      enableTraffic: false,
+      scale: mod15.defaultScale,
+      longitude: 0,
+      latitude: 0,
+      myLongitude: 0,
+      myLatitude: 0,
+      markers: [],
+      secondsToRefresh: mod15.secondsToRefresh,
+      code: "",
+      selectedDeviceName: "",
+      deviceInfoShart: null,
+      deviceShareRecord: null,
+      location: "",
+      singInfo: null,
+      wxBrowser: true
+    };
+  },
+  computed: {
+    ...o.mapGetters(["sysInfo", "appConfig"]),
+    ...o.mapState("device", ["deviceIcons"]),
+    backgroundColor: function () {
+      if (this.deviceInfoShart) return mod166.badgeBgColor(this.deviceInfoShart.status);
+    },
+    backgroundColorMarker: function () {
+      if (this.deviceInfoShart) return mod166.badgeBgColor(this.deviceInfoShart.status);
+    },
+    WLSignalIcon: function () {
+      if (this.deviceInfoShart) {
+        var e = this.deviceInfoShart.wlsignal;
+        if (e <= 20) return this.cdn + "/ikon/signal-1.png";
+        if (e > 20 && e <= 50) return this.cdn + "/ikon/signal-2.png";
+        if (e > 50 && e <= 80) return this.cdn + "/ikon/signal-3.png";
+        if (e > 80 && e <= 100) return this.cdn + "/ikon/signal-4.png";
+      }
+    },
+    GNSSCountIcon: function () {
+      if (this.deviceInfoShart) {
+        var e = this.deviceInfoShart.gpssignal;
+        return 2 == e ? this.cdn + "/ikon/gps-1.png" : 3 == e ? this.cdn + "/ikon/gps-2.png" : 4 == e ? this.cdn + "/ikon/gps-3.png" : this.cdn + "/ikon/gps-1.png";
+      }
+    },
+    genBetteryIcon: function () {
+      if (this.deviceInfoShart) return this.deviceInfoShart.battery <= 0 || this.deviceInfoShart.battery > 80 ? this.cdn + "/ikon/b100.png" : this.deviceInfoShart.battery <= 80 && this.deviceInfoShart.battery > 60 ? this.cdn + "/ikon/b80.png" : this.deviceInfoShart.battery <= 60 && this.deviceInfoShart.battery > 40 ? this.cdn + "/ikon/b60.png" : this.deviceInfoShart.battery <= 40 && this.deviceInfoShart.battery > 20 ? this.cdn + "/ikon/b40.png" : this.cdn + "/ikon/b20.png";
+    },
+    genAddress: function () {
+      return this.location ? this.location : this.l("common.get.locate");
+    },
+    genDistance: function () {
+      return u.getDistance(this.latitude, this.longitude, this.myLatitude, this.myLongitude) / 1e3;
+    },
+    LBSMode: function () {
+      if (this.deviceInfoShart) {
+        if (0 === this.deviceInfoShart.lbsMode) return f.$t("common.GPS-Beidou");
+        if (1 === this.deviceInfoShart.lbsMode) return f.$t("common.base");
+        if (2 === this.deviceInfoShart.lbsMode) return f.$t("common.WIFI");
+        if (3 === this.deviceInfoShart.lbsMode) return f.$t("common.WIFI");
+      }
+    },
+    genTime: function () {
+      if (this.deviceInfoShart && this.deviceInfoShart.lastalive) return mod0(this.deviceInfoShart.lastalive, "YYYY/MM/DD HH:mm").format("YYYY/MM/DD HH:mm");
+    }
+  },
+  onLoad: function (e) {
+    var t = this;
+    (this.code = e.code, this.longitude = 116.4, this.latitude = 39.91, uni.getLocation({
+      type: "gcj02",
+      success: function (e) {
+        (t.myLongitude = e.longitude, t.myLatitude = e.latitude, clearInterval(h));
+      }
+    }), this.getSharePosition(true), this.initInterval(), this.secondsToRefresh = 0);
+  },
+  onHide: function () {
+    var e = this;
+    (clearInterval(h), setTimeout(function () {
+      e.secondsToRefresh = 0;
+    }, 100));
+  },
+  onReady: function () {
+    var e = this;
+    return (async function () {
+      e.mapContext = uni.createMapContext("map", e);
+    })();
+  },
+  methods: {
+    ...o.mapActions("device", ["GetSharePosition", "GetSharePositionRecord", "GetGeocode"]),
+    ...o.mapActions("wechat", ["GetWxSign"]),
+    l: function (e) {
+      return f.$t(e);
+    },
+    getSharePosition: function (t) {
+      var n = this;
+      return i(mod22.mark(function a() {
+        var i, s, o, u;
+        return mod22.wrap(function (a) {
+          for (; ; ) switch (a.prev = a.next) {
+            case 0:
+              if ((e("log", "type", t, " at pagesMore/public/locate.nvue:364"), !t)) {
+                a.next = 6;
+                break;
+              }
+              return (a.next = 4, n.GetSharePositionRecord({
+                code: n.code
+              }));
+            case 4:
+              (i = a.sent).succeeded && (n.deviceShareRecord = i.data);
+            case 6:
+              return (a.next = 8, n.GetSharePosition({
+                code: n.code
+              }));
+            case 8:
+              return ((s = a.sent).succeeded && (n.selectedDeviceName = s.data.terminalName || s.data.devicenum, n.latitude = s.data.latGCJ02, n.longitude = s.data.lonGCJ02, n.deviceInfoShart = s.data, o = mod166.getTerminalIconCode(s.data.iconType, n.deviceIcons), n.markers = [{
+                id: 0,
+                longitude: n.longitude,
+                latitude: n.latitude,
+                width: 40,
+                height: 40,
+                anchor: {
+                  x: .5,
+                  y: .5
+                },
+                rotate: o.rotateState ? n.deviceInfoShart.direction : 0,
+                iconPath: ("").concat(n.cdn, "/ikon/device/").concat(o.code, "-").concat(s.data.deviceState, ".png"),
+                callout: {
+                  content: n.selectedDeviceName,
+                  display: "ALWAYS",
+                  color: n.backgroundColorMarker,
+                  bgColor: "#fff",
+                  textAlign: "center",
+                  padding: 8,
+                  borderRadius: 10,
+                  fontSize: 13
+                }
+              }]), a.next = 12, n.GetGeocode({
+                latitude: s.data.lat,
+                longitude: s.data.lon
+              }));
+            case 12:
+              (u = a.sent).succeeded && (n.location = u.address);
+            case 14:
+            case "end":
+              return a.stop();
+          }
+        }, a);
+      }))();
+    },
+    initInterval: function () {
+      var e = this;
+      (this.secondsToRefresh = mod15.secondsToRefresh, h = setInterval(i(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if ((e.secondsToRefresh = 0 === e.secondsToRefresh ? mod15.secondsToRefresh : e.secondsToRefresh - 1, 0 !== e.secondsToRefresh)) {
+                t.next = 4;
+                break;
+              }
+              return (t.next = 4, e.getSharePosition());
+            case 4:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      })), 1e3));
+    },
+    debounceRefreshDeviceInfo: function () {
+      uni.$u.debounce(this.refreshDeviceInfo, 500);
+    },
+    refreshDeviceInfo: function () {
+      var e = this;
+      return (async function () {
+        clearInterval(h);
+        e.secondsToRefresh = 0;
+        uni.getLocation({
+          type: "gcj02",
+          success: function (t) {
+            (e.myLongitude = t.longitude, e.myLatitude = t.latitude);
+          }
+        });
+        await e.getSharePosition();
+        e.initInterval();
+        return mod166.qzwlToast(f.$t("common.refurbish.success"), "none");
+      })();
+    },
+    toggleLayer: function () {
+      this.enableSatellite = !this.enableSatellite;
+    },
+    toggleTraffic: function () {
+      this.enableTraffic = !this.enableTraffic;
+    },
+    ranging: function () {
+      if (this.deviceInfoShart) if (this.longitude || this.latitude) {
+        if (this.longitude && this.latitude) {
+          var t = [{
+            longitude: this.longitude,
+            latitude: this.latitude
+          }, {
+            longitude: this.myLongitude,
+            latitude: this.myLatitude
+          }];
+          (mod166.safeMap(this.mapContext).includePoints({
+            points: t,
+            padding: [80, 30, 180, 30],
+            fail: function (t) {
+              e("log", t, " at pagesMore/public/locate.nvue:516");
+            }
+          }), uni.showToast({
+            title: "\u60a8\u8ddd\u79bb\u8bbe\u5907\u6709" + this.genDistance + "km",
+            icon: "none"
+          }));
+        }
+      } else uni.showToast({
+        title: f.$t("device.no-locate"),
+        icon: "none"
+      }); else uni.showToast({
+        title: f.$t("device.no.terminal"),
+        icon: "none"
+      });
+    },
+    changeMapScale: function (e) {
+      this.scale = e ? this.scale + .5 : this.scale - .5;
+    },
+    moveToDeviceLocation: function () {
+      this.deviceInfoShart && (mod166.safeMap(this.mapContext).moveToLocation({
+        longitude: this.longitude,
+        latitude: this.latitude
+      }), this.scale = mod15.defaultScale, uni.showToast({
+        title: f.$t("common.Switched.to.terminal"),
+        icon: "none"
+      }));
+    },
+    moveToMyLocation: function () {
+      var e = this;
+      uni.getLocation({
+        type: "gcj02",
+        success: function (t) {
+          (mod166.safeMap(e.mapContext).moveToLocation({
+            longitude: t.longitude,
+            latitude: t.latitude
+          }), e.scale = mod15.defaultScale, uni.showToast({
+            title: f.$t("common.Switched.to.mine"),
+            icon: "none"
+          }));
+        }
+      });
+    },
+    getWxSign: function () {
+      var t = this;
+      return (async function () {
+        var a;
+        (a = await t.GetWxSign({
+          url: t.getWxConfigUrl
+        }), t.singInfo = a.data, wx.config({
+          debug: false,
+          appId: t.singInfo.appId,
+          timestamp: t.singInfo.timestamp,
+          nonceStr: t.singInfo.nonceStr,
+          signature: t.singInfo.signature,
+          jsApiList: ["openLocation", "getLocation"]
+        }), wx.ready(function () {
+          e("log", wx, "resresresresresresres", " at pagesMore/public/locate.nvue:586");
+        }), wx.error(function (t) {
+          e("log", "wxwxerror", t, " at pagesMore/public/locate.nvue:591");
+        }));
+      })();
+    },
+    openNavigation: function () {},
+    is_weixin: function () {
+      return "micromessenger" == navigator.userAgent.toLowerCase().match(/MicroMessenger/i);
+    }
+  }
+});
+export default p;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.map-ctls {
+  position: absolute;
+  left: 30rpx;
+}
+
+.map-ctls-main {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20rpx;
+  padding-right: 8rpx;
+  padding-bottom: 20rpx;
+  padding-left: 8rpx;
+  border-radius: 10rpx;
+}
+
+.map-ctls-main-item1 {
+  padding-bottom: 20rpx;
+  border-bottom-width: 1rpx;
+  border-bottom-style: solid;
+  border-bottom-color: #b3b3b3;
+}
+
+.map-ctls-main-item2 {
+  padding-top: 20rpx;
+}
+
+.map-ctls-item {
+  width: 96rpx;
+  height: 96rpx;
+  border-color: #cccccc;
+  margin-bottom: 20rpx;
+}
+
+.map-ctls-item2 {
+  width: 48rpx;
+  height: 48rpx;
+  border-color: #cccccc;
+}
+
+.map-panel {
+  position: absolute;
+  background-color: #ffffff;
+  padding-top: 24rpx;
+  padding-right: 24rpx;
+  padding-bottom: 24rpx;
+  padding-left: 24rpx;
+  width: 700rpx;
+  left: 25rpx;
+  bottom: 10rpx;
+  border-radius: 16rpx;
+}
+
+.mapTitleLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.genBettery {
+  display: flex;
+  flex-direction: row;
+}
+
+.mapStatus {
+  color: #f7fdf7;
+  border-radius: 25rpx;
+  padding-top: 3rpx;
+  padding-right: 10rpx;
+  padding-bottom: 0rpx;
+  padding-left: 10rpx;
+  font-size: 22rpx;
+  height: 38rpx;
+  line-height: 35rpx;
+}
+
+.grid {
+  padding-top: 12rpx;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.grid-item {
+  width: 140rpx;
+  height: 100rpx;
+  padding-top: 40rpx;
+  padding-right: 0;
+  padding-bottom: 40rpx;
+  padding-left: 0;
+  background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16rpx;
+}
+
+.map-control {
+  position: absolute;
+  left: 640rpx;
+  top: 50rpx;
+}
+
+.map-control-item {
+  width: 96rpx;
+  height: 96rpx;
+  border-color: #cccccc;
+  margin-bottom: 16rpx;
+}
+
+.map-left {
+  position: absolute;
+  top: 50rpx;
+}
+
+.map-left-electric {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 222rpx;
+  height: 56rpx;
+  background-color: #ffffff;
+  border-top-left-radius: 0;
+  border-top-right-radius: 28rpx;
+  border-bottom-right-radius: 28rpx;
+  border-bottom-left-radius: 0;
+  margin-bottom: 70rpx;
+}
+
+.map-left-main {
+  margin-left: 16rpx;
+}
+
+.map-left-main-item1 {
+  width: 96rpx;
+  height: 96rpx;
+  background-color: #ffffff;
+  border-radius: 48rpx;
+  margin-bottom: 344rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-left-main-item2 {
+  width: 96rpx;
+  height: 96rpx;
+  margin-bottom: 32rpx;
+}
+
+.up-map {
+  margin-top: 42rpx;
+  margin-left: 12rpx;
+  width: 88rpx;
+  height: 176rpx;
+  background-color: #ffffff;
+  box-shadow: 0 0 16rpx 0 rgba(0, 0, 0, 0.2);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 22rpx;
+  padding-right: 0;
+  padding-bottom: 22rpx;
+  padding-left: 0;
+}
+
+.up-map-item {
+  margin-left: 8rpx;
+  width: 48rpx;
+  height: 48rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.map-ctls {
+  position: absolute;
+  left: 4vw;
+}
+
+.map-ctls-main {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2.6667vw;
+  padding-right: 1.0667vw;
+  padding-bottom: 2.6667vw;
+  padding-left: 1.0667vw;
+  border-radius: 1.3333vw;
+}
+
+.map-ctls-main-item1 {
+  padding-bottom: 2.6667vw;
+  border-bottom-width: 0.1333vw;
+  border-bottom-style: solid;
+  border-bottom-color: #b3b3b3;
+}
+
+.map-ctls-main-item2 {
+  padding-top: 2.6667vw;
+}
+
+.map-ctls-item {
+  width: 12.8vw;
+  height: 12.8vw;
+  border-color: #cccccc;
+  margin-bottom: 2.6667vw;
+}
+
+.map-ctls-item2 {
+  width: 6.4vw;
+  height: 6.4vw;
+  border-color: #cccccc;
+}
+
+.map-panel {
+  position: absolute;
+  background-color: #ffffff;
+  padding-top: 3.2vw;
+  padding-right: 3.2vw;
+  padding-bottom: 3.2vw;
+  padding-left: 3.2vw;
+  width: 93.3333vw;
+  left: 3.3333vw;
+  bottom: 1.3333vw;
+  border-radius: 2.1333vw;
+}
+
+.mapTitleLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.genBettery {
+  display: flex;
+  flex-direction: row;
+}
+
+.mapStatus {
+  color: #f7fdf7;
+  border-radius: 3.3333vw;
+  padding-top: 0.4vw;
+  padding-right: 1.3333vw;
+  padding-bottom: 0vw;
+  padding-left: 1.3333vw;
+  font-size: 2.9333vw;
+  height: 5.0667vw;
+  line-height: 4.6667vw;
+}
+
+.grid {
+  padding-top: 1.6vw;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.grid-item {
+  width: 18.6667vw;
+  height: 13.3333vw;
+  padding-top: 5.3333vw;
+  padding-right: 0;
+  padding-bottom: 5.3333vw;
+  padding-left: 0;
+  background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2.1333vw;
+}
+
+.map-control {
+  position: absolute;
+  left: 85.3333vw;
+  top: 6.6667vw;
+}
+
+.map-control-item {
+  width: 12.8vw;
+  height: 12.8vw;
+  border-color: #cccccc;
+  margin-bottom: 2.1333vw;
+}
+
+.map-left {
+  position: absolute;
+  top: 6.6667vw;
+}
+
+.map-left-electric {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 29.6vw;
+  height: 7.4667vw;
+  background-color: #ffffff;
+  border-top-left-radius: 0;
+  border-top-right-radius: 3.7333vw;
+  border-bottom-right-radius: 3.7333vw;
+  border-bottom-left-radius: 0;
+  margin-bottom: 9.3333vw;
+}
+
+.map-left-main {
+  margin-left: 2.1333vw;
+}
+
+.map-left-main-item1 {
+  width: 12.8vw;
+  height: 12.8vw;
+  background-color: #ffffff;
+  border-radius: 6.4vw;
+  margin-bottom: 45.8667vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-left-main-item2 {
+  width: 12.8vw;
+  height: 12.8vw;
+  margin-bottom: 4.2667vw;
+}
+
+.up-map {
+  margin-top: 5.6vw;
+  margin-left: 1.6vw;
+  width: 11.7333vw;
+  height: 23.4667vw;
+  background-color: #ffffff;
+  box-shadow: 0 0 2.1333vw 0 rgba(0, 0, 0, 0.2);
+  border-radius: 2.1333vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2.9333vw;
+  padding-right: 0;
+  padding-bottom: 2.9333vw;
+  padding-left: 0;
+}
+
+.up-map-item {
+  margin-left: 1.0667vw;
+  width: 6.4vw;
+  height: 6.4vw;
+}
+/* #endif */
+</style>

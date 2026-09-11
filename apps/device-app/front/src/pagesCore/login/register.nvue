@@ -1,0 +1,225 @@
+<template>
+<scroll-view
+  style="flex-direction: column; flex: 1; background-color: #f5f6f8;"
+  :scrollY="true"
+  :showScrollbar="false"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view style="min-height: 100vh; background-color: #f5f6f8; padding-top: 24rpx; padding-bottom: 60rpx; display: flex; flex-direction: column;">
+    <!-- 白色圆角卡片容器包裹输入框与返回登录 -->
+    <view style="background-color: #ffffff; border-radius: 24rpx; margin-left: 32rpx; margin-right: 32rpx; padding: 32rpx; display: flex; flex-direction: column;">
+      <!-- 手机号输入框 -->
+      <view style="height: 96rpx;">
+        <u--input
+          style="border: 2rpx solid #e5e5e5; height: 96rpx;"
+          shape="square"
+          :placeholder="l('common.tel')"
+          type="number"
+          v-model="userPhone"
+        ></u--input>
+      </view>
+
+      <!-- 验证码输入框 -->
+      <view style="height: 96rpx; margin-top: 24rpx;">
+        <u--input
+          style="border: 2rpx solid #e5e5e5; height: 96rpx;"
+          shape="square"
+          :placeholder="l('common.code')"
+          type="number"
+          v-model="code"
+        >
+          <template slot="suffix">
+            <u-code
+              ref="ztxCode"
+              :keepRunning="true"
+              uniqueKey="page-a"
+              seconds="60"
+              :changeText="l('common.x.get.code')"
+              :startText="l('common.get.code')"
+              :endText="l('common.anew.code')"
+              @change="codeTimeChange"
+              @start="disabled = true"
+              @end="disabled = false"
+            ></u-code>
+            <u--text type="primary" :text="codeTime" @click="getSmsCode"></u--text>
+          </template>
+        </u--input>
+      </view>
+
+      <!-- 密码输入框 -->
+      <view style="height: 96rpx; margin-top: 24rpx;">
+        <u--input
+          style="border: 2rpx solid #e5e5e5; height: 96rpx;"
+          shape="square"
+          type="password"
+          :placeholder="l('common.password')"
+          v-model="userPwd"
+        ></u--input>
+      </view>
+
+      <!-- 返回登录 (靠左侧排列，紧跟密码框下方) -->
+      <view style="margin-top: 24rpx; display: flex; flex-direction: row; justify-content: flex-start;">
+        <text style="font-size: 28rpx; color: #6081c7;" append="tree" @click="back">
+          {{ l('common.Return.signin') }}
+        </text>
+      </view>
+    </view>
+
+    <!-- 注册按钮 (位于白色卡片下方) -->
+    <view style="margin-top: 40rpx; margin-left: 32rpx; margin-right: 32rpx;">
+      <u-button type="primary" size="large" shape="circle" :text="l('common.signup')" @click="signup"></u-button>
+    </view>
+
+    <verificationCode
+      v-if="imgCaptchaShow"
+      ref="imgCaptchaRef"
+      :phoneNumber="userPhone"
+      @imgCaptchaChange="imgCaptchaChange"
+      @smsCodeChange="smsCodeChange"
+    ></verificationCode>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/login/register
+ * 反编译自 webpack 模块 738（nvue 编译空间）
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod368 from '../../components/verificationCode/verificationCode.nvue'
+
+function a(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var d = (a(require("../../common/config.nvue.js")), require("../../common/utils.nvue.js"));
+var c, m = getApp().globalData, f = {
+  components: {
+    verificationCode: mod368
+  },
+  data: function () {
+    return {
+      userPhone: "",
+      userPwd: "",
+      code: "",
+      codeTime: "",
+      disabled: false,
+      imgCaptchaShow: false
+    };
+  },
+  onHide: function () {
+    clearInterval(c);
+  },
+  methods: {
+    ...mod25.mapActions("account", ["SignUp"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    codeTimeChange: function (e) {
+      this.codeTime = e;
+    },
+    imgCaptchaChange: function (e) {
+      this.imgCaptchaShow = e;
+    },
+    smsCodeChange: function () {
+      (d.qzwlToast(m.$t("common.code.sent"), "none"), this.$refs.ztxCode.start(), this.imgCaptchaShow = false);
+    },
+    getSmsCode: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.please.tel"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (e.$refs.ztxCode.canGetCode) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.operation"), "none"));
+            case 6:
+              e.imgCaptchaShow = true;
+            case 7:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    signup: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim() && e.userPwd.trim() && e.code.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.content"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (uni.$u.test.rangeLength(e.code, [4, 6])) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.please.valid.mobile.code"), "none"));
+            case 6:
+              if (uni.$u.test.rangeLength(e.userPwd, [6, 20])) {
+                t.next = 8;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(m.$t("common.please.pwd.num"), "none"));
+            case 8:
+              return (t.next = 10, e.SignUp({
+                phoneNumber: e.userPhone.trim(),
+                code: e.code.trim(),
+                password: e.userPwd.trim()
+              }));
+            case 10:
+              t.sent.succeeded && (d.qzwlToast(m.$t("common.signup.successful"), "none"), c = setTimeout(function () {
+                uni.reLaunch({
+                  url: "/pages/home/home"
+                });
+              }, 1500));
+            case 12:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    back: function () {
+      uni.navigateBack();
+    },
+    gotoPage: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    }
+  }
+};
+export default f;
+</script>
+
+<style scoped>
+</style>

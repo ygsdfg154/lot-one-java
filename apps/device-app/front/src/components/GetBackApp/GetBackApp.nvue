@@ -1,0 +1,58 @@
+<template>
+<view>
+  <button
+    v-if="$data.appMpShow"
+    class="phone-btn"
+    style="width: 200rpx; height: 50rpx; background-color: #6081C7; border: none; display: flex; align-items: center; justify-content: center; margin-bottom: 20rpx"
+    openType="launchApp"
+    @error=""
+  >
+    <text style="color: #fff; font-size: 30rpx" append="tree">
+      返回APP
+    </text>
+  </button>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: GetBackApp
+ * 反编译自 webpack 模块 400（nvue 编译空间）
+ * 辅助函数 s 仍被引用，保留原定义
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+
+function s(e, t) {
+  var n = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var a = Object.getOwnPropertySymbols(e);
+    (t && (a = a.filter(function (t) {
+      return Object.getOwnPropertyDescriptor(e, t).enumerable;
+    })), n.push.apply(n, a));
+  }
+  return n;
+}
+
+"use strict";
+getApp().globalData;
+var o = {
+  data: function () {
+    return {};
+  },
+  computed: (function (e) {
+    for (var t = 1; t < arguments.length; t++) {
+      var n = null != arguments[t] ? arguments[t] : {};
+      t % 2 ? s(Object(n), true).forEach(function (t) {
+        mod5(e, t, n[t]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(n)) : s(Object(n)).forEach(function (t) {
+        Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(n, t));
+      });
+    }
+    return e;
+  })({}, mod25.mapGetters(["appMpShow"])),
+  methods: {}
+};
+export default o;
+
+</script>

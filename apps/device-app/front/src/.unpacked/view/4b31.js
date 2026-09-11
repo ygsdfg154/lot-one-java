@@ -1,0 +1,7 @@
+// webpack 模块 4b31  [view]
+// 出现于: app-view.js
+const __r = require('./__runtime.js').wrap();
+(function (t, e, a) {
+  var n = require("@/.unpacked/view/c86c.js");
+  (e = n(!1), e.push([t.i, '@charset "UTF-8";uni-view[data-v-1ca26d6a], uni-scroll-view[data-v-1ca26d6a], uni-swiper-item[data-v-1ca26d6a]{display:flex;flex-direction:column;flex-shrink:0;flex-grow:0;flex-basis:auto;align-items:stretch;align-content:flex-start}@font-face{font-family:uicon-iconfont;src:url(https://at.alicdn.com/t/font_2225171_8kdcwk4po24.ttf) format("truetype")}.u-icon[data-v-1ca26d6a]{display:flex;align-items:center}.u-icon--left[data-v-1ca26d6a]{flex-direction:row-reverse;align-items:center}.u-icon--right[data-v-1ca26d6a]{flex-direction:row;align-items:center}.u-icon--top[data-v-1ca26d6a]{flex-direction:column-reverse;justify-content:center}.u-icon--bottom[data-v-1ca26d6a]{flex-direction:column;justify-content:center}.u-icon__icon[data-v-1ca26d6a]{font-family:uicon-iconfont;position:relative;\ndisplay:flex;\nflex-direction:row;align-items:center}.u-icon__icon--primary[data-v-1ca26d6a]{color:#6081c7}.u-icon__icon--success[data-v-1ca26d6a]{color:#5ac725}.u-icon__icon--error[data-v-1ca26d6a]{color:#f56c6c}.u-icon__icon--warning[data-v-1ca26d6a]{color:#f9ae3d}.u-icon__icon--info[data-v-1ca26d6a]{color:#909399}.u-icon__img[data-v-1ca26d6a]{height:auto;will-change:transform}.u-icon__label[data-v-1ca26d6a]{line-height:1}', ""]), t.exports = e);
+})(module, exports, __r);

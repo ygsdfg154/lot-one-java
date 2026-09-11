@@ -1,0 +1,510 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #ffffff; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding: 24rpx 32rpx 140rpx 32rpx; background-color: #ffffff;">
+    <view v-if="!(emptyShow)" style="background-color: #f4f7ff; border-radius: 20rpx; padding: 24rpx; box-sizing: border-box;">
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 16rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #333333;" append="tree">
+          {{ selectedTerminal.terminalName || selectedTerminal.terminalNo }}
+        </text>
+        <text style="font-size: 24rpx; color: #888888;" append="tree">
+          更新时间：{{ genTime || '-' }}
+        </text>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 12rpx; padding: 20rpx 16rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-around; box-sizing: border-box;">
+        <view v-if="genBettery" style="display: flex; flex-direction: row; align-items: center;">
+          <text style="font-size: 24rpx; color: #666666;" append="tree">电量：</text>
+          <text style="font-size: 24rpx; color: #faa441; font-weight: bold;" append="tree">{{ genBettery }}</text>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <text style="font-size: 24rpx; color: #666666;" append="tree">设备信号：</text>
+          <text style="font-size: 24rpx; color: #4fd4a0; font-weight: bold;" append="tree">{{ WLSignal }}</text>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <text style="font-size: 24rpx; color: #666666;" append="tree">卫星信号：</text>
+          <text style="font-size: 24rpx; color: #4fd4a0; font-weight: bold;" append="tree">{{ GNSSCount }}</text>
+        </view>
+      </view>
+    </view>
+
+    <image
+      v-if="terminalFuncShow(1825)"
+      style="width: 100%; height: 128rpx; border-radius: 16rpx; margin-top: 24rpx; cursor: pointer;"
+      :src="cdn + '/draw/qzwl-addValue.png'"
+      mode="aspectFit"
+      @click="gridItemTaped({ key: 'value-added' })"
+    />
+
+    <view style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 36rpx; width: 100%;">
+      <view
+        v-for="(t, a) in currentFuncList"
+        :key="a"
+        style="width: 25%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 40rpx; cursor: pointer; box-sizing: border-box;"
+        @click="gridItemTaped(t, t)"
+      >
+        <u-icon :name="t.icon" size="90rpx"></u-icon>
+        <text style="font-size: 26rpx; color: #333333; margin-top: 12rpx; text-align: center; line-height: 32rpx; width: 100%;" append="tree">
+          {{ l(t.title) }}
+        </text>
+      </view>
+    </view>
+
+    <u-empty v-if="emptyShow" :text="l('device.select')" :icon="cdn + '/draw/qzwl-empty.png'"></u-empty>
+  </view>
+
+  <qzwlShare ref="qzwlShare" @setShareMp="setShareMp"></qzwlShare>
+  <u-popup
+    style="position: absolute"
+    :show="funcPopupShow"
+    round="15"
+    :closeable="true"
+    mode="bottom"
+    :closeOnClickOverlay="true"
+    @close="funcPopupShow = false"
+  >
+    <directivePopup
+      v-if="funcPopupShow"
+      :popupType="popupType"
+      :directive="directive"
+      :describe="describe"
+      :param="param"
+    ></directivePopup>
+  </u-popup>
+  <payPopup
+    v-if="vipPopupShow"
+    :message="vipPopupData"
+    :url="vipPopupUrl"
+    @closeVipPopup="closeVipPopup"
+  ></payPopup>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pages/ability/index
+ * 反编译自 webpack 模块 544（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import mod15 from '../../common/config.nvue.js';
+import mod0 from 'moment';
+import mod815 from '../../components/directivePopup/directivePopup.nvue';
+import mod816 from '../../components/qzwlShare/qzwlShare.nvue';
+import mod446 from '../../components/payPopup/payPopup.nvue';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var h = getApp().globalData, y = {
+  components: {
+    directivePopup: mod815,
+    qzwlShare: mod816,
+    payPopup: mod446
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      titleColor: mod15.titleColor,
+      primaryColor: mod15.primaryColor,
+      gridList: [{
+        key: "location",
+        title: "remote-setup.immediately.locate",
+        icon: mod15.cdn + "/ikon/qzwl-location-li@2x.png",
+        func: 28,
+        iconSize: "96rpx"
+      }, {
+        key: "sim",
+        title: "device.traffic.card",
+        icon: mod15.cdn + "/ikon/qzwl-sim@2x.png",
+        func: 52,
+        iconSize: "96rpx"
+      }, {
+        key: "track",
+        title: "device.locus",
+        icon: mod15.cdn + "/ikon/qzwl-func-track@2x.png",
+        func: 3,
+        iconSize: "96rpx"
+      }, {
+        key: "fence",
+        title: "device.enclosure",
+        icon: mod15.cdn + "/ikon/qzwl-fence@2x.png",
+        func: 16,
+        iconSize: "96rpx"
+      }, {
+        key: "record",
+        title: "device.audio",
+        icon: mod15.cdn + "/ikon/qzwl-voice.png",
+        func: 14,
+        iconSize: "96rpx"
+      }, {
+        key: "positioning-mode",
+        title: "device.locate.mode",
+        icon: mod15.cdn + "/ikon/qzwl-posMode@2x.png",
+        func: 19,
+        iconSize: "96rpx"
+      }, {
+        key: "share",
+        title: "device.share.locate",
+        icon: mod15.cdn + "/ikon/qzwl-share-post.png",
+        func: 57,
+        iconSize: "96rpx"
+      }, {
+        key: "nav",
+        title: "common.nav",
+        icon: mod15.cdn + "/ikon/qzwl-fun-nav@2x.png",
+        iconSize: "96rpx"
+      }, {
+        key: "onOff",
+        title: "common.remote.onOff",
+        icon: mod15.cdn + "/ikon/qzwl-onOff@2x.png",
+        func: 22,
+        iconSize: "96rpx"
+      }, {
+        key: "updata",
+        title: "device.terminal.info",
+        icon: mod15.cdn + "/ikon/qzwl-info@2x.png",
+        iconSize: "96rpx"
+      }, {
+        key: "alarm-setting",
+        title: "device.alarm.setup",
+        icon: mod15.cdn + "/ikon/qzwl-alarm-setup.png",
+        iconSize: "96rpx"
+      }, {
+        key: "remote-setting",
+        title: "device.remote.setup",
+        icon: mod15.cdn + "/ikon/qzwl-remote-setup@2x.png",
+        iconSize: "96rpx"
+      }, {
+        key: "report",
+        title: "device.statement",
+        icon: mod15.cdn + "/ikon/qzwl-report@2x.png",
+        func: 58,
+        iconSize: "96rpx"
+      }, {
+        key: "self-check",
+        title: "device.self-test",
+        icon: mod15.cdn + "/ikon/qzwl-self-test@2x.png",
+        iconSize: "96rpx"
+      }, {
+        key: "activation",
+        title: "device.activation",
+        icon: mod15.cdn + "/ikon/qzwl-activation-service.png",
+        func: 2002,
+        iconSize: "96rpx"
+      }, {
+        key: "order",
+        title: "device.orders",
+        icon: mod15.cdn + "/ikon/qzwl-device-orders@2x.png",
+        func: 2222,
+        iconSize: "96rpx"
+      }],
+      funcPopupShow: false,
+      popupType: 0,
+      directive: "",
+      describe: "",
+      param: "",
+      shareTitle: "",
+      sharePath: "",
+      vipTime: false,
+      payState: ["\u672a\u5f00\u901a", "\u5f00\u901a"],
+      vipPopupShow: false,
+      vipPopupData: null,
+      vipPopupUrl: "",
+      emptyShow: false
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "terminalFuncs", "sysInfo", "appConfig", "userType", "isAuditMode", "access_token"]),
+    genTime: function () {
+      if (this.selectedTerminal && this.selectedTerminal.lastAlive) return mod0(this.selectedTerminal.lastAlive, "YYYY/MM/DD HH:mm").format("YYYY-MM-DD HH:mm");
+    },
+    genBettery: function () {
+      if (this.selectedTerminal) return !(mod15.wirelessDevice.includes(this.selectedTerminal.terminalTypeDisplayName) || !mod166.funcShowHandler(this.terminalFuncs, 18)) && this.selectedTerminal.battery + "%";
+    },
+    GNSSCount: function () {
+      if (this.selectedTerminal) {
+        var e = this.selectedTerminal.gnssCount;
+        if (e <= 12) return h.$t("common.general");
+        if (e >= 13 && e <= 18) return h.$t("common.general");
+        if (e >= 19) return h.$t("common.excellent");
+      }
+    },
+    WLSignal: function () {
+      if (this.selectedTerminal) {
+        var e = this.selectedTerminal.wlSignal;
+        if (e <= 20) return h.$t("common.general");
+        if (e > 20 && e <= 50) return h.$t("common.general");
+        if (e > 50 && e <= 80) return h.$t("common.good");
+        if (e > 80 && e <= 100) return h.$t("common.excellent");
+      }
+    },
+    currentFuncList: function () {
+      var e = this;
+      return this.selectedTerminal ? this.gridList.filter(function (t) {
+        return e.terminalFuncShow(t.func);
+      }) : (this.emptyShow = true, []);
+    },
+    columns: function () {
+      return [[{
+        label: this.l("common.0.5-day"),
+        time: 720
+      }, {
+        label: this.l("common.1-day"),
+        time: 1440
+      }, {
+        label: this.l("common.3-day"),
+        time: 4320
+      }, {
+        label: this.l("common.7-day"),
+        time: 10080
+      }]];
+    }
+  },
+  onShow: function () {
+    (this.sharePath = "/pages/home/home", this.shareTitle = h.$t("app.name"), this.selectedTerminal || (this.emptyShow = true));
+  },
+  onShareAppMessage: function () {
+    return {
+      title: this.shareTitle,
+      imageUrl: mod15.cdn + "/draw/qzwl-logo.png",
+      path: this.sharePath
+    };
+  },
+  onHide: function () {
+    (this.$refs.qzwlShare && (this.$refs.qzwlShare.shareLocationShow = false, this.$refs.qzwlShare.isToShare = false, this.$refs.qzwlShare.selectTime = false, this.$refs.qzwlShare.defaultIndex = [0], this.$refs.qzwlShare.shareTime = this.l("common.0.5-day"), this.$refs.qzwlShare.selectedTime = 720), this.vipPopupShow = false);
+  },
+  methods: {
+    ...mod25.mapActions("remoteSet", ["Locateing"]),
+    ...mod25.mapActions("packageInfo", ["GetDeviceVipTypeList"]),
+    l: function (e) {
+      return h.$t(e);
+    },
+    setShareMp: function (e) {
+      (this.sharePath = e.path, this.shareTitle = e.title);
+    },
+    terminalFuncShow: function (e) {
+      return 52 == e || 16 == e ? mod166.funcShowHandler(this.terminalFuncs, e) : 1825 == e ? (t = !!this.selectedTerminal && this.selectedTerminal.enableValueAdded, t = !this.isAuditMode && t) : 2002 == e ? (n = !!this.selectedTerminal && this.selectedTerminal.enableActivation, n = !this.isAuditMode && n) : 2222 == e ? 1 == this.userType : !e || mod166.funcShowHandler(this.terminalFuncs, e);
+      var t, n;
+    },
+    gridItemTaped: function (e, t) {
+      var n = this;
+      return i(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (n.selectedTerminal) {
+                t.next = 3;
+                break;
+              }
+              return (uni.showToast({
+                title: h.$t("device.no.terminal"),
+                icon: "none"
+              }), t.abrupt("return"));
+            case 3:
+              (t.t0 = e.key, t.next = "sim" === t.t0 ? 6 : "value-added" === t.t0 ? 8 : "location" === t.t0 ? 10 : "record" === t.t0 ? 15 : "share" === t.t0 ? 17 : "onOff" === t.t0 ? 28 : "activation" === t.t0 ? 30 : "updata" === t.t0 ? 32 : "track" === t.t0 ? 34 : "remote-setting" === t.t0 ? 36 : "fence" === t.t0 ? 38 : "self-check" === t.t0 ? 40 : "alarm-setting" === t.t0 ? 42 : "positioning-mode" === t.t0 ? 44 : "report" === t.t0 ? 46 : "log" === t.t0 ? 48 : "nav" === t.t0 ? 50 : "order" === t.t0 ? 52 : 54);
+              break;
+            case 6:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/device-card"
+              }), t.abrupt("break", 55));
+            case 8:
+              return (mod166.qzGotoWx({
+                id: n.selectedTerminal.id,
+                url: "/pagesPay/value-added/index",
+                access_token: n.access_token
+              }), t.abrupt("break", 55));
+            case 10:
+              return (t.next = 12, n.Locateing(n.selectedTerminal.id));
+            case 12:
+              return (t.sent.succeeded && mod166.qzwlToast(n.l("common.refurbish.locate"), "none"), t.abrupt("break", 55));
+            case 15:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/audio/index"
+              }), t.abrupt("break", 55));
+            case 17:
+              if (n.selectedTerminal.enablePositionShare) {
+                t.next = 19;
+                break;
+              }
+              return t.abrupt("return", n.$refs.qzwlShare.shareLocationShow = true);
+            case 19:
+              return (t.next = 21, n.getDeviceVipTypeList(8));
+            case 21:
+              if (!n.vipTime) {
+                t.next = 23;
+                break;
+              }
+              return t.abrupt("return", n.$refs.qzwlShare.shareLocationShow = true);
+            case 23:
+              return (n.vipPopupData = {
+                title: ("\u5b9a\u4f4d\u5206\u4eab").concat(n.payState[1]),
+                content: ("\u5f53\u524d\u8bbe\u5907\u5b9a\u4f4d\u5206\u4eab\u670d\u52a1").concat(n.payState[0], "\uff0c\u662f\u5426\u524d\u5f80").concat(n.payState[1]),
+                description: "1. \u9650\u65f6\u5b9a\u4f4d\u5206\u4eab\u529f\u80fd\u4f7f\u7528\u6743\u9650\n2. 7*16\u5c0f\u65f6\u8fdc\u7a0b\u6280\u672f\u670d\u52a1\u652f\u6301\u4fdd\u969c\n3. \u7ec8\u8eab\u552e\u540e\u670d\u52a1\uff0c1\u5bf91\u5168\u7a0b\u670d\u52a1\n4. \u66f4\u591aAPP\u521b\u65b0\u529f\u80fd\u62a2\u5148\u514d\u8d39\u4f53\u9a8c"
+              }, n.vipPopupUrl = "/pagesPay/value-added/index?type=4", n.vipPopupShow = true, t.abrupt("return"));
+            case 28:
+              return (n.setDirective(0, "common.remote.onOff", "common.remote.onOff.introduce", "OffOn"), t.abrupt("break", 55));
+            case 30:
+              return (mod166.qzGotoWx({
+                id: n.selectedTerminal.id,
+                url: "/pagesPay/appreciation/index",
+                access_token: n.access_token
+              }), t.abrupt("break", 55));
+            case 32:
+              return (uni.navigateTo({
+                url: "/pagesFunc/deviceInfo/index"
+              }), t.abrupt("break", 55));
+            case 34:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/locus/index"
+              }), t.abrupt("break", 55));
+            case 36:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/remote-setup/index"
+              }), t.abrupt("break", 55));
+            case 38:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/corral/list"
+              }), t.abrupt("break", 55));
+            case 40:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/self-detection"
+              }), t.abrupt("break", 55));
+            case 42:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/alerts-set/index"
+              }), t.abrupt("break", 55));
+            case 44:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/locate-mode/index"
+              }), t.abrupt("break", 55));
+            case 46:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/trip-report/list"
+              }), t.abrupt("break", 55));
+            case 48:
+              return (uni.navigateTo({
+                url: "/pagesFunc/terminal/remote-setup/list"
+              }), t.abrupt("break", 55));
+            case 50:
+              return (n.openNavigate(), t.abrupt("break", 55));
+            case 52:
+              return (uni.navigateTo({
+                url: "/pagesPay/list/indent-device"
+              }), t.abrupt("break", 55));
+            case 54:
+              return t.abrupt("break", 55);
+            case 55:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    closeVipPopup: function () {
+      this.vipPopupShow = false;
+    },
+    gotoPages: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    },
+    openNavigate: function () {
+      this.selectedTerminal.lon && this.selectedTerminal.lat ? uni.openLocation({
+        longitude: this.selectedTerminal.lon,
+        latitude: this.selectedTerminal.lat,
+        name: this.selectedTerminal.terminalNo,
+        address: this.selectedTerminal.TextLocation,
+        fail: function () {
+          uni.showToast({
+            title: h.$t("device.open.locate.fail"),
+            icon: "none"
+          });
+        }
+      }) : uni.showToast({
+        title: h.$t("device.no-locate"),
+        icon: "none"
+      });
+    },
+    setDirective: function (e, t, n, a) {
+      (this.popupType = e, this.directive = h.$t(t), this.describe = h.$t(n), this.param = a, this.funcPopupShow = true);
+    },
+    getDeviceVipTypeList: function (t) {
+      var n = this;
+      return (async function () {
+        var i;
+        (i = await n.GetDeviceVipTypeList({
+          terminalId: n.selectedTerminal.id,
+          type: t
+        }), e("log", "res", i, " at pages/ability/index.nvue:565"), i.succeeded && (i.data && (new Date(i.data.expirationTime) > new Date() && (n.vipTime = true), n.payState = i.data.expirationTime ? ["\u5df2\u5230\u671f", "\u7eed\u8d39"] : ["\u672a\u5f00\u901a", "\u5f00\u901a"]), i.data || (n.payState = ["\u672a\u5f00\u901a", "\u5f00\u901a"])));
+      })();
+    }
+  }
+};
+export default y;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.mainTitle {
+  background-color: #f4f7ff;
+  border-radius: 24rpx;
+  padding-top: 20rpx;
+  padding-right: 8rpx;
+  padding-bottom: 8rpx;
+  padding-left: 8rpx;
+}
+
+.mainTitle-item {
+  width: 214rpx;
+  border-right-width: 1rpx;
+  border-right-style: solid;
+  border-right-color: #d8d8d8;
+  padding-left: 32rpx;
+}
+
+.grid-item {
+  width: 142rpx;
+  height: 152rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+/* #endif */
+/* #ifdef H5 */
+.mainTitle {
+  background-color: #f4f7ff;
+  border-radius: 3.2vw;
+  padding-top: 2.6667vw;
+  padding-right: 1.0667vw;
+  padding-bottom: 1.0667vw;
+  padding-left: 1.0667vw;
+}
+
+.mainTitle-item {
+  width: 28.5333vw;
+  border-right-width: 0.1333vw;
+  border-right-style: solid;
+  border-right-color: #d8d8d8;
+  padding-left: 4.2667vw;
+}
+
+.grid-item {
+  width: 18.9333vw;
+  height: 20.2667vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+/* #endif */
+</style>

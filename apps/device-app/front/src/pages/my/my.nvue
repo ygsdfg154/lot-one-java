@@ -1,0 +1,394 @@
+<template>
+<scroll-view
+  style="flex-direction: column; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="page">
+    <view class="header-page" :style="{ paddingTop: paddingTop }">
+      <view class="user-row" @click="gotoAppRevise">
+        <view class="user-info-left">
+          <u-avatar :src="src" size="96rpx"></u-avatar>
+          <view v-if="isAuthenticated" class="user-text-col">
+            <text class="user-nick-text" append="tree">
+              {{ nickAccount }}
+            </text>
+            <text class="user-sub-text" append="tree">
+              {{ accountNum }}
+            </text>
+          </view>
+          <view v-else class="user-text-col">
+            <text class="user-nick-text" append="tree">
+              未登录
+            </text>
+          </view>
+        </view>
+        <u-icon v-if="3 != userType" name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+      </view>
+    </view>
+    <view class="card-container">
+      <view class="card-box">
+        <view
+          v-if="isDevMode"
+          class="main-item"
+          @click="gotoPage('/pagesMore/my/developers/developers', true)"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-add-device@2x.png'" color="#ccc" size="48rpx"></u-icon>
+            <text class="item-text" append="tree">
+              开发者模式
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <view
+          v-if="2 == userType"
+          class="main-item"
+          @click="gotoPage('/pagesFunc/terminal/list/index?bind=' + true)"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-add-device@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              添加设备
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <view
+          class="main-item"
+          @click="gotoPage('/pagesCore/account/account-safety')"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-use-account@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              {{ l('mine.setup.account.safety') || '账号与安全' }}
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <!--
+          充值订单：契约 11.x 需 account token（见 0.4 的"前端身份能力边界"表），
+          设备身份调用会 21010。原条件只排除了企业账号(1)，漏了设备登录(3)——
+          于是设备登录也能点进去，进去就是一片报错。
+        -->
+        <view
+          v-if="!(isAuditMode || 1 == userType || isDeviceLogin)"
+          class="main-item"
+          @click="gotoPage('/pagesPay/list/indent')"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-use-ord@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              {{ l('mine.pay.orders') || '充值订单' }}
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <view
+          class="main-item"
+          @click="gotoPage('/pagesFunc/terminal/remote-setup/list')"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-use-setList@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              操作记录
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <view
+          v-if="showService"
+          class="main-item"
+          @click="contactService"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-use-kf@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              {{ l('mine.custome.us') || '联系客服' }}
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+        <view
+          class="main-item"
+          @click="gotoPage('/pagesMore/my/setups/as', true)"
+        >
+          <view class="item-left">
+            <u-icon :name="cdn + '/ikon/qzwl-use-as@2x.png'" color="#ccc" size="60rpx"></u-icon>
+            <text class="item-text" append="tree">
+              {{ l('mine.setup.about') || '关于' }}
+            </text>
+          </view>
+          <u-icon name="arrow-right" color="#ccc" size="32rpx"></u-icon>
+        </view>
+      </view>
+      <view
+        v-if="isAuthenticated"
+        class="login-btn-wrap"
+        @click="signOut"
+      >
+        <text class="login-btn-text" style="color: #5f80c7;" append="tree">
+          {{ l('common.not.signin') || '退出登录' }}
+        </text>
+      </view>
+      <view
+        v-else
+        class="login-btn-wrap"
+        @click="gotoPageLogin"
+      >
+        <text class="login-btn-text" append="tree">
+          去登录
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <u-action-sheet
+    :show="showSignOutSheet"
+    :actions="signOutActions"
+    :title="l('common.not.signin.confirm') || '确定退出登录吗？'"
+    :cancelText="l('common.cancel') || '取消'"
+    :closeOnClickOverlay="true"
+    :closeOnClickAction="true"
+    @close="showSignOutSheet = false"
+    @select="confirmSignOut"
+  ></u-action-sheet>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pages/my/my
+ * 反编译自 webpack 模块 548（nvue 编译空间）
+ * async/await 还原: 2 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod166 from '../../common/utils.nvue.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var c = getApp().globalData, m = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      src: mod15.cdn + "/draw/wxHeDefault.png",
+      showService: mod15.kf.show,
+      individuation: false,
+      showSignOutSheet: false
+    };
+  },
+  onLoad: function () {},
+  computed: {
+    ...mod25.mapGetters(["isDevMode", "autoCheckUpdate", "userType", "sysInfo", "nickname", "username", "isAuditMode", "selectedTerminal", "isAuthenticated"]),
+    // 身份判断统一走 user 模块的 getter（契约 0.4），不再各处写 `3 == userType`
+    ...mod25.mapGetters("user", ["isDeviceLogin"]),
+    paddingTop: function () {
+      return (this.sysInfo.statusBarHeight || 0) + 20 + "px";
+    },
+    signOutActions: function () {
+      return [{
+        name: this.l("common.ok") || "确定退出",
+        color: "#EF4444",
+        fontSize: "32rpx"
+      }];
+    },
+    locales: function () {
+      return [{
+        text: c.$t("common.en"),
+        code: "en"
+      }, {
+        text: c.$t("common.zh-hans"),
+        code: "zh-Hans"
+      }];
+    },
+    accountNum: function () {
+      return 3 == this.userType ? this.selectedTerminal ? this.selectedTerminal.terminalNo : "-" : this.username;
+    },
+    nickAccount: function () {
+      var e;
+      return (3 == this.userType ? (e = this.selectedTerminal ? this.selectedTerminal.terminalNo : "-", this.nickname && (e = this.nickname)) : e = this.nickname || this.username, e);
+    }
+  },
+  onShareAppMessage: function () {
+    return {
+      title: c.$t("app.name"),
+      imageUrl: mod15.cdn + "/draw/qzwl-logo.png",
+      path: "/pages/home/home"
+    };
+  },
+  methods: {
+    ...mod25.mapMutations("app", ["setAutoCheckUpdate", "setSetLocaleState"]),
+    ...mod25.mapActions("account", ["SignOut"]),
+    l: function (e) {
+      if (this && typeof this.$t === 'function') {
+        var res = this.$t(e);
+        if (res && res !== e) return res;
+      }
+      var app = getApp() && getApp().globalData;
+      if (app && typeof app.$t === 'function') {
+        return app.$t(e);
+      }
+      return '';
+    },
+    gotoPage: function (e, t) {
+      this.isAuthenticated || t ? uni.navigateTo({
+        url: e
+      }) : mod166.gotoPagesLogin(true);
+    },
+    signOut: function () {
+      this.showSignOutSheet = true;
+    },
+    confirmSignOut: function () {
+      this.showSignOutSheet = false;
+      this.SignOut();
+    },
+    changeAutoCheckUpdate: function (e) {
+      this.setAutoCheckUpdate(e);
+    },
+    switchLanguage: function () {
+      var e = this;
+      uni.showActionSheet({
+        itemList: this.locales.map(function (e) {
+          return e.text;
+        }),
+        success: function (t) {
+          e.setSetLocaleState(false);
+          var n = e.locales[t.tapIndex].code;
+          e.isAndroid ? uni.showModal({
+            content: c.$t("mine.setup.language.Restart.App"),
+            success: function (e) {
+              e.confirm && uni.setLocale(n);
+            }
+          }) : (uni.setLocale(n), c.$i18n.locale = n);
+        },
+        fail: function () {},
+        complete: function () {}
+      });
+    },
+    contactService: function () {
+      uni.navigateTo({
+        url: "/pagesMore/my/support"
+      });
+    },
+    gotoAppRevise: function (e) {
+      if (!this.isAuthenticated) return mod166.gotoPagesLogin();
+      3 != this.userType && uni.navigateTo({
+        url: "/pagesCore/account/revise-userInfo"
+      });
+    },
+    gotoPageLogin: function () {
+      mod166.gotoPagesLogin();
+    }
+  }
+};
+export default m;
+</script>
+
+<style scoped>
+.page {
+  padding-bottom: 40px;
+  background-color: #f6f6f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.header-page {
+  background-image: linear-gradient(180deg, #dbe6fa 0%, #ffffff 100%);
+  padding-bottom: 12px;
+}
+
+.user-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.user-info-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.user-text-col {
+  margin-left: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-nick-text {
+  font-size: 18px;
+  color: #333333;
+  font-weight: bold;
+}
+
+.user-sub-text {
+  font-size: 13px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.card-container {
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-top: 12px;
+}
+
+.card-box {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.main-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.main-item:last-child {
+  border-bottom: none;
+}
+
+.item-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.item-text {
+  font-size: 15px;
+  color: #333333;
+  font-weight: 500;
+  margin-left: 12px;
+}
+
+.login-btn-wrap {
+  margin-top: 16px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.login-btn-text {
+  font-size: 16px;
+  color: #ff0009;
+  font-weight: bold;
+}
+</style>

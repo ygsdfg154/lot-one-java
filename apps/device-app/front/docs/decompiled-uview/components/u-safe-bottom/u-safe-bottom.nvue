@@ -1,0 +1,38 @@
+<template>
+<view
+  class="u-safe-bottom"
+  :class="[!$data.isNvue && 'u-safe-area-inset-bottom']"
+  :style="[$data.style]"
+></view>
+</template>
+
+<script>
+/*
+ * 组件: uSafeBottom
+ * 反编译自 webpack 模块 181（nvue 编译空间）
+ */
+import mod252 from '@/.unpacked/nvue/252.js'
+
+"use strict";
+var i = {
+  name: "u-safe-bottom",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod252],
+  data: function () {
+    return {
+      safeAreaBottomHeight: 0,
+      isNvue: false
+    };
+  },
+  computed: {
+    style: function () {
+      var e = {};
+      return (e.height = uni.$u.addUnit(uni.$u.sys().safeAreaInsets.bottom, "px"), uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    }
+  },
+  mounted: function () {
+    this.isNvue = true;
+  }
+};
+export default i;
+
+</script>

@@ -1,0 +1,310 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding: 24rpx 32rpx 160rpx 32rpx; background-color: #f6f6f6;">
+    <xMode
+      :weekDailyAlarmsMode="false"
+      :currentRunningModelist="currentRunningModelist"
+      :currentRunningMode="currentRunningMode"
+      :currentTimePickerInfo="[]"
+      :locationVip="true"
+      @changeRunningMode="changeRunningMode"
+    ></xMode>
+
+    <view v-if="prioritylist.length" style="margin-top: 32rpx;">
+      <text style="font-size: 28rpx; color: #999999; font-weight: 500; margin-bottom: 12rpx; display: block;" append="tree">
+        {{ l('locate-mode.positioning-priority') }}
+      </text>
+      <view style="display: flex; flex-direction: column;">
+        <view
+          v-for="t in prioritylist"
+          :key="t.value"
+          style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 32rpx; margin-bottom: 16rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;"
+          @click="currentPriority = t.value"
+        >
+          <text
+            style="font-size: 28rpx; font-weight: 500;"
+            :style="{ color: currentPriority == t.value ? '#6081C7' : '#333333' }"
+            append="tree"
+          >
+            {{ t.name }}
+          </text>
+          <view v-if="currentPriority == t.value" style="width: 40rpx; height: 40rpx; border-radius: 20rpx; background-color: #6081C7; display: flex; flex-direction: row; align-items: center; justify-content: center;">
+            <text style="color: #ffffff; font-size: 24rpx; font-weight: bold; line-height: 24rpx;" append="tree">✓</text>
+          </view>
+          <view v-else style="width: 40rpx; height: 40rpx; border-radius: 20rpx; border: 2rpx solid #CCCCCC; box-sizing: border-box;"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 32rpx; background-color: #ffffff; box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <u-button color="#6081C7" :text="l('common.confirm')" type="primary" @click="savaSubmit"></u-button>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/locate-mode/index —— 定位模式与定位优先级
+ *
+ * 重写自反编译产物（webpack 模块 692）。原版把 8 套"运行模式"（秒定/智能/定时/省电/
+ * 待机/周计划/闹钟/快速定位）按机型名硬编码在前端，并用 `/terminal/set-params` 的
+ * `ChangeMode` 自由传间隔秒数。契约把定位模式收成一条指令 `I_POS_MOD_LEVEL`（档位由
+ * 8.4.1 给，协议层落到 UPLOAD,10 / 60 / 3600），优先级是另一条 `I_GPS_WIFI`。
+ *
+ * 因此这里只保留后端声明支持的档位：
+ *   - 周计划 / 闹钟 / 定时上报：指令注册表里没有对应指令码，协议文档也没有，
+ *     属于 doc/design/device-app-gapfill-spec.md §4 的协议受阻项，本期不渲染；
+ *   - 原版"秒定模式"要买增值服务才能选（前端自己判定 VIP）。契约的 8.4.2 对 level=1
+ *     没有增值校验，追踪模式对所有设备开放；若产品要恢复收费闸门，应在后端 8.4.2 加
+ *     校验再由前端按错误码提示，而不是前端自己拦。
+ */
+import * as s from 'vuex';
+import d from '../../../common/config.nvue.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+import l from '../../../components/xMode/xMode.nvue';
+
+"use strict";
+var p = getApp().globalData;
+
+export default {
+  components: {
+    xMode: l
+  },
+  data: function () {
+    return {
+      cdn: d.cdn,
+      // 8.4.1：当前档位 + 可选档位
+      currentRunningMode: 2,
+      availableModes: [],
+      // 9.4.1 pos_priority 的选项（没有这条设置项时为空数组，整块不显示）
+      prioritylist: [],
+      currentPriority: 0,
+      priorityCmdCode: ""
+    };
+  },
+  onLoad: function (e) {
+    (this.getDeviceMode(), this.getPriorityDef());
+  },
+  onShow: function () {
+    (this.getDeviceMode(), this.getPriorityDef());
+  },
+  computed: {
+    ...s.mapGetters(["selectedTerminal"]),
+    /** xMode 要的形状：`text` 放档位说明，`timeShow` 为真表示不显示间隔选择器。 */
+    currentRunningModelist: function () {
+      var list = (this.availableModes && this.availableModes.length) ? this.availableModes : [
+        { level: 1, name: "追踪模式", desc: "约10秒上报一次定位" },
+        { level: 2, name: "普通模式", desc: "约1分钟上报一次定位" },
+        { level: 3, name: "省电模式", desc: "约1小时上报一次定位" }
+      ];
+      return list.map(function (m) {
+        return { value: m.level, name: m.name, text: m.desc || "", timeShow: true };
+      });
+    }
+  },
+  methods: {
+    ...s.mapActions("remoteSet", ["GetLocationMode", "SetLocationMode", "GetTerminalSettings", "SendCommand"]),
+    l: function (e) {
+      return p.$t(e);
+    },
+    /** 8.4.1：当前档位与可选档位一起返回。modeLevel 为 null 表示当前是无法映射的自定义模式。 */
+    getDeviceMode: function () {
+      var self = this;
+      return (async function () {
+        if (!self.selectedTerminal || !self.selectedTerminal.id) return;
+        var res = await self.GetLocationMode({ terminalId: self.selectedTerminal.id });
+        if (!res || !res.succeeded) return;
+        if (res.data && res.data.availableModes && res.data.availableModes.length) {
+          self.availableModes = res.data.availableModes;
+        }
+        if (res.data && res.data.modeLevel) {
+          self.currentRunningMode = res.data.modeLevel;
+        }
+      })();
+    },
+    /**
+     * 9.4.1：定位优先级的选项由后端给（1 GPS 优先 / 2 WIFI 优先），前端不硬编码——
+     * 原版把两档写死在 prioritylist 里，JT808 设备没有 I_GPS_WIFI 也照样画出来。
+     * 本接口只给定义不给当前值，所以进页面时不预选，用户选了才下发。
+     */
+    getPriorityDef: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetTerminalSettings({ terminalId: self.selectedTerminal.id });
+        if (!res.succeeded || !res.data) return;
+        var setting = (res.data.settings || []).find(function (x) {
+          return x.settingCode === "pos_priority";
+        });
+        if (!setting) return;
+        self.priorityCmdCode = setting.cmdCode;
+        var def = (setting.paramDefs || [])[0] || {};
+        self.prioritylist = (def.options || []).map(function (o) {
+          return { value: o.value, name: o.label };
+        });
+      })();
+    },
+    changeRunningMode: function (level) {
+      this.currentRunningMode = level;
+    },
+    /**
+     * 提交：档位走 8.4.2，优先级走 10.1（两条独立指令）。
+     * 只提交用户真正选了的部分——没选优先级就不要多下一条指令去打扰设备。
+     */
+    savaSubmit: function () {
+      var self = this;
+      if (!this.currentRunningMode) {
+        return mod166.qzwlToast(this.l("device.locate.mode"), "none");
+      }
+      return (async function () {
+        var res = await self.SetLocationMode({
+          terminalId: self.selectedTerminal.id,
+          level: self.currentRunningMode
+        });
+        if (!res.succeeded) return;
+        if (self.currentPriority && self.priorityCmdCode) {
+          await self.SendCommand({
+            deviceId: self.selectedTerminal.id,
+            cmdCode: self.priorityCmdCode,
+            params: { level: self.currentPriority }
+          });
+        }
+        return mod166.qzwlToast(self.l("common.switch.mode"), "none");
+      })();
+    }
+  }
+};
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.mode-item {
+  background-color: #f3f9ff;
+  border-radius: 24rpx;
+  padding-top: 32rpx;
+  padding-right: 16rpx;
+  padding-bottom: 16rpx;
+  padding-left: 16rpx;
+  margin-top: 24rpx;
+}
+
+.mode-item-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 16rpx;
+}
+
+.mode-item-text {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding-top: 28rpx;
+  padding-right: 16rpx;
+  padding-bottom: 30rpx;
+  padding-left: 16rpx;
+}
+
+.time {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.time-title {
+  font-size: 28rpx;
+  color: #999999;
+  margin-right: 16rpx;
+}
+
+.time-input {
+  padding-top: 10rpx;
+  padding-right: 20rpx;
+  padding-bottom: 10rpx;
+  padding-left: 20rpx;
+  border-radius: 8rpx;
+  background-color: #f2faff;
+  font-size: 28rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-input-text {
+  color: #333333;
+  margin-right: 16rpx;
+  font-size: 28rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.mode-item {
+  background-color: #f3f9ff;
+  border-radius: 3.2vw;
+  padding-top: 4.2667vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 2.1333vw;
+  padding-left: 2.1333vw;
+  margin-top: 3.2vw;
+}
+
+.mode-item-icon {
+  width: 4.2667vw;
+  height: 4.2667vw;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 2.1333vw;
+}
+
+.mode-item-text {
+  background-color: #ffffff;
+  border-radius: 2.1333vw;
+  padding-top: 3.7333vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 4vw;
+  padding-left: 2.1333vw;
+}
+
+.time {
+  margin-top: 2.1333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.time-title {
+  font-size: 3.7333vw;
+  color: #999999;
+  margin-right: 2.1333vw;
+}
+
+.time-input {
+  padding-top: 1.3333vw;
+  padding-right: 2.6667vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 2.6667vw;
+  border-radius: 1.0667vw;
+  background-color: #f2faff;
+  font-size: 3.7333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-input-text {
+  color: #333333;
+  margin-right: 2.1333vw;
+  font-size: 3.7333vw;
+}
+/* #endif */
+</style>

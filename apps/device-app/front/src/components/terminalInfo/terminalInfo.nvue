@@ -1,0 +1,607 @@
+<template>
+<view style="display: block; position: relative; height: 0;">
+  <view v-if="selectedTerminal && infoBoxShow" class="info" style="position: fixed; bottom: var(--window-bottom, 0px); left: 0; right: 0; width: 100vw; height: auto !important; max-height: 75vh; z-index: 100; box-sizing: border-box;">
+    <view class="infoMain" style="width: 100vw; height: auto !important; display: flex; flex-direction: column; justify-content: flex-start;">
+      <view class="infotitle" style="height: 60rpx; display: flex; flex-direction: row; align-items: center;">
+        <image
+          v-if="locationGoodPower"
+          style="width: 160rpx; height: 32rpx; flex-shrink: 0;"
+          :src="cdn + '/draw/qzwl-index-text1.png'"
+          @click="gotoPages('locationGood')"
+         />
+        <image
+          v-if="locationGoodPower"
+          class="m-l-xl"
+          style="width: 160rpx; height: 32rpx; flex-shrink: 0;"
+          :src="cdn + '/draw/qzwl-index-text2.png'"
+          @click="gotoPages('locationGood')"
+         />
+        <text v-if="!locationGoodPower" class="infotitle-text" style="color: #fff; font-weight: bold; font-size: 36rpx; line-height: 48rpx;" @click="gotoPages('locationGood')">
+          秒速定位 点击开启
+        </text>
+      </view>
+      <view class="infobox" style="width: calc(100% - 32rpx); margin-left: 16rpx; margin-right: 16rpx; background-color: #fff; height: auto !important; display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box; border-top-left-radius: 24rpx; border-top-right-radius: 24rpx;">
+        <view class="flex-row items-center justify-between" style="height: 48rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+          <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center;">
+            <u-badge
+              class="p-h-md"
+              style="height: 40rpx; font-size: 26rpx; line-height: 32rpx"
+              :bgColor="setBadgeColor(selectedTerminal.status)"
+              color="#fff"
+              :value="l(selectedTerminal.status)"
+            ></u-badge>
+            <text class="m-l text-title text" style="font-size: 28rpx; font-weight: bold; color: #333; margin-left: 16rpx;" append="tree">
+              {{ selectedTerminal.speed || 0 }}km/h
+            </text>
+          </view>
+          <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center;">
+            <view class="flex-row items-center m-r" style="display: flex; flex-direction: row; align-items: center; margin-right: 16rpx;">
+              <image style="width: 36rpx; height: 36rpx; flex-shrink: 0;" :src="WLSignalIcon || cdn + '/ikon/signal-4.png'" />
+              <text class="text-ssm" style="margin: 3rpx 0 0 4rpx; font-size: 21rpx; color: #666;" append="tree">
+                通信
+              </text>
+            </view>
+            <view class="flex-row items-center m-r" style="display: flex; flex-direction: row; align-items: center; margin-right: 16rpx;">
+              <image style="width: 36rpx; height: 36rpx; flex-shrink: 0;" :src="GNSSCountIcon || cdn + '/ikon/gps-3.png'" />
+              <text class="text-ssm" style="margin-left: 4rpx; font-size: 21rpx; color: #666;" append="tree">
+                卫星
+              </text>
+            </view>
+            <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center;">
+              <image style="width: 36rpx; height: 36rpx; flex-shrink: 0;" :src="genBetteryIcon || cdn + '/ikon/b100.png'" />
+              <text class="text-title text-sm m-l-mini" style="font-size: 24rpx; color: #333; margin-left: 4rpx;" append="tree">
+                {{ genBettery || '100%' }}
+              </text>
+            </view>
+          </view>
+        </view>
+        <view v-if="selectedTerminal" style="margin-top: 16rpx; margin-bottom: 16rpx; height: auto !important; display: flex; flex-direction: column; justify-content: flex-start;">
+          <view style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; height: auto !important;">
+            <view style="display: flex; flex-direction: column; justify-content: flex-start; flex: 1;">
+              <view style="margin-top: 4rpx; display: flex; flex-direction: row; align-items: center;">
+                <text class="text text-darker" style="font-size: 28rpx; color: #333; line-height: 40rpx;" append="tree">
+                  {{ l('device.locate.way') }}：{{ (selectedTerminal.lbsMode !== undefined && locationState[selectedTerminal.lbsMode]) ? l(locationState[selectedTerminal.lbsMode]) : 'GPS+北斗定位' }}
+                </text>
+              </view>
+              <view style="margin-top: 4rpx; display: flex; flex-direction: row; align-items: center;">
+                <text class="text text-darker" style="font-size: 28rpx; color: #333; line-height: 40rpx;" append="tree">
+                  {{ l('self-test.communication-time') }}：{{ genTime || '-' }}
+                </text>
+              </view>
+              <view style="margin-top: 4rpx; display: flex; flex-direction: row; align-items: center;">
+                <text class="text text-darker" style="font-size: 28rpx; color: #333; line-height: 40rpx;" append="tree">
+                  {{ l('device.location-time') }}：{{ locateTime || '-' }}
+                </text>
+              </view>
+            </view>
+            <view style="width: 100rpx; height: 90rpx; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" @click="gotoPages('share')">
+              <image
+                style="width: 56rpx; height: 56rpx; flex-shrink: 0;"
+                :src="cdn + '/ikon/qzwl-shareLocation@2x.png'"
+              />
+              <text class="text-ssm text-gray" style="font-size: 21rpx; color: #666; margin-top: 4rpx;" append="tree">分享定位</text>
+            </view>
+          </view>
+          <view style="margin-top: 8rpx; display: flex; flex-direction: row; align-items: center;">
+            <text v-if="selectedTerminal.lon && selectedTerminal.lat" class="text text-darker" style="font-size: 28rpx; color: #333; line-height: 40rpx;" append="tree">
+              {{ l('index.address') }}：{{ genAddress }}
+            </text>
+            <text v-else class="text text-gray" style="font-size: 28rpx; color: #666; line-height: 40rpx;" append="tree">
+              {{ l('index.address') }}：{{ l('common.no.locate') }}
+            </text>
+          </view>
+        </view>
+        <u-scroll-list indicatorActiveColor="#6081C7" :indicator="false" style="height: 140rpx;">
+          <view class="grid-item">
+            <u-icon
+              :name="cdn + '/draw/qzwl-locationMap.png'"
+              size="56rpx"
+              label="精准定位"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoPages('locationGood')"
+            ></u-icon>
+          </view>
+          <view class="grid-item">
+            <u-icon
+              :name="cdn + '/ikon/qzwl-index-pay@2x.png'"
+              size="56rpx"
+              label="VIP服务"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoMp"
+            ></u-icon>
+          </view>
+          <view class="grid-item">
+            <u-icon
+              :name="cdn + '/ikon/qzwl-index-track@2x.png'"
+              size="56rpx"
+              label="历史轨迹"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoPages('/pagesFunc/terminal/locus/index')"
+            ></u-icon>
+          </view>
+          <view class="grid-item">
+            <u-icon
+              :name="cdn + '/ikon/qzwl-index-info@2x.png'"
+              size="56rpx"
+              label="设备信息"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoPages('/pagesFunc/deviceInfo/index')"
+            ></u-icon>
+          </view>
+          <view class="grid-item">
+            <u-icon
+              :name="cdn + '/ikon/qzwl-locationMode@2x.png'"
+              size="56rpx"
+              label="定位模式"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoPages('/pagesFunc/terminal/locate-mode/index')"
+            ></u-icon>
+          </view>
+          <view v-if="isAuditMode" class="grid-item">
+            <u-icon
+              :name="cdn + '/ikon/qzwl-fence@2x.png'"
+              size="60rpx"
+              label="电子围栏"
+              labelPos="bottom"
+              labelSize="24rpx"
+              labelColor="#999"
+              @click="gotoPages('/pagesFunc/terminal/corral/list')"
+            ></u-icon>
+          </view>
+        </u-scroll-list>
+      </view>
+    </view>
+    <image class="infoIcon" :src="cdn + '/draw/qzwl-index-location.png'" />
+  </view>
+  <payPopup
+    v-if="vipPopupShow"
+    :message="vipPopupData"
+    :url="vipPopupUrl"
+    @closeVipPopup="closeVipPopup"
+  ></payPopup>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: terminalInfo
+ * 反编译自 webpack 模块 568（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 3 个含条件跳转/try-catch 保持状态机原样
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import mod0 from 'moment';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod446 from '../payPopup/payPopup.nvue';
+"use strict";
+var p = getApp().globalData, f = {
+  components: {
+    payPopup: mod446
+  },
+  props: ["wxBrowser"],
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      locationState: ["device.locate.gps", "device.locate.base", "device.locate.WiFi", "device.locate.WiFi"],
+      vipTime: false,
+      payState: ["\u672a\u5f00\u901a", "\u5f00\u901a"],
+      vipPopupShow: false,
+      vipPopupData: null,
+      vipPopupUrl: ""
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "terminalFuncs", "access_token", "isAuditMode"]),
+    ...mod25.mapState("device", ["infoBoxShow"]),
+    infoBottom: function () {
+      return ("0rpx", "0rpx");
+    },
+    genBettery: function () {
+      if (this.selectedTerminal) return !(mod15.wirelessDevice.includes(this.selectedTerminal.terminalTypeDisplayName) || !mod166.funcShowHandler(this.terminalFuncs, 18)) && this.selectedTerminal.battery + "%";
+    },
+    genBetteryIcon: function () {
+      if (this.selectedTerminal) {
+        if (mod15.wirelessDevice.includes(this.selectedTerminal.terminalTypeDisplayName) || !mod166.funcShowHandler(this.terminalFuncs, 18)) return false;
+        var e = this.selectedTerminal.battery;
+        if (e < 0 || e > 80) return this.cdn + ("/ikon/").concat(this.selectedTerminal.batteryState ? "b-c100" : "b100", ".png");
+        if (e <= 80 && e > 60) return this.cdn + ("/ikon/").concat(this.selectedTerminal.batteryState ? "b-c80" : "b80", ".png");
+        if (e <= 60 && e > 40) return this.cdn + ("/ikon/").concat(this.selectedTerminal.batteryState ? "b-c60" : "b60", ".png");
+        if (e <= 40 && e > 20) return this.cdn + ("/ikon/").concat(this.selectedTerminal.batteryState ? "b-c40" : "b40", ".png");
+        if (e <= 20 && e >= 0) return this.cdn + ("/ikon/").concat(this.selectedTerminal.batteryState ? "b-c20" : "b20", ".png");
+      }
+    },
+    WLSignalIcon: function () {
+      if (this.selectedTerminal) {
+        var e = this.selectedTerminal.wlSignal;
+        if (e <= 20) return this.cdn + "/ikon/signal-1.png";
+        if (e > 20 && e <= 50) return this.cdn + "/ikon/signal-2.png";
+        if (e > 50 && e <= 80) return this.cdn + "/ikon/signal-3.png";
+        if (e > 80 && e <= 100) return this.cdn + "/ikon/signal-4.png";
+      }
+    },
+    GNSSCountIcon: function () {
+      if (this.selectedTerminal) {
+        var e = this.selectedTerminal.gnssCount;
+        if (e <= 12) return this.cdn + "/ikon/gps-1.png";
+        if (e >= 13 && e <= 18) return this.cdn + "/ikon/gps-2.png";
+        if (e >= 19) return this.cdn + "/ikon/gps-3.png";
+      }
+    },
+    genTime: function () {
+      if (this.selectedTerminal && this.selectedTerminal.lastAlive) return mod0(this.selectedTerminal.lastAlive, "YYYY/MM/DD HH:mm").format("YYYY-MM-DD HH:mm");
+    },
+    locateTime: function () {
+      if (this.selectedTerminal && this.selectedTerminal.locateTime) return mod0(this.selectedTerminal.locateTime, "YYYY/MM/DD HH:mm").format("YYYY-MM-DD HH:mm");
+    },
+    locationGoodPower: function () {
+      return !!this.selectedTerminal && this.selectedTerminal.enablePositionMode;
+    },
+    addValuePower: function () {
+      var e;
+      return (e = !!this.selectedTerminal && this.selectedTerminal.enableValueAdded, e = !this.isAuditMode && e);
+    },
+    locationModePower: function () {
+      return mod166.funcShowHandler(this.terminalFuncs, 19);
+    },
+    sharePower: function () {
+      return mod166.funcShowHandler(this.terminalFuncs, 57);
+    },
+    genAddress: function () {
+      return this.selectedTerminal && this.selectedTerminal.TextLocation ? this.selectedTerminal.TextLocation : this.l("common.get.locate");
+    }
+  },
+  methods: {
+    ...mod25.mapActions("remoteSet", ["GetLocationMode", "SetLocationMode"]),
+    ...mod25.mapActions("packageInfo", ["GetDeviceVipTypeList"]),
+    l: function (e) {
+      return p.$t(e);
+    },
+    setBadgeColor: function (e) {
+      return mod166.badgeBgColor(e);
+    },
+    gotoMp: function () {
+      mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: "/pagesPay/value-added/index",
+        access_token: this.access_token
+      });
+    },
+    gotoPages: function (e) {
+      var t = this;
+      return i(mod22.mark(function n() {
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              (n.t0 = e, n.next = "locationGood" === n.t0 ? 3 : "share" === n.t0 ? 14 : 24);
+              break;
+            case 3:
+              return (n.next = 5, t.getDeviceVipTypeList(3));
+            case 5:
+              if (!t.vipTime) {
+                n.next = 10;
+                break;
+              }
+              return (n.next = 8, t.openLocationGood());
+            case 8:
+              n.next = 13;
+              break;
+            case 10:
+              (t.vipPopupData = {
+                title: ("\u79d2\u5b9a\u6a21\u5f0f").concat(t.payState[1]),
+                content: ("\u5f53\u524d\u8bbe\u5907\u79d2\u5b9a\u6a21\u5f0f\u670d\u52a1").concat(t.payState[0], "\uff0c\u662f\u5426\u524d\u5f80").concat(t.payState[1]),
+                description: "1. \u9650\u65f6\u79d2\u901f\u5b9a\u4f4d\u529f\u80fd\u4f7f\u7528\u6743\u9650\n2. 7*16\u5c0f\u65f6\u8fdc\u7a0b\u6280\u672f\u670d\u52a1\u652f\u6301\u4fdd\u969c\n3. \u7ec8\u8eab\u552e\u540e\u670d\u52a1\uff0c1\u5bf91\u5168\u7a0b\u670d\u52a1\n4. \u66f4\u591aAPP\u521b\u65b0\u529f\u80fd\u62a2\u5148\u514d\u8d39\u4f53\u9a8c"
+              }, t.vipPopupUrl = "/pagesPay/value-added/index?type=2", t.vipPopupShow = true);
+            case 13:
+              return n.abrupt("break", 26);
+            case 14:
+              if (t.selectedTerminal.enablePositionShare) {
+                n.next = 16;
+                break;
+              }
+              return n.abrupt("return", t.$emit("openShare"));
+            case 16:
+              return (n.next = 18, t.getDeviceVipTypeList(8));
+            case 18:
+              if (!t.vipTime) {
+                n.next = 20;
+                break;
+              }
+              return n.abrupt("return", t.$emit("openShare"));
+            case 20:
+              return (t.vipPopupData = {
+                title: ("\u5b9a\u4f4d\u5206\u4eab").concat(t.payState[1]),
+                content: ("\u5f53\u524d\u8bbe\u5907\u5b9a\u4f4d\u5206\u4eab\u670d\u52a1").concat(t.payState[0], "\uff0c\u662f\u5426\u524d\u5f80").concat(t.payState[1]),
+                description: "1. \u9650\u65f6\u5b9a\u4f4d\u5206\u4eab\u529f\u80fd\u4f7f\u7528\u6743\u9650\n2. 7*16\u5c0f\u65f6\u8fdc\u7a0b\u6280\u672f\u670d\u52a1\u652f\u6301\u4fdd\u969c\n3. \u7ec8\u8eab\u552e\u540e\u670d\u52a1\uff0c1\u5bf91\u5168\u7a0b\u670d\u52a1\n4. \u66f4\u591aAPP\u521b\u65b0\u529f\u80fd\u62a2\u5148\u514d\u8d39\u4f53\u9a8c"
+              }, t.vipPopupUrl = "/pagesPay/value-added/index?type=4", t.vipPopupShow = true, n.abrupt("break", 26));
+            case 24:
+              return (uni.navigateTo({
+                url: e
+              }), n.abrupt("break", 26));
+            case 26:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    /**
+     * "高精准定位" = 契约的追踪模式（8.4 level 1，协议层 UPLOAD,10）。
+     * 原版读 `/terminal/set-params` 的 ChangeMode 判断 runningMode==1 && Interval==10，
+     * 现在直接看 8.4.1 的 modeLevel。
+     */
+    openLocationGood: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetLocationMode({ terminalId: self.selectedTerminal.id });
+        if (!res.succeeded) {
+          if (res.msg) mod166.qzwlToast(res.msg, "none");
+          return;
+        }
+        var cur = (res.data && res.data.availableModes || []).find(function (m) {
+          return m.level === 1;
+        });
+        if (res.data && res.data.modeLevel === 1) {
+          return mod166.qzwlToast("此设备已开启高精准定位", "none");
+        }
+        self.setLocationGood(cur);
+      })();
+    },
+    setLocationGood: function (mode) {
+      var self = this;
+      uni.showModal({
+        showCancel: true,
+        title: "是否开启高精准定位",
+        // 说明取后端给的档位文案，避免前端写死"每10秒"而协议侧其实是另一个间隔
+        content: (mode && mode.desc) || "开启后设备将以最高频率上报定位，轨迹更完整，耗电更快",
+        confirmText: "开启",
+        cancelText: "取消",
+        success: function (r) {
+          if (r.confirm) self.confirmLocationGood();
+        }
+      });
+    },
+    confirmLocationGood: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.SetLocationMode({
+          terminalId: self.selectedTerminal.id,
+          level: 1
+        });
+        if (res.succeeded) mod166.qzwlToast(self.l("common.switch.mode"), "none");
+      })();
+    },
+    getDeviceVipTypeList: function (e) {
+      var t = this;
+      return (async function () {
+        var r;
+        t.vipTime = false;
+        (r = await t.GetDeviceVipTypeList({
+          terminalId: t.selectedTerminal.id,
+          type: e
+        })).succeeded && (r.data && (new Date(r.data.expirationTime) > new Date() && (t.vipTime = true), t.payState = r.data.expirationTime ? ["\u5df2\u5230\u671f", "\u7eed\u8d39"] : ["\u672a\u5f00\u901a", "\u5f00\u901a"]), r.data || (t.payState = ["\u672a\u5f00\u901a", "\u5f00\u901a"]));
+      })();
+    },
+    closeVipPopup: function () {
+      this.vipPopupShow = false;
+    }
+  }
+};
+export default f;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.info {
+  position: fixed;
+  bottom: -2rpx;
+  left: 0;
+  width: 750rpx;
+  padding-top: 24rpx;
+  z-index: 100;
+}
+
+.infoMain {
+  background-image: linear-gradient(to bottom, #86adff, #ffffff);
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 750rpx;
+}
+
+.infoIcon {
+  width: 120rpx;
+  height: 120rpx;
+  position: absolute;
+  top: -14rpx;
+  left: 12rpx;
+}
+
+.infotitle {
+  margin-left: 16rpx;
+  padding-bottom: 26rpx;
+  padding-left: 132rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.infotitle-text {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 42rpx;
+  padding-top: 20rpx;
+  padding-right: 0;
+  padding-bottom: 20rpx;
+  padding-left: 20rpx;
+}
+
+.infobox {
+  width: 718rpx;
+  margin-left: 16rpx;
+  padding-top: 26rpx;
+  padding-right: 32rpx;
+  padding-bottom: 14rpx;
+  padding-left: 32rpx;
+  background-color: #ffffff;
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.grid {
+  padding-top: 32rpx;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.grid-item {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 16rpx;
+  border-width: 1rpx;
+  border-style: solid;
+  border-color: #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12rpx;
+  padding-right: 0;
+  padding-bottom: 12rpx;
+  padding-left: 0;
+  margin-right: 15rpx;
+}
+
+.grid-item2 {
+  width: 208rpx;
+  height: 64rpx;
+  border-radius: 40rpx;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+/* #endif */
+/* #ifdef H5 */
+.info {
+  position: fixed;
+  bottom: var(--window-bottom, 0px);
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: auto !important;
+  padding-top: 3.2vw;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.infoMain {
+  background-image: linear-gradient(to bottom, #86adff, #ffffff);
+  border-top-left-radius: 3.2vw;
+  border-top-right-radius: 3.2vw;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 100vw;
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.infoIcon {
+  width: 16vw;
+  height: 16vw;
+  position: absolute;
+  top: -1.8667vw;
+  left: 1.6vw;
+}
+
+.infotitle {
+  margin-left: 2.1333vw;
+  padding-bottom: 3.4667vw;
+  padding-left: 17.6vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.infotitle-text {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 5.6vw;
+  padding-top: 2.6667vw;
+  padding-right: 0;
+  padding-bottom: 2.6667vw;
+  padding-left: 2.6667vw;
+}
+
+.infobox {
+  width: 95.7333vw;
+  margin-left: 2.1333vw;
+  padding-top: 3.4667vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 1.8667vw;
+  padding-left: 4.2667vw;
+  background-color: #ffffff;
+  border-top-left-radius: 3.2vw;
+  border-top-right-radius: 3.2vw;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.grid {
+  padding-top: 4.2667vw;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.grid-item {
+  width: 16vw;
+  height: 16vw;
+  border-radius: 2.1333vw;
+  border-width: 0.1333vw;
+  border-style: solid;
+  border-color: #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.6vw;
+  padding-right: 0;
+  padding-bottom: 1.6vw;
+  padding-left: 0;
+  margin-right: 2vw;
+}
+
+.grid-item2 {
+  width: 27.7333vw;
+  height: 8.5333vw;
+  border-radius: 5.3333vw;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+/* #endif */
+</style>

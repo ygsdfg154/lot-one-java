@@ -1,0 +1,2185 @@
+{
+  "baseUrlCandidates": [
+    "http://h5.akbee.com/v1",
+    "https://m.qzwlvp.com/download/qzwl/",
+    "https://app.qzwlvp.com/pagesMore/public/locate",
+    "https://work.weixin.qq.com/kfid/kfc8d9c8750e70bab5f",
+    "https://m.qzwlvp.com/docs/about/privacy-policy.html",
+    "https://m.qzwlvp.com/docs/about/service-agreement.html",
+    "https://shop.zhitugps.com/mobile/pages/login/auto-login"
+  ],
+  "count": 155,
+  "apis": [
+    {
+      "method": "GET",
+      "url": "/{t.type}/dates",
+      "data": [
+        "terminalId: t.terminalId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/account/bind-apple",
+      "data": [
+        "openId: t.openId",
+        "authorizationCode: t.authorizationCode",
+        "identityToken: t.identityToken"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/account/bind-wechat",
+      "data": [
+        "code: t.code",
+        "type: t.type"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/account/cancellation",
+      "data": [
+        "phoneNumber: t.phoneNumber",
+        "code: t.code"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/account/unbind-{t.mode}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/account/user/oauth",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "url": "/alarm-log/{t.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "url": "/alarm-log/batch",
+      "data": [
+        "<t.data>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "url": "/alarm-log/clear?terminalId={n.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/alarm-log/statistics",
+      "data": [
+        "type: t.type"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/amap/config/district?extensions=all&keywords={t}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/amap/config/district?extensions=all&keywords=100000&subdistrict=3",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/app-ad/click/{n.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:fb73"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/app-ad/publish/{o.default.applicationId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:fb73"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/app/bind-phone",
+      "data": [
+        "applicationId: u.default.applicationId",
+        "username: t.username",
+        "password: (0, s.default)(t.password).toUpperCase()",
+        "phoneNumber: t.phoneNumber",
+        "captcha: t.captcha"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/application-configuration",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:fb73"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/bind-user/apple",
+      "data": [
+        "<f(f({}, uni.getSystemInfoSync()), {}, { applicationId: u.default.applicationId, pushClientId: d.default.state.app.pushClientId, openId: n.openId, authorizationCode: n.authorizationCode, identityToken: n.identityToken, username: n.username, verifyCode: n.verifyCode })>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/bind-user/wechat",
+      "data": [
+        "<f(f({}, uni.getSystemInfoSync()), {}, { applicationId: u.default.applicationId, pushClientId: d.default.state.app.pushClientId, code: n.code, type: n.type, username: n.username, verifyCode: n.verifyCode })>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/login",
+      "data": [
+        "<f(f({}, uni.getSystemInfoSync()), {}, { applicationId: u.default.applicationId, username: t.username, password: t.password, pushClientId: d.default.state.app.pushClientId })>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/login/apple",
+      "data": [
+        "<f(f({}, uni.getSystemInfoSync()), {}, { applicationId: u.default.applicationId, openId: t.openId, authorizationCode: t.authorizationCode, identityToken: t.identityToken, pushClientId: d.default.state.app.pushClientId })>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/login/wechat",
+      "data": [
+        "<f(f({}, uni.getSystemInfoSync()), {}, { applicationId: u.default.applicationId, code: t.code, type: t.type, pushClientId: d.default.state.app.pushClientId })>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/auth/register",
+      "data": [
+        "phoneNumber: t.phoneNumber",
+        "password: (0, s.default)(t.password).toUpperCase()",
+        "code: t.code"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/auth/reset-pwd",
+      "data": [
+        "phoneNumber: t.phoneNumber",
+        "password: t.password",
+        "code: t.code"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/auth/update-pwd",
+      "data": [
+        "oldPassword: t.oldPassword",
+        "newPassword: t.password"
+      ],
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/captcha",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/command/page",
+      "data": [
+        "terminalId: t.terminalId",
+        "page: i.page",
+        "limit: i.limit"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/enterprise/tree",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "url": "/fence/{t}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/notice/{t}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:fb73"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/notice/latest",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:fb73"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/order/{t.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/order/{t}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/order/create",
+      "data": [
+        "clientType: s.default.state.app.sysInfo.uniPlatform",
+        "deviceId: s.default.state.app.sysInfo.deviceId",
+        "productId: t.productId",
+        "provider: t.provider",
+        "terminalId: t.terminalId",
+        "openid: t.openid || \"\"",
+        "iccid: t.iccid || \"\""
+      ],
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/order/page",
+      "data": [
+        "page: t.page",
+        "limit: t.limit",
+        "terminalId: t.terminalId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/order/refund",
+      "data": [
+        "orderId: t.orderId",
+        "requestFee: t.requestFee",
+        "refundReason: t.refundReason",
+        "contactName: t.contactName",
+        "contactTel: t.contactTel",
+        "allowCall: t.allowCall"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/order/topup/page",
+      "data": [
+        "page: n.page",
+        "limit: n.limit"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pages/app-updateVersions/pages/upgrade-popup?local_storage_key=__package_info__",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:918f"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pages/dev/push-message",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:593"
+      ],
+      "usedByBundles": [
+        "pagesMore/my/developers/push-msgs.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pages/home/home",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:5691",
+        "svc:ae8d",
+        "nvue:723",
+        "nvue:734"
+      ],
+      "usedByBundles": [
+        "app-service.js",
+        "pagesCore/login/bind-tel-more.js",
+        "pagesCore/login/bind-tel.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pages/signin/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:723"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/bind-tel-more.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/account/revise-userInfo",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:548"
+      ],
+      "usedByBundles": [
+        "pages/my/my.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/bind-tel-more?type=apple",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:742"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/bind-tel-more?type=weixin",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:742"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/bind-tel?terminalNo={e.username}&password={e.password}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:742"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/find-pas?phone={this.username}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:742"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:565",
+        "nvue:596",
+        "nvue:715",
+        "nvue:727",
+        "nvue:734"
+      ],
+      "usedByBundles": [
+        "pages/home/home.js",
+        "pagesMore/my/developers/developers.js",
+        "pagesCore/account/revise-pwd.js",
+        "pagesCore/login/logout.js",
+        "pagesCore/login/bind-tel.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/index?back={!0}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:4ddb",
+        "nvue:166"
+      ],
+      "usedByBundles": [
+        "app-service.js",
+        "pages/ability/index.js",
+        "pages/home/home.js",
+        "pages/msg/index.js",
+        "pages/my/my.js",
+        "pagesCore/account/account-safety.js",
+        "pagesCore/account/revise-pwd.js",
+        "pagesCore/account/revise-userInfo.js",
+        "pagesCore/login/bind-tel-more.js",
+        "pagesCore/login/bind-tel.js",
+        "pagesCore/login/find-pas.js",
+        "pagesCore/login/index.js",
+        "pagesCore/login/logout.js",
+        "pagesCore/login/register.js",
+        "pagesFunc/deviceInfo/index.js",
+        "pagesFunc/deviceInfo/set-icon.js",
+        "pagesFunc/terminal/alerts-set/index.js",
+        "pagesFunc/terminal/alerts-set/messages.js",
+        "pagesFunc/terminal/alerts-set/phone.js",
+        "pagesFunc/terminal/alerts-set/wx-mp.js",
+        "pagesFunc/terminal/alerts-set/wx.js",
+        "pagesFunc/terminal/corral/info.js",
+        "pagesFunc/terminal/corral/list.js",
+        "pagesFunc/terminal/device-card.js",
+        "pagesFunc/terminal/list/index.js",
+        "pagesFunc/terminal/locate-mode/index.js",
+        "pagesFunc/terminal/locus/index.js",
+        "pagesFunc/terminal/remote-setup/index.js",
+        "pagesFunc/terminal/self-detection.js",
+        "pagesMore/message/statement.js",
+        "pagesMore/my/developers/developers.js",
+        "pagesMore/public/locate.js",
+        "pagesPay/card/index.js",
+        "pagesPay/list/indent-device.js",
+        "pagesPay/list/specifics.js",
+        "pagesPay/value-added/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/login/register",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:742"
+      ],
+      "usedByBundles": [
+        "pagesCore/login/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesCore/webframe?url={t.advertisingContent[e].linkUrl}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:580"
+      ],
+      "usedByBundles": [
+        "pages/home/home.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/deviceInfo/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/alerts-set/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/audio/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/corral/info?enclosureType={[0, 2, 3][e.tapIndex]}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:648"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/corral/list.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/corral/info?fenceId={e.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:648"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/corral/list.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/corral/list",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/device-card",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/list/index?bind={!0}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:552"
+      ],
+      "usedByBundles": [
+        "pages/home/home.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/locate-mode/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/locus/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/remote-setup/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/remote-setup/list",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/self-detection",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/trip-report/detail",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:a361"
+      ],
+      "usedByBundles": [
+        "pagesFunc/app-sub-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesFunc/terminal/trip-report/list",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesMore/message/statement?id={e.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:537"
+      ],
+      "usedByBundles": [
+        "pages/msg/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesMore/message/table?alarmType={e}&current={this.currentTime + 1}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:534"
+      ],
+      "usedByBundles": [
+        "pages/msg/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesMore/my/developers/push-msgs",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:752"
+      ],
+      "usedByBundles": [
+        "pagesMore/my/developers/developers.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesMore/my/support",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:31c0",
+        "nvue:393",
+        "nvue:548",
+        "nvue:616",
+        "nvue:625",
+        "nvue:631"
+      ],
+      "usedByBundles": [
+        "pagesPay/app-sub-service.js",
+        "pagesPay/card/index.js",
+        "pagesPay/value-added/index.js",
+        "pages/my/my.js",
+        "pagesPay/list/specifics.js",
+        "pagesPay/list/indent.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesMore/notice/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:563"
+      ],
+      "usedByBundles": [
+        "pages/home/home.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/appreciation/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544",
+        "nvue:565"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js",
+        "pages/home/home.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/card/index?iccid={this.iccid}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:652"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/device-card.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/list/indent-device",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:544"
+      ],
+      "usedByBundles": [
+        "pages/ability/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/list/specifics?id={t.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:625"
+      ],
+      "usedByBundles": [
+        "pagesPay/list/indent.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/paySuccess/index?outTradeNo={i.data.outTradeNo}&payTime={i.data.payTime}&totalFee={i.data.totalFee}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:400f"
+      ],
+      "usedByBundles": [
+        "pagesPay/app-sub-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/paySuccess/index?outTradeNo={s.data.outTradeNo}&payTime={s.data.payTime}&totalFee={s.data.totalFee}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:395"
+      ],
+      "usedByBundles": [
+        "pagesPay/card/index.js",
+        "pagesPay/value-added/index.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/value-added/index",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:9451",
+        "nvue:544",
+        "nvue:568"
+      ],
+      "usedByBundles": [
+        "pagesFunc/app-sub-service.js",
+        "pages/ability/index.js",
+        "pages/home/home.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/value-added/index?type=3&alarm=0",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:707"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/alerts-set/wx.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/value-added/index?type=3&alarm=1",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:701"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/alerts-set/phone.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pagesPay/value-added/index?type=3&alarm=2",
+      "data": null,
+      "header": null,
+      "modules": [
+        "nvue:698"
+      ],
+      "usedByBundles": [
+        "pagesFunc/terminal/alerts-set/messages.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/pay/provider",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:7318"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/position-share-record",
+      "data": [
+        "terminalId: t.deviceId",
+        "userId: t.userId",
+        "duration: t.duration"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "url": "/record/{n}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/record/always",
+      "data": [
+        "terminalId: t.deviceId",
+        "isOpen: t.state"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/record/auto",
+      "data": [
+        "terminalId: t.deviceId",
+        "isAuto: t.state",
+        "seconds: 30"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/record/page",
+      "data": [
+        "terminalId: o",
+        "limit: a.limit",
+        "recordId: c || 0",
+        "updateType: l || 0",
+        "createTimeStart: f",
+        "createTimeEnd: m"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/record/read",
+      "data": [
+        "id: t.id"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/record/send",
+      "data": [
+        "terminalId: t.deviceId",
+        "seconds: t.timeValue"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/record/status",
+      "data": [
+        "terminalId: t.deviceId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:7191"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/service-package/{t.path}",
+      "data": [
+        "terminalId: t.deviceId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:464b"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/service-package/simcard",
+      "data": [
+        "iccid: t.iccid"
+      ],
+      "header": null,
+      "modules": [
+        "svc:464b"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/simcard/card-info/{t.iccid}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:464b"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/simcard/get-card-alarm/{n.iccid}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/sms-code?phoneNumber={t.phoneNumber}&captchaId={t.captchaId}&captchaCode={t.captchaCode}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:04f1"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/system/user/nickname",
+      "data": [
+        "nickName: t.nickName"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4fb9"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/system/user/user-info",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:4fb9"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/terminal",
+      "data": [
+        "id: t.terminalId",
+        "terminalName: t.deviceName"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal-alarm-setting/{n.device.selectedTerminal.id}",
+      "data": [
+        "appId: s.default.applicationId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-fence-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-low-power-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-offline-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-power-off-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-push-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status",
+        "pushClientId: a.app.pushClientId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-rest-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-sms-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-sms-phone-number",
+      "data": [
+        "id: t.id",
+        "smsPhoneNo1: t.alarmSmsList[0]",
+        "smsPhoneNo2: t.alarmSmsList[1]",
+        "smsPhoneNo3: t.alarmSmsList[2]",
+        "smsPhoneNo4: t.alarmSmsList[3]",
+        "smsPhoneNo5: t.alarmSmsList[4]",
+        "smsPhoneNo6: t.alarmSmsList[5]"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-sos-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-speed-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-tear-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-tel-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-tel-phone-number",
+      "data": [
+        "id: t.id",
+        "telPhoneNo1: t.alarmTelList[0]",
+        "telPhoneNo2: t.alarmTelList[1]",
+        "telPhoneNo3: t.alarmTelList[2]",
+        "telPhoneNo4: t.alarmTelList[3]",
+        "telPhoneNo5: t.alarmTelList[4]",
+        "telPhoneNo6: t.alarmTelList[5]"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-vibration-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-voice-alarm",
+      "data": [
+        "id: t.id",
+        "status: t.status"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal-alarm-setting/set-wechat-alarm",
+      "data": [
+        "id: t.id",
+        "wechatNickname: t.nickname",
+        "wechatHeadimgurl: t.headImgUrl",
+        "wechatOpenUnionid: t.unionId",
+        "status: !0"
+      ],
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal-vip/list/type",
+      "data": [
+        "terminalId: t.terminalId",
+        "type: t.type"
+      ],
+      "header": null,
+      "modules": [
+        "svc:464b"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/{t.deviceID}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/bind",
+      "data": [
+        "terminalNo: t.terminalNo",
+        "password: (0, u.default)(t.password).toUpperCase()"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/cut-buffer",
+      "data": [
+        "terminalId: t.TerminalId",
+        "isCutButter: t.isCutButter"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/cut-buffer/{t.terminalId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/factory",
+      "data": [
+        "terminalId: t.TerminalId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/terminal/filter",
+      "data": [
+        "id: t.terminalId",
+        "lbs: t.Lbs",
+        "wifi: t.Wifi || 0",
+        "mix: t.Mix || 0",
+        "lbsLocation: t.LbsLocation || 0",
+        "wifiLocation: t.WifiLocation || 0",
+        "mixLocation: t.MixLocation || 0"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/funcs/{n.id}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/garrison",
+      "data": [
+        "terminalId: t.deviceId",
+        "isGarrison: t.isSetDefence"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/garrison/{t.deviceId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/terminal/icon",
+      "data": [
+        "id: t.terminalId",
+        "iconType: t.iconType"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/locate",
+      "data": [
+        "TerminalId: n"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/page",
+      "data": [
+        "<c>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d7d"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/params-info/{t.terminalId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/power/{t.terminalId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/restart",
+      "data": [
+        "terminalId: t.TerminalId"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/send-command",
+      "data": [
+        "terminalId: t.deviceId",
+        "command: t.directive"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/set-params",
+      "data": [
+        "terminalId: t.deviceId",
+        "params: t.param"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/set-power",
+      "data": [
+        "terminalId: t.deviceId",
+        "powerOn: t.state"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/statistics",
+      "data": [
+        "<a>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/unbind",
+      "data": [
+        "id: t.id"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "PUT",
+      "url": "/terminal/update-pwd",
+      "data": [
+        "terminalNo: t.terminalNo",
+        "oldPassword: t.oldPassword",
+        "newPassword: t.password"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d7d"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/value-added/{t.terminalId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/terminal/white-list",
+      "data": [
+        "terminalId: t.deviceId",
+        "phoneList: t.phoneList"
+      ],
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/terminal/white-list/{t.deviceId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:d65a"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/upgrade-app-version/check-version",
+      "data": [
+        "<t>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:5129"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/user-alarm-setting",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:4c62"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/alarm-log/{t.alarmId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/alarm-log/page",
+      "data": [
+        "<o>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d79"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/fence",
+      "data": [
+        "<n[0]>"
+      ],
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/fence/{n}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/fence/page?terminalId={t.terminalId}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:b366"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/map/geocode/regeo",
+      "data": [
+        "location: (\"\").concat(t.longitude, \",\").concat(t.latitude)"
+      ],
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/position-share-record/code?code={t.code}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/position-share-record/lbs-info/code?code={t.code}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/terminal/{l}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:9d7d"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/terminal/ids",
+      "data": [
+        "ids: l.join(\",\")"
+      ],
+      "header": null,
+      "modules": [
+        "svc:9d7d"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/track/info?terminalId={a}&startTime={s}&endTime={u}",
+      "data": null,
+      "header": null,
+      "modules": [
+        "svc:beec"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/trip/stopover/page",
+      "data": [
+        "terminalId: t.deviceId",
+        "page: a.page",
+        "limit: a.limit || 20",
+        "startTime: l",
+        "endTime: f"
+      ],
+      "header": null,
+      "modules": [
+        "svc:0083"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/v2/trip/trip/page",
+      "data": [
+        "terminalId: t.deviceId",
+        "page: a.page",
+        "limit: a.limit || 20",
+        "startTime: l",
+        "endTime: f"
+      ],
+      "header": null,
+      "modules": [
+        "svc:0083"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/wx/get-wx-user-info",
+      "data": [
+        "code: t.code",
+        "type: t.type"
+      ],
+      "header": null,
+      "modules": [
+        "svc:17ea"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "/wx/js-sign",
+      "data": [
+        "url: t.url"
+      ],
+      "header": null,
+      "modules": [
+        "svc:17ea"
+      ],
+      "usedByBundles": [
+        "app-service.js"
+      ]
+    }
+  ]
+}

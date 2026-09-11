@@ -1,0 +1,86 @@
+<template>
+<view>
+  <u-popup mode="center" bgColor="transparent" :closeable="false" :show="$data.advertisingState">
+    <view class="flex-col justify-center items-center">
+      <view style="width: 710rpx; height: 800rpx">
+        <u-swiper
+          style="width: 710rpx"
+          :list="$data.advertisingList"
+          :indicator="true"
+          indicatorMode="line"
+          :circular="true"
+          height="800rpx"
+          radius="10"
+          @click="$data.clickAdvertising"
+        ></u-swiper>
+      </view>
+      <view class="m-t-lg" @click="$data.closeAdvertising">
+        <u-icon name="close-circle" size="56rpx" color="#fff"></u-icon>
+      </view>
+    </view>
+  </u-popup>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: Advertising
+ * 反编译自 webpack 模块 580（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+"use strict";
+var l = {
+  data: function () {
+    return {};
+  },
+  computed: {
+    ...mod25.mapGetters(["advertisingContent", "advertisingState"]),
+    advertisingList: function () {
+      return this.advertisingContent.map(function (e) {
+        return e.mediaUrl;
+      });
+    }
+  },
+  methods: {
+    ...mod25.mapMutations("app", ["setAdvertisingState"]),
+    ...mod25.mapActions("app", ["ClickAd"]),
+    closeAdvertising: function () {
+      this.setAdvertisingState(false);
+    },
+    clickAdvertising: function (e) {
+      var t = this;
+      return (async function () {
+        await t.ClickAd({
+          id: t.advertisingContent[e].id
+        });
+        uni.navigateTo({
+          url: ("/pagesCore/webframe?url=").concat(t.advertisingContent[e].linkUrl)
+        });
+      })();
+    }
+  }
+};
+export default l;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.main {
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 16rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.main {
+  width: 80vw;
+  height: 80vw;
+  border-radius: 2.1333vw;
+}
+/* #endif */
+</style>

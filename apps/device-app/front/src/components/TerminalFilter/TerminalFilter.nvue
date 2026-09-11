@@ -1,0 +1,324 @@
+<template>
+<view style="width: 560rpx; padding: 48rpx 32rpx; background-color: #ffffff; min-height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+  <view>
+    <view style="margin-bottom: 40rpx;">
+      <text style="font-size: 30rpx; font-weight: bold; color: #333333; margin-bottom: 20rpx; display: block;" append="tree">
+        告警类型
+      </text>
+      <view style="display: flex; flex-direction: row; flex-wrap: wrap;">
+        <view
+          v-for="(t, index) in alarmListType"
+          :key="t.value || index"
+          :style="{
+            padding: '12rpx 24rpx',
+            borderRadius: '30rpx',
+            backgroundColor: t.state ? '#6081C7' : '#F2F3F5',
+            marginRight: '16rpx',
+            marginBottom: '16rpx',
+            cursor: 'pointer'
+          }"
+          @click="alarmItemHandler(t.value)"
+        >
+          <text :style="{ fontSize: '26rpx', color: t.state ? '#ffffff' : '#555555' }" append="tree">
+            {{ t.name }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="margin-bottom: 40rpx;">
+      <text style="font-size: 30rpx; font-weight: bold; color: #333333; margin-bottom: 20rpx; display: block;" append="tree">
+        时间选择
+      </text>
+      
+      <view style="margin-bottom: 20rpx;" @click="startDataShow = true">
+        <text style="font-size: 26rpx; color: #888888; margin-bottom: 8rpx; display: block;" append="tree">
+          开始时间：
+        </text>
+        <view style="background-color: #F7F8FA; border: 1rpx solid #E5E6EB; border-radius: 12rpx; padding: 18rpx 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;">
+          <text style="font-size: 26rpx; color: #333333;" append="tree">
+            {{ currentStartModel[0] }}
+          </text>
+          <u-icon name="calendar" color="#999999" size="32rpx"></u-icon>
+        </view>
+      </view>
+
+      <view style="margin-bottom: 20rpx;" @click="endDataShow = true">
+        <text style="font-size: 26rpx; color: #888888; margin-bottom: 8rpx; display: block;" append="tree">
+          结束时间：
+        </text>
+        <view style="background-color: #F7F8FA; border: 1rpx solid #E5E6EB; border-radius: 12rpx; padding: 18rpx 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;">
+          <text style="font-size: 26rpx; color: #333333;" append="tree">
+            {{ currentEndModel[0] }}
+          </text>
+          <u-icon name="calendar" color="#999999" size="32rpx"></u-icon>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding-top: 32rpx; border-top: 1rpx solid #f0f0f0;">
+    <view style="width: 230rpx;">
+      <u-button
+        shape="circle"
+        :plain="true"
+        color="#6081C7"
+        text="重置"
+        @click="resetHandler"
+      ></u-button>
+    </view>
+    <view style="width: 230rpx;">
+      <u-button color="#6081C7" shape="circle" type="primary" text="确定" @click="confirmAlarm"></u-button>
+    </view>
+  </view>
+
+  <u-datetime-picker
+    mode="datetime"
+    :title="l('common.selected-date')"
+    :show="startDataShow"
+    :maxDate="timeChangeMs(currentEndModel[1])"
+    :closeOnClickOverlay="true"
+    @close="startDataShow = false"
+    @cancel="startDataShow = false"
+    @confirm="confirmPicker($event, 'start')"
+    v-model="currentStartModel[1]"
+  ></u-datetime-picker>
+  <u-datetime-picker
+    mode="datetime"
+    :title="l('common.selected-date')"
+    :show="endDataShow"
+    :maxDate="timeChangeMs(maxDate)"
+    :minDate="timeChangeMs(currentStartModel[1])"
+    :closeOnClickOverlay="true"
+    @close="endDataShow = false"
+    @cancel="endDataShow = false"
+    @confirm="confirmPicker($event, 'end')"
+    v-model="currentEndModel[1]"
+  ></u-datetime-picker>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: TerminalFilter
+ * 反编译自 webpack 模块 539（nvue 编译空间）
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod0 from 'moment'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var l = getApp().globalData, c = new Date(), _ = c.getFullYear(), m = c.getMonth() + 1;
+m = m < 10 ? ("0").concat(m) : m;
+var f = c.getDate();
+f = f < 10 ? ("0").concat(f) : f;
+var p = {
+  computed: {
+    ...mod25.mapGetters(["userType", "selectedTerminal", "sysInfo", "appConfig"]),
+    currentStartModel: function () {
+      return this.currentStartDate ? [this.currentStartDate, this.currentStartDate] : ["-", ("").concat(this.currentDate, " 00:00:00")];
+    },
+    currentEndModel: function () {
+      return this.currentEndDate ? [this.currentEndDate, this.currentEndDate] : ["-", ("").concat(this.currentDate, " 23:59:59")];
+    }
+  },
+  props: ["filterData"],
+  data: function () {
+    return {
+      alarmListType: [],
+      startDataShow: false,
+      endDataShow: false,
+      currentStartDate: "",
+      currentEndDate: "",
+      maxDate: ("").concat(_, "-").concat(m, "-").concat(f, " 23:59:59"),
+      currentDate: mod0(c).format("YYYY-MM-DD")
+    };
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    l: function (e) {
+      return l.$t(e);
+    },
+    init: function () {
+      var t = this;
+      var rawTypes = (this.appConfig && this.appConfig.alarmTypes) || [
+        { name: "震动告警", value: "vibration" },
+        { name: "拆卸告警", value: "dismantle" },
+        { name: "低电告警", value: "battery" },
+        { name: "超速告警", value: "speed" },
+        { name: "断电告警", value: "cutPower" },
+        { name: "SOS告警", value: "sos" },
+        { name: "围栏告警", value: "fence" },
+        { name: "离线告警", value: "offline" }
+      ];
+      this.alarmListType = JSON.parse(JSON.stringify(rawTypes)).map(function (item) {
+        return { ...item, state: false };
+      });
+      if (this.filterData) {
+        if (this.filterData.alarmTypes && Array.isArray(this.filterData.alarmTypes)) {
+          this.alarmListType.forEach(function (item) {
+            if (t.filterData.alarmTypes.includes(item.value)) {
+              item.state = true;
+            }
+          });
+        }
+        if (this.filterData.beginTime) this.currentStartDate = this.filterData.beginTime;
+        if (this.filterData.endTime) this.currentEndDate = this.filterData.endTime;
+      }
+    },
+    alarmItemHandler: function (val) {
+      this.alarmListType = this.alarmListType.map(function (item) {
+        if (item.value === val) {
+          return { ...item, state: !item.state };
+        }
+        return item;
+      });
+    },
+    confirmPicker: function (res, type) {
+      var val = (res && res.value) ? res.value : res;
+      var n = mod0(val).format("YYYY-MM-DD HH:mm:ss");
+      if (type === "start") {
+        this.currentStartDate = n;
+        this.startDataShow = false;
+      } else {
+        this.currentEndDate = n;
+        this.endDataShow = false;
+      }
+    },
+    timeChangeMs: function (e) {
+      return mod0(e).valueOf();
+    },
+    resetHandler: function () {
+      this.currentStartDate = "";
+      this.currentEndDate = "";
+      this.alarmListType = this.alarmListType.map(function (e) {
+        return { ...e, state: false };
+      });
+    },
+    confirmAlarm: function () {
+      if (!this.currentStartDate && this.currentEndDate) return mod166.qzwlToast("请选择开始时间", "none");
+      if (this.currentStartDate && !this.currentEndDate) return mod166.qzwlToast("请选择结束时间", "none");
+      var t = {};
+      t.alarmTypes = this.alarmListType.filter(function (e) { return e.state; }).map(function (e) { return e.value; });
+      t.beginTime = this.currentStartDate;
+      t.endTime = this.currentEndDate;
+      this.$emit("fetchData", {
+        param: t,
+        value: true
+      });
+      this.$emit("filterClose");
+    }
+  }
+};
+export default p;
+</script>     param: t,
+        value: true
+      }), this.$emit("filterClose"));
+    }
+  }
+};
+export default p;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.type-box {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+}
+
+.type-box-item {
+  width: 136rpx;
+  height: 56rpx;
+  border-width: 1rpx;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 28rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-box-item-active {
+  width: 136rpx;
+  height: 56rpx;
+  background-color: #6081C7;
+  border-radius: 28rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-time {
+  width: 322rpx;
+  height: 72rpx;
+  background-color: #fafafa;
+  border-width: 1;
+  border-style: solid;
+  border-color: #e6e6e6;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.type-box {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+}
+
+.type-box-item {
+  width: 18.1333vw;
+  height: 7.4667vw;
+  border-width: 0.1333vw;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 3.7333vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-box-item-active {
+  width: 18.1333vw;
+  height: 7.4667vw;
+  background-color: #6081C7;
+  border-radius: 3.7333vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-time {
+  width: 42.9333vw;
+  height: 9.6vw;
+  background-color: #fafafa;
+  border-width: 1;
+  border-style: solid;
+  border-color: #e6e6e6;
+  border-radius: 2.1333vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3.2vw;
+}
+/* #endif */
+</style>

@@ -1,0 +1,44 @@
+<template>
+<view class="u-slider" :style="[$u.addStyle(customStyle)]">
+  <slider
+    :min="min"
+    :max="max"
+    :step="step"
+    :value="value"
+    :activeColor="activeColor"
+    :inactiveColor="inactiveColor"
+    :blockSize="$u.getPx(blockSize)"
+    :blockColor="blockColor"
+    :showValue="showValue"
+    :disabled="disabled"
+    @changing="changingHandler"
+    @change="changeHandler"
+  ></slider>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSlider
+ * 反编译自 webpack 模块 408（nvue 编译空间）
+ */
+import mod838 from '@/.unpacked/nvue/838.js'
+
+"use strict";
+var i = {
+  name: "u--slider",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod838],
+  methods: {
+    changingHandler: function (e) {
+      var t = e.detail.value;
+      (this.$emit("input", t), this.$emit("changing", t));
+    },
+    changeHandler: function (e) {
+      var t = e.detail.value;
+      (this.$emit("input", t), this.$emit("change", t));
+    }
+  }
+};
+export default i;
+
+</script>

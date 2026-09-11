@@ -1,0 +1,201 @@
+<template>
+<view style="display: block; position: relative; height: 0;">
+  <view v-if="currentPoint || (basePoint && basePoint.length)" class="map-panel" style="position: fixed; bottom: 0; left: 0; right: 0; width: 100vw; height: auto !important; max-height: 50vh; z-index: 100; background-color: #ffffff; border-top-left-radius: 24rpx; border-top-right-radius: 24rpx; box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.12); box-sizing: border-box; padding: 12rpx 0 32rpx 0;">
+    <view class="player flex-row items-center justify-between" style="margin: 0 16rpx; padding: 12rpx 24rpx; border-radius: 20rpx; background-color: #e8eefa; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+      <u-icon
+        v-if="!(isPlaying)"
+        :name="cdn + '/ikon/locus-play@2x.png'"
+        size="58rpx"
+        @click="$emit('play')"
+      ></u-icon>
+      <u-icon
+        v-if="isPlaying"
+        :name="cdn + '/ikon/locus-pause@2x.png'"
+        size="58rpx"
+        @click="$emit('pause')"
+      ></u-icon>
+      <view style="flex: 1; margin: 0 20rpx;">
+        <u-slider
+          :min="0"
+          blockColor="#6081C7"
+          inactiveColor="#c0c4cc"
+          activeColor="#6081C7"
+          @changing="$emit('progressChanging', t)"
+          @change="$emit('progressChanged', t)"
+          v-model="panelProgress"
+        ></u-slider>
+      </view>
+      <view v-if="400 == speed" class="flex flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="$emit('changeSpeed', 200)">
+        <u-icon :name="cdn + '/ikon/locus-speed@2x.png'" size="48rpx"></u-icon>
+        <text class="text text-title" style="font-size: 26rpx; color: #333; margin-left: 4rpx;" append="tree">中</text>
+      </view>
+      <view v-if="200 == speed" class="flex flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="$emit('changeSpeed', 600)">
+        <u-icon :name="cdn + '/ikon/locus-speed@2x.png'" size="48rpx"></u-icon>
+        <text class="text text-title" style="font-size: 26rpx; color: #333; margin-left: 4rpx;" append="tree">快</text>
+      </view>
+      <view v-if="600 == speed" class="flex flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="$emit('changeSpeed', 400)">
+        <u-icon :name="cdn + '/ikon/locus-speed@2x.png'" size="48rpx"></u-icon>
+        <text class="text text-title" style="font-size: 26rpx; color: #333; margin-left: 4rpx;" append="tree">慢</text>
+      </view>
+    </view>
+
+    <view class="map-main" style="padding: 20rpx 32rpx 0 32rpx; display: flex; flex-direction: column; justify-content: flex-start;">
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; height: 48rpx;">
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <text style="font-size: 28rpx; color: #6081C7;" append="tree">{{ l('device.location-time') }}：</text>
+          <text style="font-size: 28rpx; color: #333;" append="tree">{{ currentPoint ? currentPoint.locateTime : '-' }}</text>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <text style="font-size: 26rpx; color: #333; margin-right: 12rpx;" append="tree">{{ l('locus.base.locate') }}</text>
+          <u-switch :activeColor="primaryColor" size="20" v-model="baseValue"></u-switch>
+        </view>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; margin-top: 8rpx;">
+        <text style="font-size: 28rpx; color: #6081C7;" append="tree">{{ l('device.locate.mode') }}：</text>
+        <text style="font-size: 28rpx; color: #333;" append="tree">{{ currentPoint ? currentPoint.mode : '基站定位' }}</text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; margin-top: 8rpx;">
+        <text style="font-size: 28rpx; color: #6081C7;" append="tree">速度：</text>
+        <text style="font-size: 28rpx; color: #333;" append="tree">{{ currentPoint ? currentPoint.speed : 0 }}km/h</text>
+        <text style="font-size: 28rpx; color: #6081C7; margin-left: 48rpx;" append="tree">里程：</text>
+        <text style="font-size: 28rpx; color: #333;" append="tree">{{ totalMileage || '0.00' }}km</text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: flex-start; margin-top: 8rpx;">
+        <text style="font-size: 28rpx; color: #6081C7; flex-shrink: 0;" append="tree">地址：</text>
+        <text style="font-size: 28rpx; color: #333; line-height: 38rpx; word-break: break-all;" append="tree">{{ currentAddress || '获取位置...' }}</text>
+      </view>
+    </view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: locusPanel
+ * 反编译自 webpack 模块 688（nvue 编译空间）
+ */
+import '../../common/utils.nvue.js'
+import mod15 from '../../common/config.nvue.js'
+
+"use strict";
+var i = getApp().globalData, s = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      primaryColor: mod15.primaryColor,
+      baseValue: false,
+      panelProgress: 0
+    };
+  },
+  props: ["currentPoint", "basePoint", "totalMileage", "currentAddress", "speed", "isPlaying", "progress"],
+  methods: {
+    l: function (e) {
+      return i.$t(e);
+    }
+  },
+  watch: {
+    baseValue: {
+      immediate: true,
+      handler: function () {
+        this.basePoint.length && this.$emit("drawBaseMarker", this.baseValue);
+      }
+    },
+    progress: {
+      immediate: true,
+      handler: function () {
+        this.panelProgress = this.progress;
+      }
+    }
+  }
+};
+export default s;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.map-panel {
+  position: fixed;
+  bottom: 0rpx;
+  left: 0rpx;
+  width: 750rpx;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding-top: 6rpx;
+  padding-right: 0rpx;
+  padding-bottom: 40rpx;
+  padding-left: 0rpx;
+  box-shadow: 0 0 16rpx 0 rgba(0, 0, 0, 0.2);
+}
+
+.map-main {
+  padding-top: 22rpx;
+  padding-right: 32rpx;
+  padding-bottom: 16rpx;
+  padding-left: 32rpx;
+}
+
+.player {
+  margin-top: 0;
+  margin-right: 4rpx;
+  margin-bottom: 0;
+  margin-left: 4rpx;
+  padding-top: 16rpx;
+  padding-right: 32rpx;
+  padding-bottom: 16rpx;
+  padding-left: 32rpx;
+  border-radius: 19rpx;
+  background-color: #e8eefa;
+}
+/* #endif */
+/* #ifdef H5 */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.map-panel {
+  position: fixed;
+  bottom: 0vw;
+  left: 0vw;
+  width: 100vw;
+  background-color: #ffffff;
+  border-radius: 3.2vw;
+  padding-top: 0.8vw;
+  padding-right: 0vw;
+  padding-bottom: 5.3333vw;
+  padding-left: 0vw;
+  box-shadow: 0 0 2.1333vw 0 rgba(0, 0, 0, 0.2);
+}
+
+.map-main {
+  padding-top: 2.9333vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 2.1333vw;
+  padding-left: 4.2667vw;
+}
+
+.player {
+  margin-top: 0;
+  margin-right: 0.5333vw;
+  margin-bottom: 0;
+  margin-left: 0.5333vw;
+  padding-top: 2.1333vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 2.1333vw;
+  padding-left: 4.2667vw;
+  border-radius: 2.5333vw;
+  background-color: #e8eefa;
+}
+/* #endif */
+</style>

@@ -1,0 +1,148 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="background-color: #f6f6f6; min-height: 100vh;">
+    <view
+      v-if="isAuthenticated"
+      style="background-color: #ffffff; padding: 16rpx 28rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; border-bottom: 1rpx solid #E2E8F0; position: sticky; top: 0; z-index: 100;"
+    >
+      <view style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="setDeleteShow">
+        <u-icon
+          v-if="!deleteShow"
+          :name="cdn + '/ikon/qzwl-msg-trash.png'"
+          size="44rpx"
+          color="#333"
+        ></u-icon>
+        <u-icon
+          v-if="deleteShow"
+          name="close-circle"
+          size="44rpx"
+          color="#EF4444"
+        ></u-icon>
+      </view>
+
+      <view style="flex: 1; margin: 0 20rpx;">
+        <u-search
+          placeholder="请输入设备号"
+          shape="round"
+          :showAction="false"
+          @search="searchHandler"
+          @clear="clearHandler"
+          v-model="searchValue"
+        ></u-search>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <view style="cursor: pointer;" @click="msgFilter">
+          <u-icon
+            :name="cdn + '/ikon/qzwl-msg-filter.png'"
+            size="44rpx"
+          ></u-icon>
+        </view>
+        <view style="margin-left: 24rpx; cursor: pointer;" @click="gotoPages('/pagesFunc/terminal/alerts-set/index')">
+          <u-icon
+            :name="cdn + '/ikon/qzwl-msg-set.png'"
+            size="44rpx"
+          ></u-icon>
+        </view>
+      </view>
+    </view>
+
+    <view style="padding: 24rpx 28rpx 140rpx 28rpx;">
+      <TerminalMsg
+        ref="TerminalMsg"
+        :deleteShow="deleteShow"
+        :filterShow="filterShow"
+        @setDeleteShow="setDeleteShow"
+        @msgFilter="msgFilter"
+      ></TerminalMsg>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pages/msg/index
+ * 反编译自 webpack 模块 529（nvue 编译空间）
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod15 from '../../common/config.nvue.js'
+import mod921 from '../../components/TerminalMsg/TerminalMsg.nvue'
+
+"use strict";
+var c = getApp().globalData, _ = {
+  components: {
+    TerminalMsg: mod921
+  },
+  computed: {
+    ...mod25.mapGetters(["userType", "sysInfo", "selectedTerminal", "isAuthenticated"]),
+    ...mod25.mapState("timingRefresh", ["msgRefresh"])
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      deleteShow: false,
+      filterShow: false,
+      searchValue: ""
+    };
+  },
+  onLoad: function () {},
+  onShow: function () {
+    var e = this;
+    this.msgRefresh && this.$nextTick(function () {
+      (e.$refs.TerminalMsg.fetchData({
+        value: true
+      }), e.setMsgRefresh(false), c.$msg(3e5));
+    });
+  },
+  onPullDownRefresh: function () {
+    (this.$refs.TerminalMsg.fetchData({
+      value: true
+    }), this.deleteShow = false);
+  },
+  onReachBottom: function () {
+    this.$refs.TerminalMsg.fetchData({
+      value: false
+    });
+  },
+  methods: {
+    ...mod25.mapMutations("timingRefresh", ["setMsgRefresh"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    gotoPages: function (e) {
+      if (e) {
+        if (this.deleteShow || !this.selectedTerminal) return;
+        uni.navigateTo({
+          url: e
+        });
+      } else uni.navigateBack();
+    },
+    setDeleteShow: function (e) {
+      e ? this.deleteShow = e : this.$refs.TerminalMsg.setDeleteShowTerminal() && (this.deleteShow = !this.deleteShow);
+    },
+    msgFilter: function (e) {
+      this.deleteShow || (this.filterShow = e || !this.filterShow);
+    },
+    searchHandler: function (e) {
+      this.$refs.TerminalMsg.fetchData({
+        value: true,
+        terminalNo: e
+      });
+    },
+    clearHandler: function () {
+      this.$refs.TerminalMsg.fetchData({
+        value: true,
+        terminalNo: ""
+      });
+    }
+  }
+};
+export default _;
+
+</script>

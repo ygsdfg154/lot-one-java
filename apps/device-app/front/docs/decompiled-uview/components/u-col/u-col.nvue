@@ -1,0 +1,85 @@
+<template>
+<view
+  ref="u-col"
+  class="u-col"
+  :class="['u-col-' + $data.span]"
+  :style="[$data.colStyle]"
+  @click="$data.clickHandler"
+>
+  <slot></slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uCol
+ * 反编译自 webpack 模块 414（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod842 from '@/.unpacked/nvue/842.js';
+"use strict";
+var o = {
+  name: "u-col",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod842],
+  data: function () {
+    return {
+      width: 0,
+      parentData: {
+        gutter: 0
+      },
+      gridNum: 12
+    };
+  },
+  computed: {
+    uJustify: function () {
+      return "end" == this.justify || "start" == this.justify ? "flex-" + this.justify : "around" == this.justify || "between" == this.justify ? "space-" + this.justify : this.justify;
+    },
+    uAlignItem: function () {
+      return "top" == this.align ? "flex-start" : "bottom" == this.align ? "flex-end" : this.align;
+    },
+    colStyle: function () {
+      var e = {
+        paddingLeft: uni.$u.addUnit(uni.$u.getPx(this.parentData.gutter) / 2),
+        paddingRight: uni.$u.addUnit(uni.$u.getPx(this.parentData.gutter) / 2),
+        alignItems: this.uAlignItem,
+        justifyContent: this.uJustify,
+        textAlign: this.textAlign,
+        width: uni.$u.addUnit(Math.floor(this.width / this.gridNum * Number(this.span))),
+        marginLeft: uni.$u.addUnit(Math.floor(this.width / this.gridNum * Number(this.offset)))
+      };
+      return uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle));
+    }
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    init: function () {
+      var e = this;
+      return (async function () {
+        e.updateParentData();
+        e.width = await e.parent.getComponentWidth();
+      })();
+    },
+    updateParentData: function () {
+      this.getParentData("u-row");
+    },
+    clickHandler: function (e) {
+      this.$emit("click");
+    }
+  }
+};
+export default o;
+
+</script>
+
+<style scoped>
+.u-col {
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+}
+</style>

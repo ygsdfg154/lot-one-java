@@ -1,0 +1,163 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view class="container" style="display: block; padding-bottom: 140rpx; background-color: #ffffff;">
+    <view
+      v-for="t in iconList"
+      :key="t.id"
+      style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; height: 100rpx; padding: 0 32rpx; border-bottom: 1rpx solid #ECECEC; box-sizing: border-box; cursor: pointer;"
+      @click="setTerminalIcon(t)"
+    >
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <u-icon :name="cdn + '/ikon/device/' + t.code + '-1.png'" size="60rpx"></u-icon>
+        <text style="font-size: 28rpx; color: #333; margin-left: 24rpx;" append="tree">
+          {{ t.name }}
+        </text>
+      </view>
+
+      <view v-if="currentIconType == t.iconType" style="width: 40rpx; height: 40rpx; border-radius: 20rpx; background-color: #6081C7; display: flex; flex-direction: row; align-items: center; justify-content: center;">
+        <text style="color: #ffffff; font-size: 24rpx; font-weight: bold; line-height: 24rpx;" append="tree">✓</text>
+      </view>
+      <view v-else style="width: 40rpx; height: 40rpx; border-radius: 20rpx; border: 2rpx solid #CCCCCC; box-sizing: border-box;"></view>
+    </view>
+  </view>
+  
+  <view style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 32rpx; background-color: #ffffff; box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <u-button type="primary" color="#6081C7" :text="l('mine.setup.save')" @click="putDeviceIcon"></u-button>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/deviceInfo/set-icon
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import * as mod166 from '../../common/utils.nvue.js'
+import mod15 from '../../common/config.nvue.js'
+
+"use strict";
+var m = getApp().globalData, c = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      currentIconType: 1
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal"]),
+    ...mod25.mapState("device", ["deviceIcons"]),
+    iconList: function () {
+      var CODE_MAP = {
+        ebike: 'motor',
+        motorcycle: 'motor',
+        cargo: 'truck',
+        '03': 'motor',
+        '04': 'motor',
+        '08': 'truck'
+      };
+      if (this.deviceIcons && this.deviceIcons.length) {
+        return this.deviceIcons.map(function (item) {
+          var mappedCode = CODE_MAP[item.code] || item.code || "default";
+          return {
+            id: item.id,
+            iconType: item.id,
+            code: mappedCode,
+            name: item.name || ("图标 " + item.id)
+          };
+        });
+      }
+      return [
+        { id: 1, iconType: "default", code: "default", name: "默认" },
+        { id: 2, iconType: "car", code: "car", name: "私家车" },
+        { id: 3, iconType: "ebike", code: "motor", name: "电动车" },
+        { id: 4, iconType: "motorcycle", code: "motor", name: "摩托车" },
+        { id: 5, iconType: "pet", code: "pet", name: "宠物" },
+        { id: 6, iconType: "cargo", code: "truck", name: "货运" }
+      ];
+    }
+  },
+  onLoad: function (e) {
+    if (e && e.iconType) {
+      this.currentIconType = e.iconType;
+    }
+    this.GetDeviceIcons();
+  },
+  methods: {
+    ...mod25.mapActions("device", ["SetTerminalIcon", "GetDeviceIcons"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    setTerminalIcon: function (e) {
+      this.currentIconType = e.iconType;
+    },
+    putDeviceIcon: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              return (t.next = 2, e.SetTerminalIcon({
+                terminalId: e.selectedTerminal.id,
+                iconType: e.currentIconType
+              }));
+            case 2:
+              if (!t.sent.succeeded) {
+                t.next = 8;
+                break;
+              }
+              return (mod166.qzwlToast(e.l("common.save.success"), "none"), t.next = 7, m.$sleep(1e3));
+            case 7:
+              uni.navigateBack();
+            case 8:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    }
+  }
+};
+export default c;
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.box {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 20rpx;
+  padding-right: 20rpx;
+  padding-bottom: 20rpx;
+  padding-left: 20rpx;
+  background-color: #ffffff;
+  border-top-width: 2rpx;
+  border-top-style: solid;
+  border-top-color: #f5f5f5;
+}
+/* #endif */
+/* #ifdef H5 */
+.box {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 2.6667vw;
+  padding-right: 2.6667vw;
+  padding-bottom: 2.6667vw;
+  padding-left: 2.6667vw;
+  background-color: #ffffff;
+  border-top-width: 0.2667vw;
+  border-top-style: solid;
+  border-top-color: #f5f5f5;
+}
+/* #endif */
+</style>

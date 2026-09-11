@@ -1,0 +1,207 @@
+<template>
+<view
+  ref="u-subsection"
+  class="u-subsection"
+  :class="['u-subsection--' + mode]"
+  :style="[$u.addStyle(customStyle), wrapperStyle]"
+>
+  <view
+    ref="u-subsection__bar"
+    class="u-subsection__bar"
+    :class="['button' === mode && 'u-subsection--button__bar', 0 === current && 'subsection' === mode && 'u-subsection__bar--first', current > 0 && current < list.length - 1 && 'subsection' === mode && 'u-subsection__bar--center', current === list.length - 1 && 'subsection' === mode && 'u-subsection__bar--last']"
+    :style="[barStyle]"
+  ></view>
+  <view
+    v-for="(t, r) in list"
+    :key="r"
+    :ref="'u-subsection__item--' + r"
+    class="u-subsection__item"
+    :class="['u-subsection__item--' + r, r < list.length - 1 && 'u-subsection__item--no-border-right', 0 === r && 'u-subsection__item--first', r === list.length - 1 && 'u-subsection__item--last']"
+    :style="[itemStyle(r)]"
+    @click="clickHandler(r)"
+  >
+    <text class="u-subsection__item__text" :style="[textStyle(r)]" append="tree">
+      {{ getText(t) }}
+    </text>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSubsection
+ * 反编译自 webpack 模块 531（nvue 编译空间）
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 a 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import a from '@/.unpacked/nvue/1.js'
+import mod920 from '@/.unpacked/nvue/920.js'
+
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var o = e("dom"), s = e("animation"), d = {
+  name: "u-subsection",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod920],
+  data: function () {
+    return {
+      itemRect: {
+        width: 0,
+        height: 0
+      }
+    };
+  },
+  watch: {
+    list: function (e, t) {
+      this.init();
+    },
+    current: {
+      immediate: true,
+      handler: function (e) {
+        var t, n, r = this, a = null === (t = this.$refs) || undefined === t || null === (n = t["u-subsection__bar"]) || undefined === n ? undefined : n.ref;
+        uni.$u.sleep(a ? 0 : 100).then(function () {
+          s.transition(r.$refs["u-subsection__bar"].ref, {
+            styles: {
+              transform: ("translateX(").concat(e * r.itemRect.width, "px)"),
+              transformOrigin: "center center"
+            },
+            duration: 300
+          });
+        });
+      }
+    }
+  },
+  computed: {
+    wrapperStyle: function () {
+      var e = {};
+      return ("button" === this.mode && (e.backgroundColor = this.bgColor), e);
+    },
+    barStyle: function () {
+      var e = {};
+      return (e.width = ("").concat(this.itemRect.width, "px"), e.height = ("").concat(this.itemRect.height, "px"), "subsection" === this.mode && (e.backgroundColor = this.activeColor), e);
+    },
+    itemStyle: function (e) {
+      var t = this;
+      return function (e) {
+        var n = {};
+        return ("subsection" === t.mode && (n.borderColor = t.activeColor, n.borderWidth = "1px", n.borderStyle = "solid"), n);
+      };
+    },
+    textStyle: function (e) {
+      var t = this;
+      return function (e) {
+        var n = {};
+        return (n.fontWeight = t.bold && t.current === e ? "bold" : "normal", n.fontSize = uni.$u.addUnit(t.fontSize), "subsection" === t.mode ? n.color = t.current === e ? "#fff" : t.inactiveColor : n.color = t.current === e ? t.activeColor : t.inactiveColor, n);
+      };
+    }
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    init: function () {
+      var e = this;
+      uni.$u.sleep().then(function () {
+        return e.getRect();
+      });
+    },
+    getText: function (e) {
+      return "object" === a(e) ? e[this.keyName] : e;
+    },
+    getRect: function () {
+      var e = this, t = this.$refs["u-subsection__item--0"][0];
+      t && o.getComponentRect(t, function (t) {
+        e.itemRect = t.size;
+      });
+    },
+    clickHandler: function (e) {
+      this.$emit("change", e);
+    }
+  }
+};
+export default d;
+
+</script>
+
+<style scoped>
+.u-subsection {
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+}
+
+.u-subsection--button {
+  height: 32;
+  background-color: #eeeeef;
+  padding-top: 3;
+  padding-right: 3;
+  padding-bottom: 3;
+  padding-left: 3;
+  border-radius: 3;
+  align-items: stretch;
+}
+
+.u-subsection--button__bar {
+  background-color: #ffffff;
+  border-radius: 3;
+}
+
+.u-subsection--subsection {
+  height: 30;
+}
+
+.u-subsection__bar {
+  position: absolute;
+}
+
+.u-subsection__bar--first {
+  border-top-left-radius: 3;
+  border-bottom-left-radius: 3;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.u-subsection__bar--center {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.u-subsection__bar--last {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3;
+  border-bottom-right-radius: 3;
+}
+
+.u-subsection__item {
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.u-subsection__item--no-border-right {
+  border-right-width: 0;
+}
+
+.u-subsection__item--first {
+  border-top-left-radius: 3;
+  border-bottom-left-radius: 3;
+}
+
+.u-subsection__item--last {
+  border-top-right-radius: 3;
+  border-bottom-right-radius: 3;
+}
+
+.u-subsection__item__text {
+  font-size: 12;
+  line-height: 12;
+  flex-direction: row;
+  align-items: center;
+  transition-property: color;
+  transition-duration: 300;
+}
+</style>

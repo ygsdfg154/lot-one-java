@@ -1,0 +1,260 @@
+<template>
+<view class="u-tabs">
+  <view class="u-tabs__wrapper">
+    <slot name="left"></slot>
+    <view class="u-tabs__wrapper__scroll-view-wrapper">
+      <scroll-view
+        ref="u-tabs__wrapper__scroll-view"
+        class="u-tabs__wrapper__scroll-view"
+        :scrollX="scrollable"
+        :scrollLeft="scrollLeft"
+        :scrollWithAnimation="true"
+        :showScrollbar="false"
+      >
+        <view ref="u-tabs__wrapper__nav" class="u-tabs__wrapper__nav">
+          <view
+            v-for="(t, a) in list"
+            :key="a"
+            :ref="'u-tabs__wrapper__nav__item-' + a"
+            class="u-tabs__wrapper__nav__item"
+            :class="['u-tabs__wrapper__nav__item-' + a, t.disabled && 'u-tabs__wrapper__nav__item--disabled']"
+            :style="[$u.addStyle(itemStyle), { flex: scrollable ? '' : 1 }]"
+            @click="clickHandler(t, a)"
+          >
+            <text
+              class="u-tabs__wrapper__nav__item__text"
+              :class="[t.disabled && 'u-tabs__wrapper__nav__item__text--disabled']"
+              :style="[textStyle(a)]"
+              append="tree"
+            >
+              {{ t[keyName] }}
+            </text>
+            <u-badge
+              :show="!(!t.badge || !(t.badge.show || t.badge.isDot || t.badge.value))"
+              :isDot="t.badge && t.badge.isDot || propsBadge.isDot"
+              :value="t.badge && t.badge.value || propsBadge.value"
+              :max="t.badge && t.badge.max || propsBadge.max"
+              :type="t.badge && t.badge.type || propsBadge.type"
+              :showZero="t.badge && t.badge.showZero || propsBadge.showZero"
+              :bgColor="t.badge && t.badge.bgColor || propsBadge.bgColor"
+              :color="t.badge && t.badge.color || propsBadge.color"
+              :shape="t.badge && t.badge.shape || propsBadge.shape"
+              :numberType="t.badge && t.badge.numberType || propsBadge.numberType"
+              :inverted="t.badge && t.badge.inverted || propsBadge.inverted"
+              customStyle="margin-left: 4px;"
+            ></u-badge>
+          </view>
+          <view
+            ref="u-tabs__wrapper__nav__line"
+            class="u-tabs__wrapper__nav__line"
+            :style="[{ width: $u.addUnit(lineWidth), height: $u.addUnit(lineHeight), background: lineColor, backgroundSize: lineBgSize }]"
+          ></view>
+        </view>
+      </scroll-view>
+    </view>
+    <slot name="right"></slot>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uTabs
+ * 反编译自 webpack 模块 402（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import i from '@/.unpacked/nvue/22.js';
+import mod202 from '@/.unpacked/nvue/202.js';
+import o from '@/.unpacked/nvue/5.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod834 from '@/.unpacked/nvue/834.js';
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var c = e("animation"), _ = e("dom"), m = {
+  name: "u-tabs",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod834],
+  data: function () {
+    return {
+      firstTime: true,
+      scrollLeft: 0,
+      scrollViewWidth: 0,
+      lineOffsetLeft: 0,
+      tabsRect: {
+        left: 0
+      },
+      innerCurrent: 0,
+      moving: false
+    };
+  },
+  watch: {
+    current: {
+      immediate: true,
+      handler: function (e, t) {
+        var n = this;
+        e !== this.innerCurrent && (this.innerCurrent = e, this.$nextTick(function () {
+          n.resize();
+        }));
+      }
+    },
+    list: function () {
+      var e = this;
+      this.$nextTick(function () {
+        e.resize();
+      });
+    }
+  },
+  computed: {
+    textStyle: function () {
+      var e = this;
+      return function (t) {
+        var n = {}, a = t === e.innerCurrent ? uni.$u.addStyle(e.activeStyle) : uni.$u.addStyle(e.inactiveStyle);
+        return (e.list[t].disabled && (n.color = "#c8c9cc"), uni.$u.deepMerge(a, n));
+      };
+    },
+    propsBadge: function () {
+      return uni.$u.props.badge;
+    }
+  },
+  mounted: function () {
+    var e = this;
+    return (async function () {
+      e.init();
+    })();
+  },
+  methods: {
+    setLineLeft: function () {
+      var e = this, t = this.list[this.innerCurrent];
+      if (t) {
+        var n = this.list.slice(0, this.innerCurrent).reduce(function (e, t) {
+          return e + t.rect.width;
+        }, 0), a = uni.$u.getPx(this.lineWidth);
+        (this.lineOffsetLeft = n + (t.rect.width - a) / 2, this.animation(this.lineOffsetLeft, this.firstTime ? 0 : parseInt(this.duration)), this.firstTime && setTimeout(function () {
+          e.firstTime = false;
+        }, 10));
+      }
+    },
+    animation: function (e) {
+      var t = arguments.length > 1 && undefined !== arguments[1] ? arguments[1] : 0, n = this.$refs["u-tabs__wrapper__nav__line"];
+      c.transition(n, {
+        styles: {
+          transform: ("translateX(").concat(e, "px)")
+        },
+        duration: t
+      });
+    },
+    clickHandler: function (e, t) {
+      (this.$emit("click", {
+        ...e,
+        index: t
+      }), e.disabled || (this.innerCurrent = t, this.resize(), this.$emit("change", {
+        ...e,
+        index: t
+      })));
+    },
+    init: function () {
+      var e = this;
+      uni.$u.sleep().then(function () {
+        e.resize();
+      });
+    },
+    setScrollLeft: function () {
+      var e = this.list[this.innerCurrent], t = this.list.slice(0, this.innerCurrent).reduce(function (e, t) {
+        return e + t.rect.width;
+      }, 0), n = uni.$u.sys().windowWidth, a = t - (this.tabsRect.width - e.rect.width) / 2 - (n - this.tabsRect.right) / 2 + this.tabsRect.left / 2;
+      (a = Math.min(a, this.scrollViewWidth - this.tabsRect.width), this.scrollLeft = Math.max(0, a));
+    },
+    resize: function () {
+      var e = this;
+      0 !== this.list.length && Promise.all([this.getTabsRect(), this.getAllItemRect()]).then(function (t) {
+        var n = mod202(t, 2), a = n[0], i = n[1], o = undefined === i ? [] : i;
+        (e.tabsRect = a, e.scrollViewWidth = 0, o.map(function (t, n) {
+          (e.scrollViewWidth += t.width, e.list[n].rect = t);
+        }), e.setLineLeft(), e.setScrollLeft());
+      });
+    },
+    getTabsRect: function () {
+      var e = this;
+      return new Promise(function (t) {
+        e.queryRect("u-tabs__wrapper__scroll-view").then(function (e) {
+          return t(e);
+        });
+      });
+    },
+    getAllItemRect: function () {
+      var e = this;
+      return new Promise(function (t) {
+        var n = e.list.map(function (t, n) {
+          return e.queryRect(("u-tabs__wrapper__nav__item-").concat(n), true);
+        });
+        Promise.all(n).then(function (e) {
+          return t(e);
+        });
+      });
+    },
+    queryRect: function (e, t) {
+      var n = this;
+      return new Promise(function (a) {
+        _.getComponentRect(t ? n.$refs[e][0] : n.$refs[e], function (e) {
+          a(e.size);
+        });
+      });
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+.u-tabs__wrapper {
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-tabs__wrapper__scroll-view-wrapper {
+  flex: 1;
+}
+
+.u-tabs__wrapper__scroll-view {
+  flex-direction: row;
+  flex: 1;
+}
+
+.u-tabs__wrapper__nav {
+  flex-direction: row;
+  position: relative;
+}
+
+.u-tabs__wrapper__nav__item {
+  padding-top: 0;
+  padding-right: 11;
+  padding-bottom: 0;
+  padding-left: 11;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-tabs__wrapper__nav__item__text {
+  font-size: 15;
+  color: #606266;
+}
+
+.u-tabs__wrapper__nav__item__text--disabled {
+  color: #c8c9cc;
+}
+
+.u-tabs__wrapper__nav__line {
+  height: 3;
+  background-color: #6081C7;
+  width: 30;
+  position: absolute;
+  bottom: 2;
+  border-radius: 100;
+  transition-property: transform;
+  transition-duration: 300;
+}
+</style>

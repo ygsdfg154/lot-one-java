@@ -1,0 +1,600 @@
+<template>
+<view style="width: 100vw; height: 100vh; position: relative; overflow: hidden; background-color: #f6f6f6;">
+  <!-- Header -->
+  <view class="nav-bar" style="position: absolute; top: 0; left: 0; right: 0; z-index: 100; height: 88rpx; background-color: #6081C7; display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 0 30rpx;">
+    <view style="position: absolute; left: 24rpx; cursor: pointer; padding: 10rpx;" @click="goBack">
+      <u-icon name="arrow-left" color="#ffffff" size="40rpx"></u-icon>
+    </view>
+    <text style="color: #ffffff; font-size: 34rpx; font-weight: bold;">
+      {{ pageTitle || l('enclosure.add.fence') || '新建围栏' }}
+    </text>
+  </view>
+
+  <map
+    ref="map"
+    style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;"
+    id="map"
+    :scale="scale"
+    :showLocation="false"
+    :enableBuilding="true"
+    :longitude="longitude"
+    :latitude="latitude"
+    :markers="markers"
+    :polyline="polyline"
+    :circles="circles"
+    :polygons="polygons"
+    @tap="clickMap"
+  ></map>
+
+  <!-- Circular Fence Radius Slider (0 == enclosureType) -->
+  <view v-if="0 == enclosureType" style="position: absolute; top: 110rpx; left: 50%; transform: translateX(-50%); width: 680rpx; max-width: 90vw; background-color: #ffffff; border-radius: 40rpx; padding: 20rpx 32rpx; z-index: 200; display: flex; flex-direction: row; align-items: center; justify-content: space-between; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.12); box-sizing: border-box;">
+    <text style="font-size: 26rpx; color: #333333;" append="tree">
+      {{ l('enclosure.scop') || '范围' }}
+    </text>
+    <u-slider
+      style="flex: 1; margin: 0 20rpx;"
+      :activeColor="primaryColor"
+      inactiveColor="#c0c4cc"
+      blockSize="20"
+      :blockColor="primaryColor"
+      step="1"
+      min="300"
+      max="100000"
+      @change="sliderChanging"
+      v-model="slider"
+    ></u-slider>
+    <text style="font-size: 26rpx; color: #6081C7; font-weight: bold;" append="tree">
+      {{ slider }} {{ l('enclosure.meter') || '米' }}
+    </text>
+  </view>
+
+  <!-- Polygon Fence Floating Action Buttons (2 == enclosureType) -->
+  <view v-if="2 == enclosureType" style="position: absolute; top: 110rpx; right: 30rpx; z-index: 200; display: flex; flex-direction: column; gap: 16rpx;">
+    <view style="background-color: #ffffff; border-radius: 36rpx; padding: 14rpx 32rpx; display: flex; align-items: center; justify-content: center; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.15); cursor: pointer;" @click="backOrRemoveLine('back')">
+      <text style="font-size: 26rpx; color: #333333; font-weight: 500;" append="tree">
+        {{ l('enclosure.revoke') || '撤销' }}
+      </text>
+    </view>
+    <view style="background-color: #ffffff; border-radius: 36rpx; padding: 14rpx 32rpx; display: flex; align-items: center; justify-content: center; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.15); cursor: pointer;" @click="backOrRemoveLine('remove')">
+      <text style="font-size: 26rpx; color: #EF4444; font-weight: bold;" append="tree">
+        {{ l('enclosure.clear') || '清除' }}
+      </text>
+    </view>
+  </view>
+
+  <!-- Region / District Fence Select (3 == enclosureType) -->
+  <view v-if="3 == enclosureType" style="position: absolute; top: 110rpx; left: 50%; transform: translateX(-50%); width: 680rpx; max-width: 90vw; background-color: #ffffff; border-radius: 40rpx; padding: 20rpx 32rpx; z-index: 200; display: flex; flex-direction: row; align-items: center; justify-content: space-between; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.12); box-sizing: border-box;" @click="showClick">
+    <text style="font-size: 28rpx; color: #333333;" append="tree">
+      {{ l('enclosure.province/city') || '省/市/区' }}
+    </text>
+    <view style="display: flex; flex-direction: row; align-items: center;">
+      <text style="font-size: 28rpx; color: #6081C7; font-weight: bold;" append="tree">
+        {{ regionText }}
+      </text>
+      <u-icon style="margin-left: 8rpx;" name="arrow-right" size="24rpx" color="#94A3B8"></u-icon>
+    </view>
+  </view>
+
+  <!-- Bottom Form Sheet Card -->
+  <view style="position: absolute; bottom: 0; left: 0; right: 0; background-color: #ffffff; border-top-left-radius: 36rpx; border-top-right-radius: 36rpx; padding: 36rpx 36rpx 50rpx 36rpx; box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <!-- Radius input (0 == enclosureType) -->
+    <view v-if="0 == enclosureType" style="display: flex; flex-direction: row; align-items: center; border-bottom: 1rpx solid #F1F5F9; padding-bottom: 20rpx; margin-bottom: 20rpx;">
+      <text style="font-size: 28rpx; color: #64748B; width: 180rpx;" append="tree">
+        {{ l('enclosure.radius') || '围栏半径' }}
+      </text>
+      <u--input
+        customStyle="background-color: #F8FAFC; border-radius: 12rpx; padding: 12rpx 20rpx; flex: 1;"
+        :placeholder="l('enclosure.please.radius') || '请输入围栏半径'"
+        border="none"
+        type="number"
+        maxlength="5"
+        @blur="sliderBlur"
+        v-model="slider"
+      ></u--input>
+    </view>
+
+    <!-- Fence Name Input -->
+    <view style="display: flex; flex-direction: row; align-items: center; border-bottom: 1rpx solid #F1F5F9; padding-bottom: 20rpx; margin-bottom: 20rpx;">
+      <text style="font-size: 28rpx; color: #64748B; width: 180rpx;" append="tree">
+        {{ l('enclosure.info.name') || '围栏名称' }}
+      </text>
+      <u--input
+        customStyle="background-color: #F8FAFC; border-radius: 12rpx; padding: 12rpx 20rpx; flex: 1;"
+        :placeholder="l('enclosure.please.name') || '请输入围栏名称(必填)'"
+        border="none"
+        v-model="model.userInfo.name"
+      ></u--input>
+    </view>
+
+    <!-- Alarm Type Radio Selection -->
+    <view style="display: flex; flex-direction: row; align-items: center; padding-bottom: 16rpx; margin-bottom: 16rpx;">
+      <text style="font-size: 28rpx; color: #64748B; width: 180rpx;" append="tree">
+        {{ l('enclosure.alarm') || '报警类型' }}
+      </text>
+      <u-radio-group placement="row" v-model="alarmTypeId" activeColor="#6081C7">
+        <u-radio
+          v-for="(item, idx) in alarmTypeList"
+          :key="idx"
+          :customStyle="{ marginRight: '16px' }"
+          :name="item.name"
+          :label="item.lable || item.label || '类型'"
+        ></u-radio>
+      </u-radio-group>
+    </view>
+
+    <!-- Save Button -->
+    <view v-if="!(show || 1 == userType)" style="margin-top: 16rpx;">
+      <u-button
+        style="height: 84rpx; background-color: #6081C7; border-color: #6081C7;"
+        type="primary"
+        shape="circle"
+        :text="butText"
+        @click="saveEnclosure"
+      ></u-button>
+    </view>
+  </view>
+
+  <u-picker
+    v-if="districtPickerShow"
+    ref="uPicker"
+    style="position: absolute"
+    :show="districtPickerShow"
+    :columns="columns"
+    :closeOnClickOverlay="true"
+    :cancelText="l('common.cancel')"
+    :confirmText="l('common.confirm')"
+    :title="l('enclosure.please.create.province/city')"
+    @change="pickerChange"
+    @confirm="pickerConirmHangler"
+    @close="districtPickerShow = false"
+    @cancel="districtPickerShow = false"
+  ></u-picker>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/corral/info
+ * 反编译自 webpack 模块 645（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 d 在内层被重新声明，保留短名以维持遮蔽语义
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import d from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod966 from '@/.unpacked/nvue/966.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../../common/utils.nvue.js';
+function a(m) {
+  return m && m.__esModule ? m : {
+    default: m
+  };
+}
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var r, i, o, m = (a(require("moment")), a(require("../../../common/config.nvue.js")));
+var h = getApp().globalData, y = {
+  data: function () {
+    return {
+      primaryColor: m.default.primaryColor,
+      cdn: m.default.cdn,
+      mapContext: null,
+      slider: 300,
+      sliderRadius: 300,
+      scale: m.default.defaultScale,
+      longitude: 116.4,
+      latitude: 39.91,
+      markers: [],
+      polyline: [],
+      polygons: [],
+      circles: [],
+      id: 0,
+      title: "",
+      points: [],
+      pointsTwo: [],
+      alarmTypeId: 0,
+      enclosureType: null,
+      circlesLocation: null,
+      enclosureInfo: null,
+      butText: h.$t("mine.setup.save"),
+      regionText: h.$t("enclosure.please.province/city"),
+      districtPickerShow: false,
+      columns: [],
+      alarmTypeList: [{
+        name: 0,
+        lable: h.$t("enclosure.enter.fence"),
+        disabled: false
+      }, {
+        name: 1,
+        lable: h.$t("enclosure.out.fence"),
+        disabled: false
+      }, {
+        name: 2,
+        lable: h.$t("enclosure.Access.fence"),
+        disabled: false
+      }],
+      adcode: null,
+      model: {
+        userInfo: {
+          name: ""
+        }
+      },
+      sliderShow: true,
+      pageTitle: ""
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["isAuthenticated", "selectedTerminal", "appConfig", "userType"]),
+    ...mod25.mapState("device", ["deviceIcons"]),
+    ...mod25.mapState("fence", ["regionList"])
+  },
+  onLoad: function (e) {
+    var t = this;
+    if (this.selectedTerminal) {
+      this.pageTitle = e.enclosureType ? (h.$t("enclosure.add.fence") || "新建围栏") : (h.$t("enclosure.fence.info") || "修改围栏");
+      uni.setNavigationBarTitle({
+        title: this.pageTitle
+      });
+      if (this.selectedTerminal.lon && this.selectedTerminal.lat) {
+        this.longitude = this.selectedTerminal.lon;
+        this.latitude = this.selectedTerminal.lat;
+      } else {
+        uni.getLocation({
+          type: "gcj02",
+          success: function (e) {
+            t.longitude = e.longitude;
+            t.latitude = e.latitude;
+          }
+        });
+      }
+      this.setTerminalIcon();
+      this.circlesLocation = {
+        longitude: this.longitude,
+        latitude: this.latitude
+      };
+      this.GetAllRegion();
+      if (e.fenceId) {
+        this.id = e.fenceId;
+        this.getEnclosureInfo(this.id);
+        this.butText = h.$t("enclosure.revise") || "保存修改";
+      }
+      if (e.enclosureType) {
+        this.enclosureType = e.enclosureType;
+        this.enclosureChange(this.enclosureType);
+      }
+    }
+  },
+  onReady: function () {
+    this.mapContext = uni.createMapContext("map", this);
+  },
+  onHide: function () {
+    (clearInterval(r), clearInterval(i), clearInterval(o));
+  },
+  methods: {
+    ...mod25.mapActions("fence", ["AddFence", "FenceDetails", "GetCodeRegion", "GetAllRegion"]),
+    goBack: function () {
+      uni.navigateBack({ delta: 1 });
+    },
+    l: function (e) {
+      return h.$t(e);
+    },
+    setTerminalIcon: function () {
+      var e, t = mod166.getTerminalIconCode(this.selectedTerminal.iconType, this.deviceIcons), n = ("").concat(this.cdn, "/ikon/device/").concat(t.code, "-1.png");
+      this.markers = [(e = {
+        id: this.selectedTerminal.terminalNo,
+        longitude: this.selectedTerminal.lon ? this.selectedTerminal.lon : this.longitude,
+        latitude: this.selectedTerminal.lat ? this.selectedTerminal.lat : this.latitude,
+        width: 40,
+        height: 40,
+        anchor: {
+          x: .5,
+          y: .5
+        }
+      }, mod5(e, "latitude", this.selectedTerminal.lat ? this.selectedTerminal.lat : this.latitude), mod5(e, "iconPath", n), mod5(e, "rotate", t.rotateState ? this.selectedTerminal.direction : 0), e)];
+    },
+    enclosureChange: function (e, t) {
+      var n = this;
+      if (((i || o) && (clearInterval(i), clearInterval(o)), this.circles = [], this.polyline = [], this.polygons = [], 0 == e && (this.circles = [{
+        longitude: this.circlesLocation ? this.circlesLocation.longitude : this.longitude,
+        latitude: this.circlesLocation ? this.circlesLocation.latitude : this.latitude,
+        radius: this.sliderRadius,
+        fillColor: "rgba(250, 80, 81, .2)",
+        color: "rgba(250, 80, 81, .2)"
+      }]), 2 == e)) {
+        t && (this.points.length > 3 && this.points.pop(), this.points.push(t), this.points.length >= 3 && this.points.push(this.points[0]));
+        var a = this.points.map(function (e, t) {
+          var a;
+          return (a = {
+            id: t,
+            longitude: e.longitude,
+            latitude: e.latitude,
+            width: 30,
+            height: 30,
+            anchor: {
+              x: .5,
+              y: .5
+            }
+          }, mod5(a, "latitude", e.latitude), mod5(a, "iconPath", ("").concat(n.cdn, "/draw/qzwl-locationMap.png")), a);
+        });
+        (a.length >= 3 && a.pop(), this.setTerminalIcon(), this.markers = this.markers.concat(a));
+        var r = {
+          points: this.points,
+          colorList: this.points.map(function (e) {
+            return "#F75964";
+          }),
+          borderWidth: 1,
+          width: 4
+        };
+        this.polyline = [r];
+      }
+      3 == e && (i = setTimeout(function (e) {
+        n.polygons = n.pointsTwo.map(function (e) {
+          return {
+            points: e,
+            strokeWidth: 3,
+            strokeColor: "rgb(79, 230, 71)",
+            fillColor: "rgba(160, 234, 234, .4)"
+          };
+        });
+      }, 0));
+    },
+    sliderChanging: function (e) {
+      (this.sliderRadius = e, this.scale = mod966.scaleRatio(this.sliderRadius));
+    },
+    getEnclosureInfo: function (t) {
+      var n = this;
+      return d(mod22.mark(function a() {
+        var r, i, o;
+        return mod22.wrap(function (a) {
+          for (; ; ) switch (a.prev = a.next) {
+            case 0:
+              return (a.next = 2, n.FenceDetails(t));
+            case 2:
+              if ((r = a.sent).succeeded) {
+                a.next = 6;
+                break;
+              }
+              return (mod166.qzwlToast(r.msg, "none"), a.abrupt("return"));
+            case 6:
+              if ((n.enclosureInfo = r.data, n.enclosureInfo && (n.alarmTypeId = n.enclosureInfo.alarmType, n.model.userInfo.name = n.enclosureInfo.name, n.enclosureType = n.enclosureInfo.type), 0 == n.enclosureType && (n.sliderRadius = n.slider = n.enclosureInfo.fenceData.radius, n.longitude = n.enclosureInfo.fenceData.points[0].lng, n.latitude = n.enclosureInfo.fenceData.points[0].lat, n.circlesLocation = {
+                longitude: n.enclosureInfo.fenceData.points[0].lng,
+                latitude: n.enclosureInfo.fenceData.points[0].lat
+              }, n.sliderChanging(n.slider)), 2 == n.enclosureType && (n.points = n.enclosureInfo.fenceData.points, n.points.push(n.points[0]), n.points = n.points.map(function (e, t) {
+                return {
+                  longitude: e.lng,
+                  latitude: e.lat
+                };
+              }), setTimeout(function () {
+                mod166.safeMap(n.mapContext).includePoints({
+                  points: n.points,
+                  padding: [80, 30, 180, 30],
+                  fail: function (t) {
+                    e("log", t, " at pagesFunc/terminal/corral/info.nvue:470");
+                  }
+                });
+              }, 200)), 3 != n.enclosureType)) {
+                a.next = 15;
+                break;
+              }
+              return (a.next = 13, n.GetCodeRegion(n.enclosureInfo.fenceData.adcodes[0]));
+            case 13:
+              // 8.2.7 返回 {adcode,name,points}（原来是高德 district 数组，要取 [0]）
+              (i = a.sent).succeeded && (n.adcode = i.data.adcode, n.regionText = i.data.name, n.pointsTwo = mod166.parseRegion(i.data), (o = n.pointsTwo.flat(1)).length && setTimeout(function () {
+                mod166.safeMap(n.mapContext).includePoints({
+                  points: o,
+                  padding: [80, 30, 180, 30],
+                  fail: function (t) {
+                    e("log", t, " at pagesFunc/terminal/corral/info.nvue:497");
+                  }
+                });
+              }, 200));
+            case 15:
+              n.enclosureChange(n.enclosureType);
+            case 16:
+            case "end":
+              return a.stop();
+          }
+        }, a);
+      }))();
+    },
+    saveEnclosure: function () {
+      var t = this;
+      return d(mod22.mark(function n() {
+        var a, i, o;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if (t.model.userInfo.name) {
+                n.next = 3;
+                break;
+              }
+              return (mod166.qzwlToast(h.$t("enclosure.please.fence.name.msg"), "none"), n.abrupt("return"));
+            case 3:
+              if (t.model.userInfo.name.trim()) {
+                n.next = 6;
+                break;
+              }
+              return (mod166.qzwlToast(h.$t("enclosure.please.fence.name.msg"), "none"), n.abrupt("return"));
+            case 6:
+              if ((a = [], 0 == t.enclosureType && (a = [{
+                lat: t.circlesLocation ? t.circlesLocation.latitude : t.latitude,
+                lng: t.circlesLocation ? t.circlesLocation.longitude : t.longitude
+              }]), 2 == t.enclosureType && (a = (a = t.points.filter(function (e, n) {
+                return n !== t.points.length - 1;
+              })).map(function (e, t) {
+                return {
+                  lng: e.longitude,
+                  lat: e.latitude
+                };
+              })), 3 == t.enclosureType && (a = []), e("log", t.adcode, "this.adcode", " at pagesFunc/terminal/corral/info.nvue:554"), i = {
+                alarmType: t.alarmTypeId,
+                fenceData: {
+                  points: a,
+                  radius: 0 == t.enclosureType ? t.sliderRadius : 0,
+                  adcodes: 3 == t.enclosureType ? [t.adcode] : []
+                },
+                id: t.id || 0,
+                isValid: true,
+                name: t.model.userInfo.name,
+                type: Number(t.enclosureType),
+                terminalId: t.selectedTerminal.id
+              }, o = t.id ? "PUT" : "POST", !(2 == t.enclosureType && i.fenceData.points.length < 3))) {
+                n.next = 16;
+                break;
+              }
+              return (mod166.qzwlToast(h.$t("enclosure.polygon.fence-msg"), "none"), n.abrupt("return"));
+            case 16:
+              if ((e("log", i.fenceData.adcodes[0], "this.adcode", " at pagesFunc/terminal/corral/info.nvue:576"), 3 != t.enclosureType || i.fenceData.adcodes[0] && i.fenceData.adcodes[0].length)) {
+                n.next = 20;
+                break;
+              }
+              return (mod166.qzwlToast(h.$t("enclosure.district.fence-msg"), "none"), n.abrupt("return"));
+            case 20:
+              return (n.next = 22, t.AddFence([i, o]));
+            case 22:
+              n.sent.succeeded && (mod166.qzwlToast(h.$t("common.save.success"), "none"), r = setTimeout(function () {
+                uni.navigateBack({
+                  delta: 1
+                });
+              }, 1e3));
+            case 24:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    clickMap: function (e) {
+      (0 == this.enclosureType && (this.circlesLocation = JSON.parse(JSON.stringify(e.detail)), this.enclosureChange(this.enclosureType)), 2 == this.enclosureType && this.enclosureChange(this.enclosureType, e.detail));
+    },
+    backOrRemoveLine: function (e) {
+      var t = this;
+      "back" == e ? (this.points = this.points.filter(function (e, n) {
+        return n !== t.points.length - 2;
+      }), 1 == this.points.length && (this.points = []), this.enclosureChange(this.enclosureType)) : (this.points = [], this.enclosureChange(this.enclosureType));
+    },
+    pickerGetDistrict: function (e) {
+      var t = this;
+      return (async function () {
+        var a, r, i, o;
+        (a = [[], ["\u4e0d\u9650"], ["\u4e0d\u9650"]], r = t.regionList.sort(mod166.sortCode("adcode")), a[0] = r.map(function (e) {
+          return e.name;
+        }), i = r[a[0].indexOf(e[0])], a[1] = a[1].concat((i.children || []).map(function (e) {
+          return e.name;
+        })), (o = (i.children || [])[a[1].indexOf(e[1]) - 1]) && (a[2] = a[2].concat((o.children || []).map(function (e) {
+          return e.name;
+        }))), t.$nextTick(function () {
+          t.columns = a;
+        }));
+      })();
+    },
+    pickerChange: function (e) {
+      var t = e.columnIndex, n = (e.index, e.value), a = (e.indexs, e.picker), r = undefined === a ? this.$refs.uPicker : a;
+      (0 == t && (n[1] = "\u4e0d\u9650", n[2] = "\u4e0d\u9650", this.pickerGetDistrict(n, r)), 1 == t && (n[2] = "\u4e0d\u9650", this.pickerGetDistrict(n, r)));
+    },
+    showClick: function () {
+      (uni.hideKeyboard(), this.pickerGetDistrict(["\u5317\u4eac\u5e02", "\u4e0d\u9650", "\u4e0d\u9650"], this.$refs.uPicker), this.districtPickerShow = true);
+    },
+    pickerConirmHangler: function (t) {
+      var n = this;
+      return (async function () {
+        var r, i, d;
+        r = n.regionList.sort(mod166.sortCode("adcode"));
+        i = mod166.getRegionInfo(r, t.value)[0];
+        n.adcode = i.adcode;
+        n.regionText = i.name;
+        (d = await n.GetCodeRegion(n.adcode), n.pointsTwo = mod166.parseRegion(d.data), n.pointsTwo.length && (o = setTimeout(function () {
+          mod166.safeMap(n.mapContext).includePoints({
+            points: n.pointsTwo.flat(1),
+            padding: [80, 30, 180, 30],
+            fail: function (t) {
+              e("log", t, " at pagesFunc/terminal/corral/info.nvue:692");
+            }
+          });
+        }, 0)), n.districtPickerShow = false, n.enclosureChange(n.enclosureType));
+      })();
+    },
+    sliderBlur: function () {
+      ((this.slider < 300 || !this.slider) && (this.slider = this.sliderRadius = 300), this.sliderChanging(this.slider), this.sliderShow = true);
+    }
+  },
+  watch: {
+    sliderRadius: {
+      handler: function () {
+        this.enclosureChange(this.enclosureType);
+      }
+    }
+  }
+};
+export default y;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.tool-slider {
+  width: 686rpx;
+  padding-top: 24rpx;
+  padding-right: 32rpx;
+  padding-bottom: 24rpx;
+  padding-left: 32rpx;
+  background-color: #ffffff;
+  border-radius: 56rpx;
+  margin-left: 35rpx;
+}
+
+.tool-polygon {
+  display: flex;
+  flex-direction: column;
+  margin-left: 600rpx;
+  margin-top: 50rpx;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 32rpx;
+  padding-top: 32rpx;
+  padding-right: 32rpx;
+  padding-bottom: 100rpx;
+  padding-left: 32rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.tool-slider {
+  width: 91.4667vw;
+  padding-top: 3.2vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 3.2vw;
+  padding-left: 4.2667vw;
+  background-color: #ffffff;
+  border-radius: 7.4667vw;
+  margin-left: 4.6667vw;
+}
+
+.tool-polygon {
+  display: flex;
+  flex-direction: column;
+  margin-left: 80vw;
+  margin-top: 6.6667vw;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 4.2667vw;
+  padding-top: 4.2667vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 13.3333vw;
+  padding-left: 4.2667vw;
+}
+/* #endif */
+</style>

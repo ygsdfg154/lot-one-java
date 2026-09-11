@@ -1,0 +1,30 @@
+<template>
+<view class="u-status-bar" :style="[$data.style]">
+  <slot></slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uStatusBar
+ * 反编译自 webpack 模块 178（nvue 编译空间）
+ */
+import mod250 from '@/.unpacked/nvue/250.js'
+
+"use strict";
+var i = {
+  name: "u-status-bar",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod250],
+  data: function () {
+    return {};
+  },
+  computed: {
+    style: function () {
+      var e = {};
+      return (e.height = uni.$u.addUnit(uni.$u.sys().statusBarHeight, "px"), e.backgroundColor = this.bgColor, uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    }
+  }
+};
+export default i;
+
+</script>

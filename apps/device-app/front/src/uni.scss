@@ -1,0 +1,6 @@
+// [反编译] 原始 uni.scss 已不可恢复 —— SCSS 变量在编译期就被求值展开了。
+// 下面是从产物 CSS 里统计出来的高频颜色，按需改成变量后再用。
+// 主题色（来自 common/config.js 的 primaryColor / titleColor）：
+$uni-color-primary: #6081C7;
+
+@import 'uview-ui/theme.scss';

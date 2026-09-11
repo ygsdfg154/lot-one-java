@@ -1,0 +1,164 @@
+<template>
+<view>
+  <u-popup
+    :show="activationState > 1"
+    :round="10"
+    :safeAreaInsetBottom="false"
+    :overlayStyle="overlayStyle"
+  >
+    <view class="main" :style="mainTop">
+      <view class="flex-row justify-center items-center p-v-lg m-t">
+        <text v-if="valueAddedConfig" class="text-bold text-lx" append="tree">
+          {{ valueAddedConfig.title }}
+        </text>
+        <text v-else class="text-bold text-lx" append="tree">
+          温馨提示
+        </text>
+      </view>
+      <view class="p-h-xl" style="margin-bottom: 100rpx">
+        <text class="text-bold text-md" append="tree">
+          您的设备待激活。
+        </text>
+        <text class="text-bold text-md" append="tree">
+          激活后您将获得最佳服务:
+        </text>
+        <text v-if="valueAddedConfig" class="m-t-xl text text-gray" append="tree">
+          {{ valueAddedConfig.description }}
+        </text>
+        <text v-else class="m-t-xl text text-gray" append="tree">
+          1.配送的SIM卡激活、0月租、免费使用。
+2.获得1年至终身的定位流量。
+3.套餐时限内免费实时定位。
+4.套餐时限内云端历史轨迹储存。
+5.免费使用异响防盗服务。
+6.异响报警循环储存100天。
+7.赠送增值服务短信预警10条。
+8.赠送电话预警5次。
+9.7x10h远程技术支持服务。
+10.体验更多APP创新服务。
+        </text>
+      </view>
+      <view v-if="3 == activationState" class="flex-row">
+        <view class="flex-row justify-center p-v-lg b-right" style="width: 300rpx" @click="tryOut">
+          <text class="text text-primary" append="tree">
+            试用一下
+          </text>
+        </view>
+        <view class="flex-row justify-center p-v-lg" style="width: 300rpx" @click="gotoMp">
+          <text class="text text-primary" append="tree">
+            前往激活
+          </text>
+        </view>
+      </view>
+      <view v-if="2 == activationState" class="flex-row justify-between p-h-xll m-b-xl">
+        <view style="width: 240rpx; height: 65rpx">
+          <u-button
+            style="height: 65rpx"
+            shape="circle"
+            :plain="true"
+            icon="close-circle"
+            color="#444"
+            text="退出"
+            @click="closeActivatePopup"
+          ></u-button>
+        </view>
+        <view style="width: 240rpx; height: 65rpx">
+          <u-button
+            style="height: 65rpx"
+            type="primary"
+            icon="checkmark-circle"
+            text="前往激活"
+            @click="gotoMp"
+          ></u-button>
+        </view>
+      </view>
+    </view>
+  </u-popup>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: activationPopup
+ * 反编译自 webpack 模块 565（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import mod15 from '../../common/config.nvue.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var _ = {
+  data: function () {
+    return {
+      cdn: mod15.cdn
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["userType", "activationState", "valueAddedConfig", "sysInfo", "selectedTerminal", "access_token"]),
+    topHeight: function () {
+      return this.sysInfo.statusBarHeight + "px";
+    },
+    overlayStyle: function () {
+      return 3 != this.userType ? {
+        position: "fixed",
+        top: 0,
+        left: 0
+      } : {};
+    },
+    mainTop: function () {
+      return {
+        top: "300rpx"
+      };
+    }
+  },
+  methods: {
+    ...mod25.mapActions("account", ["SignOut"]),
+    ...mod25.mapMutations("device", ["setActivationState", "setInfoBoxShow"]),
+    tryOut: function () {
+      (this.setActivationState(1), this.setInfoBoxShow(true), uni.showTabBar());
+    },
+    gotoMp: function () {
+      mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: "/pagesPay/appreciation/index",
+        access_token: this.access_token
+      });
+    },
+    closeActivatePopup: function () {
+      var e = this;
+      return (async function () {
+        await e.SignOut();
+        uni.reLaunch({
+          url: "/pagesCore/login/index"
+        });
+      })();
+    }
+  }
+};
+export default _;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.main {
+  position: fixed;
+  width: 600rpx;
+  left: 75rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.main {
+  position: fixed;
+  width: 80vw;
+  left: 10vw;
+  background-color: #ffffff;
+  border-radius: 2.1333vw;
+}
+/* #endif */
+</style>

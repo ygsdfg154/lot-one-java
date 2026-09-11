@@ -1,0 +1,56 @@
+<template>
+<view>
+  <u-notice-bar
+    v-if="$data.noticeData"
+    style="margin-top: 15rpx; border-radius: 20rpx"
+    :text="$data.noticeData.title"
+    mode="closable"
+    speed="70"
+    bgColor="rgba(236, 246, 255, 0.7)"
+    color="#6081C7"
+    @close="$data.closeNotice"
+    @click="$data.clickNotice"
+  ></u-notice-bar>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: noticeNavBar
+ * 反编译自 webpack 模块 563（nvue 编译空间）
+ * 内层仍在调用 r()，已就地重建 interopRequireDefault
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+
+function r(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var i = (r(require("../../common/config.nvue.js")), require("vuex"));
+var d = {
+  data: function () {
+    return {};
+  },
+  computed: {
+    ...i.mapGetters(["noticeData"])
+  },
+  watch: {
+    noticeData: {
+      handler: function (e, t) {},
+      immediate: true
+    }
+  },
+  methods: {
+    ...i.mapMutations("app", ["setNoticeData"]),
+    closeNotice: function () {
+      this.setNoticeData(null);
+    },
+    clickNotice: function () {
+      this.noticeData && uni.navigateTo({
+        url: "/pagesMore/notice/index"
+      });
+    }
+  }
+};
+export default d;
+
+</script>

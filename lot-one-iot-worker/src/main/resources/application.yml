@@ -1,0 +1,77 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: lot-one-iot-worker
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lot?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: Aa123456
+    druid:
+      initial-size: 5
+      max-active: 20
+      min-idle: 5
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/lot
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 3000ms
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: iot-worker-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 500
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+tdengine:
+  url: jdbc:TAOS-RS://localhost:6041/lot
+  username: root
+  password: taosdata
+  driver-class-name: com.taosdata.jdbc.rs.RestfulDriver
+  initial-size: 2
+  max-active: 10
+  min-idle: 2
+
+iot:
+  worker:
+    alarm:
+      enabled: true
+      # 报警去重时间（分钟），同一设备同一规则N分钟内不重复报警
+      dedup-minutes: 5
+    device:
+      # 离线超时时间（秒），超过此时间无数据则标记离线
+      offline-timeout-seconds: 300
+    batch:
+      # 批量写入大小
+      tdengine-batch-size: 100
+      mongo-batch-size: 100
+
+logging:
+  level:
+    com.lotone: debug
+    org.springframework.kafka: info

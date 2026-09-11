@@ -1,0 +1,289 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="flex-1 justify-between h100 b-top bg-white">
+    <view class="p-h-xll">
+      <view v-for="(t, a) in packagesList" :key="a" style="margin-top: 48rpx">
+        <view v-if="t.items.length" class="flex-row">
+          <text class="text-bold text" append="tree">
+            {{ t.title }}
+          </text>
+          <text class="m-l-sm text" append="tree">
+            {{ t.desc }}
+          </text>
+        </view>
+        <view class="topup-list">
+          <view
+            v-for="(t, r) in t.items"
+            :key="r"
+            class="topup-list-item flex-row justify-between"
+            :class="t.isShow ? 'topup-list-click' : ''"
+            @click="selectPackage(a, r)"
+          >
+            <text class="text" :class="t.isShow ? 'topup-text-click' : ''" append="tree">
+              {{ t.pkgName }}
+            </text>
+            <view style="display: flex; flex-direction: row; align-items: center">
+              <text
+                v-if="t.price != t.marketPrice"
+                class="text-sm text-gray m-r-mini"
+                :class="t.isShow ? 'topup-text-click' : ''"
+                style="text-decoration: line-through"
+                append="tree"
+              >
+                ¥{{ t.marketPrice / 100 }}
+              </text>
+              <text class="text text-bold" :class="t.isShow ? 'topup-text-click' : ''" append="tree">
+                ¥{{ t.price / 100 }}
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <PayMode :payType="payType" @changePayType="changePayType"></PayMode>
+      <view style="margin: 60rpx 0 16rpx">
+        <u-button type="primary" :text="l('device.pay')" @click="confirmPay"></u-button>
+      </view>
+      <view class="telText text-md">
+        <text class="text text-bold text" :style="{ color: '#f56c6b' }" append="tree">
+          {{ l('pay.no.clue') }}：
+        </text>
+        <view class="flex-row m-t-mini">
+          <text class="m-r-sm text text-desc" append="tree">
+            1.
+          </text>
+          <view style="width: 620rpx">
+            <text class="text text-desc" append="tree">
+              {{ l('pay.content') }}
+            </text>
+          </view>
+        </view>
+        <view class="flex-row m-t-mini">
+          <text class="m-r-sm text text-desc" append="tree">
+            2.
+          </text>
+          <view style="width: 620rpx">
+            <text class="text text-desc" append="tree">
+              {{ l('pay.no.clue-content') }}
+            </text>
+          </view>
+        </view>
+        <view class="flex-row m-t-mini">
+          <text class="m-r-sm text text-desc" append="tree">
+            3.
+          </text>
+          <view style="width: 620rpx">
+            <text class="text text-desc" append="tree">
+              流量卡充值可能会延迟到账，若长时间未到账，请联系客服处理
+            </text>
+          </view>
+        </view>
+        <CustomerService></CustomerService>
+      </view>
+    </view>
+    <GetBackApp style="position: fixed; left: 32rpx; bottom: 50rpx"></GetBackApp>
+    <Pay ref="Pay" @paySucces="paySucces"></Pay>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesPay/card/index
+ * 反编译自 webpack 模块 628（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod830 from '../../components/Pay/Pay.nvue';
+import mod831 from '../../components/PayMode/PayMode.nvue';
+import mod832 from '../../components/GetBackApp/GetBackApp.nvue';
+function a(m) {
+  return m && m.__esModule ? m : {
+    default: m
+  };
+}
+"use strict";
+var u = (a(require("../../common/config.nvue.js")), a(require("../../components/CustomerService/CustomerService.nvue")));
+var p = getApp().globalData, h = {
+  components: {
+    PayMode: mod831,
+    CustomerService: u.default,
+    Pay: mod830,
+    GetBackApp: mod832
+  },
+  data: function () {
+    return {
+      packagesList: [{
+        title: "\u6d41\u91cf\u53e0\u52a0\u5305",
+        desc: "\u5f53\u6708\u6709\u6548",
+        items: []
+      }, {
+        title: "\u5e74\u5361\u5957\u9910",
+        desc: "\u6709\u9650\u671f\u4e00\u5e74",
+        items: []
+      }, {
+        title: p.$t("pay.pay.SMS"),
+        desc: p.$t("pay.effective.upon.arrival"),
+        items: []
+      }],
+      selectSimPackage: null,
+      iccid: "",
+      paySuccess: false,
+      openid: null,
+      payType: "wxpay"
+    };
+  },
+  computed: {
+    ...mod25.mapState("wechat", ["wechatUserInfo"]),
+    ...mod25.mapGetters(["selectedTerminal"])
+  },
+  onLoad: function (e) {
+    var t = this;
+    return (async function () {
+      (t.iccid = e.iccid, t.iccid && t.getSimCardPackage());
+    })();
+  },
+  onShow: function () {
+    this.paySuccess && uni.navigateBack();
+  },
+  methods: {
+    ...mod25.mapActions("packageInfo", ["GetSimCardPackage"]),
+    ...mod25.mapActions("wechat", ["GetWechatUser", "GetWxSign"]),
+    l: function (e) {
+      return p.$t(e);
+    },
+    getSimCardPackage: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        var n, a;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              return (t.next = 2, e.GetSimCardPackage({
+                iccid: e.iccid
+              }));
+            case 2:
+              if ((n = t.sent).succeeded && n.data.length) {
+                t.next = 9;
+                break;
+              }
+              return (mod166.qzwlToast(p.$t("common.no-package"), "none"), t.next = 7, p.$sleep(1500));
+            case 7:
+              return (uni.navigateBack(), t.abrupt("return"));
+            case 9:
+              (n = n.data.map(function (e) {
+                return (e.isShow = false, e);
+              }), e.packagesList[0].items = n.filter(function (e) {
+                return 2 === e.pkgCategory;
+              }), e.packagesList[0].items.length && e.packagesList[0].items.sort(function (e, t) {
+                return e.pkgOrder - t.pkgOrder;
+              }), e.packagesList[1].items = n.filter(function (e) {
+                return 1 === e.pkgCategory;
+              }), e.packagesList[2].items = n.filter(function (e) {
+                return 3 === e.pkgCategory;
+              }), a = 0, e.packagesList[0].items.length || (a = 1), e.packagesList[0].items.length || e.packagesList[1].items.length || (a = 2), e.code || e.selectPackage(a, 0));
+            case 18:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    selectPackage: function (e, t) {
+      (this.packagesList = this.packagesList.map(function (e) {
+        return (e.items.forEach(function (e) {
+          e.isShow = false;
+        }), e);
+      }), this.packagesList[e].items[t].isShow = true, this.selectSimPackage = {
+        ...this.packagesList[e].items[t],
+        index: e,
+        sindex: t
+      });
+    },
+    changePayType: function (e) {
+      this.payType = e;
+    },
+    confirmPay: function () {
+      var e = this;
+      return (async function () {
+        e.$refs.Pay.createOrderPay({
+          productId: e.selectSimPackage.id,
+          provider: e.payType,
+          iccid: e.iccid,
+          terminalId: e.selectedTerminal.id
+        });
+      })();
+    },
+    paySucces: function (e) {
+      this.paySuccess = true;
+    }
+  }
+};
+export default h;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.topup-list-item {
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #f6f6f6;
+  background-color: #f6f6f6;
+  padding-top: 22rpx;
+  padding-right: 22rpx;
+  padding-bottom: 22rpx;
+  padding-left: 22rpx;
+  margin-top: 24rpx;
+  border-radius: 16rpx;
+}
+
+.topup-list-click {
+  background-color: #f3f9ff;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #6081c7;
+  color: #6081c7;
+}
+
+.topup-text-click {
+  color: #6081c7;
+}
+/* #endif */
+/* #ifdef H5 */
+.topup-list-item {
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #f6f6f6;
+  background-color: #f6f6f6;
+  padding-top: 2.9333vw;
+  padding-right: 2.9333vw;
+  padding-bottom: 2.9333vw;
+  padding-left: 2.9333vw;
+  margin-top: 3.2vw;
+  border-radius: 2.1333vw;
+}
+
+.topup-list-click {
+  background-color: #f3f9ff;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #6081c7;
+  color: #6081c7;
+}
+
+.topup-text-click {
+  color: #6081c7;
+}
+/* #endif */
+</style>

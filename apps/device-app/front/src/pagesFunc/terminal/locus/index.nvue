@@ -1,0 +1,692 @@
+<template>
+<view style="width: 100vw; height: 100vh; position: relative; overflow: hidden; background-color: #f6f6f6;">
+  <map
+    ref="map"
+    id="map"
+    style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;"
+    :scale="scale"
+    :enableBuilding="true"
+    :longitude="longitude"
+    :latitude="latitude"
+    :markers="markers"
+    :polyline="polyline"
+    @markertap="markertap"
+    @tap="mapTap"
+  ></map>
+
+  <view class="tool-bar flex-row items-center justify-between br-xl" style="position: absolute; top: 20rpx; left: 50%; transform: translateX(-50%); width: 680rpx; max-width: 90vw; height: 80rpx; background-color: #ffffff; border-radius: 40rpx; padding: 0 32rpx; z-index: 10; display: flex; flex-direction: row; align-items: center; justify-content: space-between; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1); box-sizing: border-box; margin: 0;">
+    <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="prevDate">
+      <u-icon name="play-left-fill" size="18rpx" color="#C9CDD4"></u-icon>
+      <text class="text_4" style="margin-left: 8rpx; font-size: 26rpx; color: #333;" append="tree">
+        {{ l('common.before.day') }}
+      </text>
+    </view>
+    <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="openCalendar">
+      <u-icon :name="cdn + '/ikon/qzwl-calendar@2x.png'" size="40rpx"></u-icon>
+      <text class="text_2 p-l-mini" style="font-size: 28rpx; color: #6081C7; font-weight: bold; margin-left: 8rpx;" append="tree">
+        {{ currentDate }}
+      </text>
+    </view>
+    <view class="flex-row items-center" style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="nextDate">
+      <text class="text_4" style="margin-right: 8rpx; font-size: 26rpx; color: #333;" append="tree">
+        {{ l('common.last.day') }}
+      </text>
+      <u-icon name="play-right-fill" size="18rpx" color="#C9CDD4"></u-icon>
+    </view>
+  </view>
+
+  <locusPanel
+    ref="locusPanel"
+    :currentPoint="currentPoint"
+    :currentAddress="currentAddress"
+    :basePoint="basePoint"
+    :totalMileage="totalMileage"
+    :isPlaying="isPlaying"
+    :speed="speed"
+    :progress="progress"
+    @play="play"
+    @pause="pause"
+    @progressChanging="progressChanging"
+    @progressChanged="progressChanged"
+    @changeSpeed="changeSpeed"
+    @drawBaseMarker="drawBaseMarker"
+  ></locusPanel>
+
+  <selectTime
+    ref="selectTime"
+    :currentDate="currentDate"
+    :closeDate="closeDate"
+    @confirmCalendar="confirmCalendar"
+  ></selectTime>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/locus/index
+ * 反编译自 webpack 模块 683（nvue 编译空间）
+ * async/await 还原: 3 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 r 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import r from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import s from '@/.unpacked/nvue/5.js';
+import * as o from 'vuex';
+import { toNum } from '../../../adapters/num.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+import mod15 from '../../../common/config.nvue.js';
+import mod980 from '../../../components/selectTime/selectTime.nvue';
+import mod981 from '../../../components/locusPanel/locusPanel.nvue';
+function a(m) {
+  return m && m.__esModule ? m : {
+    default: m
+  };
+}
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var u = a(require("moment"));
+var p = getApp().globalData, h = new Date(), y = h.getFullYear(), M = h.getMonth() + 1;
+M = M < 10 ? ("0").concat(M) : M;
+var L, g = h.getDate();
+g = g < 10 ? ("0").concat(g) : g;
+var v = {
+  components: {
+    selectTime: mod980,
+    locusPanel: mod981
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      mapContext: null,
+      scale: 16,
+      longitude: 116.39742,
+      latitude: 39.909,
+      markers: [],
+      polyline: [],
+      title: "",
+      date: [u.default(h).format("YYYY-MM-DD")],
+      points: [],
+      currentIndex: 0,
+      currentPoint: null,
+      currentAddress: "",
+      basePoint: [],
+      startPoint: null,
+      endPoint: null,
+      closeDate: null,
+      pointMileageItems: null,
+      totalMileage: 0,
+      isPlaying: false,
+      speed: 1,
+      progress: 0,
+      iconInfo: {
+        code: "def-a",
+        rotateState: false
+      }
+    };
+  },
+  computed: {
+    ...o.mapGetters(["deviceIcons", "selectedTerminal"]),
+    maxDate: function () {
+      return u.default(h).format("YYYY-MM-DD");
+    },
+    minDate: function () {
+      return u.default(h).subtract(180, "days").format("YYYY-MM-DD");
+    },
+    currentDate: function () {
+      return this.date && this.date.length ? this.date[0] : u.default(h).format("YYYY-MM-DD");
+    }
+  },
+  onLoad: function (options) {
+    if (options && options.date) {
+      this.date = [options.date];
+    }
+    if (this.selectedTerminal) {
+      this.iconInfo = mod166.getTerminalIconCode(this.selectedTerminal.iconType, this.deviceIcons);
+      if (this.selectedTerminal.lon && this.selectedTerminal.lat) {
+        this.longitude = toNum(this.selectedTerminal.lon);
+        this.latitude = toNum(this.selectedTerminal.lat);
+      }
+    }
+  },
+  onReady: function () {
+    if (!this.mapContext) {
+      this.mapContext = uni.createMapContext("map", this);
+    }
+    this.fetchData();
+  },
+  mounted: function () {
+    // H5 环境下 onReady 可能不触发，mounted 作为兜底
+    var self = this;
+    setTimeout(function () {
+      if (!self.mapContext) {
+        self.mapContext = uni.createMapContext("map", self);
+      }
+      self.fetchData();
+    }, 500);
+  },
+  onUnload: function () {
+    L && clearInterval(L);
+  },
+  methods: {
+    ...o.mapActions("device", ["GetDeviceTrack", "GetGeocode"]),
+    l: function (e) {
+      return p.$t(e);
+    },
+    fetchData: function (date) {
+      var t = this;
+      console.log('[locus] fetchData called, date=', date, 'selectedTerminal=', t.selectedTerminal && t.selectedTerminal.id);
+      return (async function () {
+        var a, i;
+        if (!t.selectedTerminal) {
+          console.log('[locus] selectedTerminal is null, dispatching GetTerminalInfos...');
+          await t.$store.dispatch('terminal/GetTerminalInfos');
+        }
+        if (!t.selectedTerminal || !t.selectedTerminal.id) {
+          console.warn('[locus] still no selectedTerminal after fetch!');
+          mod166.qzwlToast("未获取到选中的设备信息", "none");
+          return;
+        }
+        if (t.selectedTerminal.lon && t.selectedTerminal.lat) {
+          t.longitude = toNum(t.selectedTerminal.lon);
+          t.latitude = toNum(t.selectedTerminal.lat);
+        }
+        var targetDate = date || t.currentDate;
+        console.log('[locus] calling GetDeviceTrack, deviceId=', t.selectedTerminal.id, 'date=', targetDate);
+        a = await t.GetDeviceTrack({
+          terminalId: t.selectedTerminal.id,
+          date: targetDate
+        });
+        console.log('[locus] GetDeviceTrack result:', a && a.succeeded, a && a.data && a.data.traceItems && a.data.traceItems.length);
+        t.closeDate = targetDate;
+        if (a && a.succeeded && a.data && a.data.traceItems && a.data.traceItems.length) {
+          i = a.data.traceItems;
+          t.pointMileageItems = a.data.pointMileageItems;
+          t.clearTrack();
+          t.drawTrack(i);
+          t.drawDetentionMileage();
+          t.startPoint = i[0];
+          t.endPoint = i[i.length - 1];
+        } else {
+          t.clearTrack();
+          mod166.qzwlToast((a && a.msg) || p.$t("locus.no.data") || "该日期暂无历史轨迹数据", "none");
+        }
+      })();
+    },
+    getCurrentAddress: function () {
+      var e = this;
+      return i(r.mark(function t() {
+        var n;
+        return r.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.currentPoint) {
+                t.next = 3;
+                break;
+              }
+              return (e.currentAddress = "", t.abrupt("return"));
+            case 3:
+              return (t.next = 5, e.GetGeocode({
+                longitude: e.currentPoint.longitudeWGS84,
+                latitude: e.currentPoint.latitudeWGS84
+              }));
+            case 5:
+              (n = t.sent, e.currentAddress = n.succeeded ? n.address : "");
+            case 7:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    clearTrack: function () {
+      (this.polyline = [], this.markers = [], this.points = [], this.currentPoint = null, this.basePoint = [], this.startPoint = null, this.endPoint = null, this.$refs.locusPanel && (this.$refs.locusPanel.baseValue = false));
+      if (this.selectedTerminal && this.selectedTerminal.lon && this.selectedTerminal.lat) {
+        var termLng = toNum(this.selectedTerminal.lon);
+        var termLat = toNum(this.selectedTerminal.lat);
+        if (!isNaN(termLng) && !isNaN(termLat) && (termLng !== 0 || termLat !== 0)) {
+          this.longitude = termLng;
+          this.latitude = termLat;
+          this.markers = [{
+            id: 2,
+            longitude: termLng,
+            latitude: termLat,
+            width: 45,
+            height: 45,
+            anchor: { x: .5, y: .5 },
+            rotate: (this.iconInfo && this.iconInfo.rotateState) ? toNum(this.selectedTerminal.direction || 0) : 0,
+            iconPath: ("").concat(this.cdn, "/ikon/device/").concat(this.iconInfo ? this.iconInfo.code : "def-a", "-1.png")
+          }];
+          var self = this;
+          setTimeout(function () {
+            mod166.safeMap(self.mapContext).moveToLocation({
+              longitude: termLng,
+              latitude: termLat
+            });
+          }, 300);
+        }
+      }
+    },
+    drawMarkers: function () {
+      var e = [];
+      if (this.points && this.points.length) {
+        e.push({
+          id: 0,
+          longitude: toNum(this.points[0].longitude),
+          latitude: toNum(this.points[0].latitude),
+          width: 30,
+          height: 30,
+          iconPath: ("").concat(this.cdn, "/ikon/qzwl-locus-start@2x.png")
+        });
+        e.push({
+          id: 1,
+          longitude: toNum(this.points[this.points.length - 1].longitude),
+          latitude: toNum(this.points[this.points.length - 1].latitude),
+          width: 30,
+          height: 30,
+          iconPath: ("").concat(this.cdn, "/ikon/qzwl-locus-end@2x.png")
+        });
+        if (this.currentPoint) {
+          e.push({
+            id: 2,
+            longitude: toNum(this.currentPoint.longitude),
+            latitude: toNum(this.currentPoint.latitude),
+            width: 45,
+            height: 45,
+            anchor: {
+              x: .5,
+              y: .5
+            },
+            rotate: this.iconInfo.rotateState ? toNum(this.currentPoint.direction) : 0,
+            iconPath: ("").concat(this.cdn, "/ikon/device/").concat(this.iconInfo.code, "-1.png")
+          });
+        }
+        this.markers = e;
+      }
+    },
+    drawLine: function () {
+      if (!this.points || !this.points.length) {
+        this.polyline = [];
+        return;
+      }
+      var linePoints = [];
+      var colorList = [];
+      for (var i = 0; i < this.points.length; i++) {
+        var p = this.points[i];
+        var lat = toNum(p.latitude);
+        var lng = toNum(p.longitude);
+        if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
+          linePoints.push({
+            latitude: lat,
+            longitude: lng
+          });
+          colorList.push(p.color || mod15.primaryColor || '#6081C7');
+        }
+      }
+
+      if (linePoints.length < 2) {
+        this.polyline = [];
+        return;
+      }
+
+      this.polyline = [{
+        points: linePoints,
+        color: mod15.primaryColor || '#6081C7',
+        colorList: colorList,
+        width: 8,
+        borderWidth: 1,
+        borderColor: '#FFFFFF',
+        arrowLine: true,
+        arrowIconPath: this.cdn + '/draw/qzwl-trackPath-img.png'
+      }];
+    },
+    drawTrack: function (e) {
+      for (var t = this, n = [], r = 0; r < e.length; r++) for (var i = 0; i < e[r].items.length; i++) {
+        var pt = e[r].items[i];
+        n.push({
+          longitude: toNum(pt.lon),
+          latitude: toNum(pt.lat),
+          longitudeWGS84: toNum(pt.lon),
+          latitudeWGS84: toNum(pt.lat),
+          mode: pt.posTypeName,
+          direction: toNum(pt.direction),
+          dir: mod166.deviceDirection(pt.direction),
+          color: "green" == e[r].color ? "#03C160" : "#6081C7",
+          locateTime: pt.deviceTime,
+          speed: toNum(pt.speed)
+        });
+      }
+      this.basePoint = n.filter(function (e) {
+        return "\u57fa\u7ad9\u5b9a\u4f4d" === e.mode;
+      });
+      this.basePoint = this.basePoint.map(function (e, t) {
+        return {
+          ...e,
+          id: -t - 1
+        };
+      });
+      var validPoints = n.filter(function (e) {
+        return "\u57fa\u7ad9\u5b9a\u4f4d" !== e.mode;
+      });
+      if (validPoints.length === 0 && n.length > 0) {
+        validPoints = n;
+      }
+      this.points = validPoints;
+      this.currentPoint = validPoints[0] ? validPoints[0] : null;
+      this.getCurrentAddress();
+      this.drawLine();
+      this.drawMarkers();
+      if (validPoints.length) {
+        setTimeout(function () {
+          mod166.safeMap(t.mapContext).includePoints({
+            points: validPoints,
+            padding: [80, 30, 180, 30]
+          });
+        }, 500);
+      } else if (this.basePoint.length) {
+        this.latitude = this.basePoint[0].latitude;
+        this.longitude = this.basePoint[0].longitude;
+      }
+    },
+    openCalendar: function () {
+      this.$refs.selectTime.showCalendar = true;
+    },
+    prevDate: function () {
+      (this.stop(), this.$refs.selectTime.currentStartDate = "", this.$refs.selectTime.currentEndDate = "");
+      var e = u.default(this.currentDate).subtract(1, "days").format("YYYY-MM-DD");
+      u.default(e).isBefore(u.default(this.minDate)) ? mod166.qzwlToast(p.$t("common.unable-minimum-date"), "none") : (this.date = [e], this.fetchData());
+    },
+    nextDate: function () {
+      (this.stop(), this.$refs.selectTime.currentStartDate = "", this.$refs.selectTime.currentEndDate = "");
+      var e = u.default(this.currentDate).add(1, "days").format("YYYY-MM-DD");
+      u.default(e).isAfter(u.default(this.maxDate)) ? mod166.qzwlToast(p.$t("common.unable-greater.than-today"), "none") : (this.date = [e], this.fetchData());
+    },
+    confirmCalendar: function (e) {
+      (this.stop(), this.date = [e[0].slice(0, 10)], this.fetchData({
+        strat: e[0],
+        end: e[1]
+      }));
+    },
+    moveCar: function (e, t, n) {
+      (mod166.safeMap(this.mapContext).moveToLocation({
+        longitude: t.longitude,
+        latitude: t.latitude
+      }), mod166.safeMap(this.mapContext).moveAlong({
+        markerId: 2,
+        path: [{
+          longitude: e.longitude,
+          latitude: e.latitude
+        }, {
+          longitude: t.longitude,
+          latitude: t.latitude
+        }],
+        autoRotate: this.iconInfo.rotateState,
+        duration: n
+      }));
+    },
+    play: function () {
+      var e = this;
+      if (!this.points.length) return mod166.qzwlToast(p.$t("locus.no.play"), "error");
+      (this.scale = 17, this.isPlaying = true, 100 != this.progress && this.currentIndex != this.points.length || (this.currentIndex = 0, this.currentPoint = this.points[this.currentIndex], this.progress = 1, this.getCurrentAddress()), L = setInterval(function () {
+        if ((e.currentIndex += 1, e.currentIndex == e.points.length)) (e.isPlaying = false, clearInterval(L), mod166.qzwlToast(p.$t("locus.played.out"), "none")); else {
+          var t = e.currentPoint;
+          (e.currentPoint = e.points[e.currentIndex], e.progress = 100 * (e.currentIndex + 1) / e.points.length, e.moveCar(t, e.currentPoint, e.speed - 100), e.getCurrentAddress());
+        }
+      }, this.speed));
+    },
+    pause: function () {
+      (this.isPlaying = false, clearInterval(L));
+    },
+    stop: function () {
+      (this.isPlaying = false, clearInterval(L), this.currentIndex = 0, this.progress = 1);
+    },
+    progressChanging: function (e) {
+      if (!this.points.length) return mod166.qzwlToast(p.$t("locus.no.play"), "error");
+      this.isPlaying && this.pause();
+      var t = this.currentPoint;
+      (this.currentIndex = e >= 20 ? Math.floor(e / 100 * this.points.length) - 1 : Math.ceil(e / 100 * this.points.length) - 1, this.currentIndex = this.currentIndex <= 0 ? 0 : this.currentIndex, this.currentPoint = this.points[this.currentIndex], this.progress = e, this.moveCar(t, this.currentPoint, 1));
+    },
+    progressChanged: function (e) {
+      if (!this.points.length) return mod166.qzwlToast(p.$t("locus.no.play"), "error");
+      this.getCurrentAddress();
+    },
+    changeSpeed: function (e) {
+      (this.speed = e, this.isPlaying && (this.pause(), this.play()));
+    },
+    drawDetentionMileage: function () {
+      var e = this;
+      this.totalMileage = Number(this.pointMileageItems.totalMileage || 0).toFixed(2);
+      var t;
+      (t = this.pointMileageItems.detentionAreas.map(function (t, n) {
+        var a = 0;
+        t.id.toString().length > 9 && (a = (a = String(t.id)).substring(0, 9), a = Number(a));
+        // 停留点坐标同样已是 GCJ-02，不换算
+        return {
+          id: a || t.id,
+          longitude: t.lon,
+          latitude: t.lat,
+          width: 30,
+          height: 30,
+          anchor: {
+            x: .5,
+            y: .5
+          },
+          iconPath: ("").concat(e.cdn, "/ikon/qzwl-locus-stay.png")
+        };
+      }), this.markers = this.markers.concat(t), this.pointMileageItems.detentionAreas = this.pointMileageItems.detentionAreas.map(function (e, t) {
+        var n = 0;
+        return e.id.toString().length > 9 ? (n = (n = String(e.id)).substring(0, 9), n = Number(n), {
+          ...e,
+          id: n
+        }) : e;
+      }));
+    },
+    drawBaseMarker: function (e) {
+      var t = this;
+      if (e) {
+        var n;
+        (n = this.basePoint.map(function (e, n) {
+          return {
+            id: e.id,
+            longitude: e.longitude,
+            latitude: e.latitude,
+            width: 25,
+            height: 28,
+            iconPath: ("").concat(t.cdn, "/draw/qzwl-locationMap.png")
+          };
+        }), this.markers = this.markers.concat(n));
+      } else this.markers = this.markers.filter(function (e) {
+        return e.id > -1;
+      });
+    },
+    markertap: function (e) {
+      var t = this;
+      return (async function () {
+        (e.detail.markerId >= 2 && t.openDetentionAreasMarker(e.detail.markerId), e.detail.markerId <= -1 && t.openBaseMarker(e.detail.markerId));
+      })();
+    },
+    mapTap: function (e) {
+      var t = this;
+      return i(r.mark(function e() {
+        var n, a;
+        return r.wrap(function (e) {
+          for (; ; ) switch (e.prev = e.next) {
+            case 0:
+              if (!(t.markers.length > 3)) {
+                e.next = 6;
+                break;
+              }
+              return (n = t.markers.filter(function (e) {
+                return e.id < 3;
+              }), t.markerLableHandle(n), e.next = 5, p.$sleep(0));
+            case 5:
+              t.drawDetentionMileage();
+            case 6:
+              if (!t.$refs.locusPanel.baseValue) {
+                e.next = 12;
+                break;
+              }
+              return (a = t.markers.filter(function (e) {
+                return e.id > -1;
+              }), t.markerLableHandle(a), e.next = 11, p.$sleep(0));
+            case 11:
+              t.drawBaseMarker(true);
+            case 12:
+            case "end":
+              return e.stop();
+          }
+        }, e);
+      }))();
+    },
+    openDetentionAreasMarker: function (t) {
+      var n = this;
+      return (async function () {
+        var i, s, o;
+        (i = n.pointMileageItems.detentionAreas.find(function (e) {
+          return e.id == t;
+        })) && (s = ("").concat(p.$t("common.stop")).concat(mod166.getNetworkTime(i.beginTime, i.endTime, true)), e("log", o = {
+          content: s,
+          display: "ALWAYS",
+          color: "#333333",
+          bgColor: "#fff",
+          textAlign: "center",
+          padding: 8,
+          borderRadius: 10,
+          fontSize: 13
+        }, "callout", " at pagesFunc/terminal/locus/index.nvue:679"), n.markerLableHandle(n.markers, t, o));
+      })();
+    },
+    openBaseMarker: function (e) {
+      var t = {
+        content: this.basePoint.find(function (t) {
+          return t.id === e;
+        }).locateTime,
+        display: "ALWAYS",
+        color: "#6EA2E3",
+        bgColor: "#fff",
+        textAlign: "center",
+        padding: 8,
+        borderRadius: 10,
+        fontSize: 13
+      };
+      this.markerLableHandle(this.markers, e, t);
+    },
+    markerLableHandle: function (t, n, a) {
+      var r = this;
+      (e("log", a, "callout", " at pagesFunc/terminal/locus/index.nvue:711"), this.markers = t.map(function (e) {
+        return (delete e.callout, n == e.id && n && (e = {
+          ...e,
+          callout: a
+        }), r.currentPoint && "ios" === r.sysInfo.platform && 2 === e.id ? {
+          ...e,
+          longitude: r.currentPoint.longitude,
+          latitude: r.currentPoint.latitude
+        } : e);
+      }));
+    }
+  }
+};
+export default v;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.tool-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 24rpx;
+  padding-right: 16rpx;
+  padding-bottom: 24rpx;
+  padding-left: 16rpx;
+  background-color: #ffffff;
+  margin: 0;
+}
+
+.text_4 {
+  font-size: 28rpx;
+  font-family: "PingFangSC-Medium";
+  font-weight: 500;
+  line-height: 40rpx;
+}
+
+.text_2 {
+  color: #6081c7;
+  font-size: 28rpx;
+  font-family: "PingFangSC-Medium";
+  font-weight: 500;
+  line-height: 40rpx;
+}
+
+.map-ctls {
+  position: absolute;
+  left: 630rpx;
+  top: 132rpx;
+}
+
+.map-ctls-item {
+  width: 96rpx;
+  height: 96rpx;
+  border-color: #cccccc;
+  margin-bottom: 20rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.tool-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 3.2vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 3.2vw;
+  padding-left: 2.1333vw;
+  background-color: #ffffff;
+  margin: 0;
+}
+
+.text_4 {
+  font-size: 3.7333vw;
+  font-family: "PingFangSC-Medium";
+  font-weight: 500;
+  line-height: 5.3333vw;
+}
+
+.text_2 {
+  color: #6081c7;
+  font-size: 3.7333vw;
+  font-family: "PingFangSC-Medium";
+  font-weight: 500;
+  line-height: 5.3333vw;
+}
+
+.map-ctls {
+  position: absolute;
+  left: 84vw;
+  top: 17.6vw;
+}
+
+.map-ctls-item {
+  width: 12.8vw;
+  height: 12.8vw;
+  border-color: #cccccc;
+  margin-bottom: 2.6667vw;
+}
+/* #endif */
+</style>

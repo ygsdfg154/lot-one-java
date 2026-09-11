@@ -1,0 +1,543 @@
+[
+  {
+    "path": "/pages/home/home",
+    "meta": {
+      "isQuit": true,
+      "isNVue": true,
+      "isTabBar": true
+    },
+    "window": {
+      "navigationBarTitleText": "%app.index%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pages/my/my",
+    "meta": {
+      "isQuit": true,
+      "isNVue": true,
+      "isTabBar": true
+    },
+    "window": {
+      "navigationBarTitleText": "我的",
+      "enablePullDownRefresh": false,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pages/ability/index",
+    "meta": {
+      "isQuit": true,
+      "isNVue": true,
+      "isTabBar": true
+    },
+    "window": {
+      "navigationBarTitleText": "功能",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pages/msg/index",
+    "meta": {
+      "isQuit": true,
+      "isNVue": true,
+      "isTabBar": true
+    },
+    "window": {
+      "navigationBarTitleText": "消息",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pages/app-updateVersions/pages/upgrade-popup",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "应用升级"
+    }
+  },
+  {
+    "path": "/pagesMore/public/locate",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.share.locate%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/public/qzwl-authorize",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "自动授权登录"
+    }
+  },
+  {
+    "path": "/pagesMore/message/statement",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "告警消息详情",
+      "enablePullDownRefresh": false,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pagesMore/message/table",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "告警消息",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesMore/my/support",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.custome.us%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/my/developers/developers",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.dev.mode%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/my/developers/push-msgs",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "Push Messages",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesMore/my/setups/privacy_notice",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.privacy.notice%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/my/setups/as",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "%mine.setup.about%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/my/setups/service_terms",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.service.agreement%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesMore/notice/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "公告",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesPay/paySuccess/index",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "支付成功",
+      "enablePullDownRefresh": false,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pagesPay/appreciation/index",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "%device.appreciation%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesPay/value-added/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.vip.service%",
+      "enablePullDownRefresh": false,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pagesPay/card/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.pay%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesPay/list/indent",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.pay.orders%",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesPay/list/indent-device",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.orders%",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesPay/list/specifics",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "订单详情",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/alerts-set/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.alarm.setup%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/alerts-set/wx",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.alarm.setup.bind.wx%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/alerts-set/wx-mp",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.alarm.setup.bind.wx-mp%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/alerts-set/phone",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.alarm.setup.phone%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/alerts-set/messages",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.alarm.setup.note%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/audio/index",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "%device.audio%",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/locate-mode/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.locate.mode%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/locus/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.locus%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/remote-setup/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.remote.setup%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/remote-setup/list",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.set.list%",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/list/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.list%",
+      "enablePullDownRefresh": true,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/list/enterprise",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "选择机构",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/trip-report/list",
+    "meta": {},
+    "window": {
+      "navigationBarTitleText": "%device.statement%",
+      "enablePullDownRefresh": true
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/trip-report/detail",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%common.specifics%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/self-detection",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.self-test%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/device-card",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.traffic.card%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/corral/list",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.enclosure%",
+      "disableScroll": false,
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/terminal/corral/info",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.enclosure.info%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/deviceInfo/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%device.terminal.info%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesFunc/deviceInfo/set-icon",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "切换图标",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/login/index",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%index.signin%",
+      "enablePullDownRefresh": false,
+      "navigationStyle": "custom"
+    }
+  },
+  {
+    "path": "/pagesCore/login/register",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "注册",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/login/bind-tel",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "绑定手机",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/login/find-pas",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "找回密码",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/login/logout",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.account.cancelled%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/login/bind-tel-more",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "绑定用户",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/account/account-safety",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.account.safety%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/account/revise-pwd",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.revise.pwd%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/account/revise-userInfo",
+    "meta": {
+      "isNVue": true
+    },
+    "window": {
+      "navigationBarTitleText": "%mine.setup.revise.userInfo%",
+      "enablePullDownRefresh": false
+    }
+  },
+  {
+    "path": "/pagesCore/webframe",
+    "meta": {},
+    "window": {
+      "enablePullDownRefresh": false,
+      "bounce": "none",
+      "titleNView": {
+        "buttons": [
+          {
+            "type": "close",
+            "float": "left"
+          },
+          {
+            "type": "menu",
+            "float": "right"
+          }
+        ]
+      }
+    }
+  }
+]

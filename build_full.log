@@ -1,0 +1,289 @@
+﻿[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] lot-one-java
+[INFO] lot-one-common
+[INFO] lot-one-gateway
+[INFO] lot-one-admin
+[INFO] lot-one-device
+[INFO] lot-one-protocol
+[INFO] lot-one-iot-gateway
+[INFO] lot-one-iot-worker
+[INFO] lot-one-query-api
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-java 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-java ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-common 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-common ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-common\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-common ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 5 source files to D:\work\lot-one-java\lot-one-common\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-common\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-common ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-common ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-common ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-common\target\lot-one-common-1.0.0.jar
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-gateway 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-gateway ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-gateway\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-gateway ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-gateway ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-gateway\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-gateway ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-gateway\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-gateway ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-gateway ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-gateway ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-gateway\target\lot-one-gateway-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-gateway ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-gateway\target\lot-one-gateway-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-gateway\target\lot-one-gateway-1.0.0.jar.original
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-admin 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-admin ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-admin\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-admin ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-admin ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-admin\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-admin ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-admin\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-admin ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-admin\target\test-classes
+[INFO] /D:/work/lot-one-java/lot-one-admin/src/test/java/com/lotone/admin/CodeGenerator.java: D:\work\lot-one-java\lot-one-admin\src\test\java\com\lotone\admin\CodeGenerator.javaʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/work/lot-one-java/lot-one-admin/src/test/java/com/lotone/admin/CodeGenerator.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-admin ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-admin ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-admin\target\lot-one-admin-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-admin ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-admin\target\lot-one-admin-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-admin\target\lot-one-admin-1.0.0.jar.original
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-device 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-device ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-device\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-device ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-device ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-device\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-device ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-device\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-device ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-device ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-device ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-device\target\lot-one-device-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-device ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-device\target\lot-one-device-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-device\target\lot-one-device-1.0.0.jar.original
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-protocol 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-protocol ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-protocol\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-protocol ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-protocol\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-protocol ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to D:\work\lot-one-java\lot-one-protocol\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-protocol ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-protocol\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-protocol ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-protocol ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-protocol ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-protocol\target\lot-one-protocol-1.0.0.jar
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-iot-gateway 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-iot-gateway ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-iot-gateway\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-iot-gateway ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-iot-gateway ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-iot-gateway\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-iot-gateway ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-iot-gateway\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-iot-gateway ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-iot-gateway ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-iot-gateway ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-iot-gateway\target\lot-one-iot-gateway-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-iot-gateway ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-iot-gateway\target\lot-one-iot-gateway-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-iot-gateway\target\lot-one-iot-gateway-1.0.0.jar.original
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-iot-worker 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-iot-worker ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-iot-worker\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-iot-worker ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-iot-worker ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-iot-worker\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-iot-worker ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-iot-worker\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-iot-worker ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-iot-worker ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-iot-worker ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-iot-worker\target\lot-one-iot-worker-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-iot-worker ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-iot-worker\target\lot-one-iot-worker-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-iot-worker\target\lot-one-iot-worker-1.0.0.jar.original
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building lot-one-query-api 1.0.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ lot-one-query-api ---
+[INFO] Deleting D:\work\lot-one-java\lot-one-query-api\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ lot-one-query-api ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ lot-one-query-api ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\work\lot-one-java\lot-one-query-api\target\classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ lot-one-query-api ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\work\lot-one-java\lot-one-query-api\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ lot-one-query-api ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ lot-one-query-api ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ lot-one-query-api ---
+[INFO] Building jar: D:\work\lot-one-java\lot-one-query-api\target\lot-one-query-api-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.2.5:repackage (default) @ lot-one-query-api ---
+[INFO] Replacing main artifact D:\work\lot-one-java\lot-one-query-api\target\lot-one-query-api-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\work\lot-one-java\lot-one-query-api\target\lot-one-query-api-1.0.0.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] lot-one-java ....................................... SUCCESS [  0.150 s]
+[INFO] lot-one-common ..................................... SUCCESS [  2.144 s]
+[INFO] lot-one-gateway .................................... SUCCESS [  1.339 s]
+[INFO] lot-one-admin ...................................... SUCCESS [  2.175 s]
+[INFO] lot-one-device ..................................... SUCCESS [  0.911 s]
+[INFO] lot-one-protocol ................................... SUCCESS [  0.346 s]
+[INFO] lot-one-iot-gateway ................................ SUCCESS [  0.800 s]
+[INFO] lot-one-iot-worker ................................. SUCCESS [  0.766 s]
+[INFO] lot-one-query-api .................................. SUCCESS [  0.647 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 10.367 s
+[INFO] Finished at: 2026-08-31T13:48:04+08:00
+[INFO] Final Memory: 117M/428M
+[INFO] ------------------------------------------------------------------------

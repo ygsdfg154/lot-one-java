@@ -1,0 +1,65 @@
+<template>
+<view>
+  <view v-for="e in enterpriseList" :key="e.id">
+    <view
+      v-if="e.openShow"
+      class="flex-row justify-between items-center p-h-xl b-bottom bg-white"
+      :style="{ marginTop: 1 == e.state ? '16rpx' : '' }"
+    >
+      <view
+        v-if="e.children && e.children.length"
+        class="flex-row items-center p-v-lg"
+        :style="{ paddingLeft: 36 * e.state + 'rpx' }"
+        @click="setIconState(e)"
+      >
+        <u-icon :name="e.iconShow ? 'arrow-down-fill' : 'play-right-fill'" color="#6081C7" size="16"></u-icon>
+      </view>
+      <view class="flex-row flex-1 justify-between p-v-lg" @click="setEnterprise(e)">
+        <view class="flex-row items-center">
+          <view
+            v-if="!(e.children && e.children.length)"
+            :style="{ paddingLeft: 36 * e.state + 'rpx' }"
+          ></view>
+          <text class="text m-l" append="tree">
+            {{ e.name }}
+          </text>
+        </view>
+        <u-icon name="arrow-right" size="17" color="#999"></u-icon>
+      </view>
+    </view>
+    <tree
+      v-if="e.children && e.children.length"
+      :enterpriseList="e.children"
+      @updateStateById="setIconState"
+    ></tree>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: Tree
+ * 反编译自 webpack 模块 665（nvue 编译空间）
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+
+"use strict";
+var c = {
+  name: "Tree",
+  props: ["enterpriseList"],
+  methods: {
+    ...require("vuex").mapMutations("account", ["setEnterpriseId", "setRefreshTerminalPage"]),
+    setIconState: function (t) {
+      this.$emit("updateStateById", {
+        list: this.enterpriseList,
+        id: t.id
+      });
+    },
+    setEnterprise: function (t) {
+      (this.setEnterpriseId(t.id), this.setRefreshTerminalPage(true), uni.navigateBack());
+    }
+  }
+};
+export default c;
+
+</script>

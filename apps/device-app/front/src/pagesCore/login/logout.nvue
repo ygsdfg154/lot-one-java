@@ -1,0 +1,348 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('account-cancelled.title') }}
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 32rpx;">
+      <view style="background-color: #ffffff; border-radius: 20rpx; padding: 36rpx 32rpx; box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);">
+        <view v-if="0 === cancellationStep">
+          <text style="font-size: 36rpx; font-weight: bold; color: #333333; text-align: center; display: block; margin-bottom: 12rpx;" append="tree">
+            {{ l('account-cancelled.title') }}
+          </text>
+          <text style="font-size: 26rpx; color: #888888; text-align: center; display: block; margin-bottom: 36rpx;" append="tree">
+            {{ l('account-cand.tip') }}
+          </text>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-canion.account') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.tip1') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.tip2') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.tip3') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.tip4') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 40rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.tip5') }}
+            </text>
+          </view>
+
+          <view style="margin-top: 32rpx;">
+            <u-button color="#6081C7" shape="circle" type="primary" size="large" :text="l('account-canion.confim')" @click="goOnCancellation"></u-button>
+          </view>
+        </view>
+
+        <view v-if="1 === cancellationStep">
+          <view style="margin-bottom: 24rpx;">
+            <text style="font-size: 30rpx; color: #333333;" append="tree">
+              {{ l('common.tel') }}：+86 {{ phoneNumber }}
+            </text>
+          </view>
+
+          <view v-if="codeShow" style="margin-bottom: 24rpx;">
+            <text style="font-size: 24rpx; color: #888888;" append="tree">
+              {{ l('common.send.code') }}{{ phoneNumber }}，{{ l('common.please.check') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 40rpx;">
+            <view style="flex: 1; margin-right: 20rpx;">
+              <u--input
+                style="height: 80rpx;"
+                type="code"
+                :placeholder="l('common.code')"
+                v-model="code"
+              ></u--input>
+            </view>
+
+            <u-code
+              ref="uCode"
+              :keepRunning="true"
+              uniqueKey="page-a"
+              seconds="60"
+              :changeText="l('common.x.get.code')"
+              :startText="l('common.get.code')"
+              :endText="l('common.anew.code')"
+              @change="codeTimeChange"
+              @start="disabled = true"
+              @end="disabled = false"
+            ></u-code>
+
+            <view style="width: 200rpx; height: 80rpx;">
+              <u-button color="#6081C7" type="primary" :text="codeTime" @click="getSmsCode"></u-button>
+            </view>
+          </view>
+
+          <view style="margin-top: 32rpx;">
+            <u-button color="#F56C6C" shape="circle" type="error" size="large" text="确定注销" @click="validationCancellation"></u-button>
+          </view>
+        </view>
+
+        <view v-if="2 === cancellationStep">
+          <text style="font-size: 36rpx; font-weight: bold; color: #333333; text-align: center; display: block; margin-bottom: 32rpx;" append="tree">
+            {{ l('account-cand.succeed-tip') }}：
+          </text>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.succeed-tip1') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 20rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.succeed-tip2') }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start; margin-bottom: 40rpx;">
+            <view style="width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #6081C7; margin-top: 14rpx; margin-right: 16rpx; flex-shrink: 0;"></view>
+            <text style="font-size: 28rpx; color: #555555; line-height: 40rpx; flex: 1;" append="tree">
+              {{ l('account-cand.succeed-tip3') }}
+            </text>
+          </view>
+
+          <view style="margin-top: 32rpx;">
+            <u-button color="#6081C7" shape="circle" type="primary" size="large" :text="l('common.close')" @click="close"></u-button>
+          </view>
+        </view>
+      </view>
+
+      <verificationCode
+        v-if="imgCaptchaShow"
+        ref="imgCaptchaRef"
+        :phoneNumber="username"
+        @imgCaptchaChange="imgCaptchaChange"
+        @smsCodeChange="smsCodeChange"
+      ></verificationCode>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/login/logout
+ * 反编译自 webpack 模块 727（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+function a(m) {
+  return m && m.__esModule ? m : {
+    default: m
+  };
+}
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var u = (a(require("../../common/config.nvue.js")), a(require("../../components/verificationCode/verificationCode.nvue")));
+var c = getApp().globalData, m = {
+  components: {
+    verificationCode: u.default
+  },
+  data: function () {
+    return {
+      cancellationStep: 0,
+      codeShow: false,
+      phoneNumber: "",
+      code: "",
+      codeTime: "",
+      disabled: false,
+      imgCaptchaShow: false
+    };
+  },
+  onLoad: function () {
+    if (this.username) {
+      var e = String(this.username);
+      ((e = e.split("")).splice(3, 6, "*", "*", "*", "*", "*", "*"), e = e.join(""), this.phoneNumber = e);
+    }
+  },
+  onHide: function () {},
+  computed: {
+    ...mod25.mapGetters(["username", "userType"])
+  },
+  methods: {
+    ...mod25.mapActions("account", ["Cancellation", "SignOut"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    goOnCancellation: function () {
+      if (2 != this.userType) return mod166.qzwlToast(c.$t("account-cand.succeed-tip4"), "none");
+      this.cancellationStep = 1;
+    },
+    codeTimeChange: function (e) {
+      this.codeTime = e;
+    },
+    imgCaptchaChange: function (e) {
+      this.imgCaptchaShow = e;
+    },
+    smsCodeChange: function () {
+      (mod166.qzwlToast(c.$t("common.code.sent"), "none"), this.codeShow = true, this.$refs.uCode.start(), this.imgCaptchaShow = false);
+    },
+    getSmsCode: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.$refs.uCode.canGetCode) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.operation"), "none"));
+            case 2:
+              if (e.username.trim()) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.tel"), "none"));
+            case 4:
+              if (uni.$u.test.mobile(e.username)) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.valid.mobile.tel"), "none"));
+            case 6:
+              e.imgCaptchaShow = true;
+            case 7:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    validationCancellation: function () {
+      var t = this;
+      return mod23(mod22.mark(function n() {
+        var a;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if (uni.$u.test.rangeLength(t.code, [4, 6])) {
+                n.next = 2;
+                break;
+              }
+              return n.abrupt("return", mod166.qzwlToast(c.$t("common.please.valid.mobile.code"), "none"));
+            case 2:
+              if (2 === t.userType) {
+                n.next = 4;
+                break;
+              }
+              return n.abrupt("return", mod166.qzwlToast(c.$t("account-cand.succeed-tip4"), "none"));
+            case 4:
+              return (n.next = 6, t.Cancellation({
+                phoneNumber: t.username,
+                code: t.code
+              }));
+            case 6:
+              ((a = n.sent).succeeded && (t.cancellationStep = 2), e("log", a, "result", " at pagesCore/login/logout.nvue:254"));
+            case 9:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    close: function () {
+      var e = this;
+      return (async function () {
+        await e.SignOut();
+        uni.reLaunch({
+          url: "/pagesCore/login/index"
+        });
+      })();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.content {
+  margin-top: 120rpx;
+  margin-right: 60rpx;
+  margin-bottom: 100rpx;
+  margin-left: 80rpx;
+}
+
+.content-icon {
+  width: 15rpx;
+  height: 15rpx;
+  border-radius: 50;
+  margin-top: 15rpx;
+  margin-right: 10rpx;
+  margin-bottom: 0;
+  margin-left: 0;
+}
+/* #endif */
+/* #ifdef H5 */
+.content {
+  margin-top: 16vw;
+  margin-right: 8vw;
+  margin-bottom: 13.3333vw;
+  margin-left: 10.6667vw;
+}
+
+.content-icon {
+  width: 2vw;
+  height: 2vw;
+  border-radius: 50;
+  margin-top: 2vw;
+  margin-right: 1.3333vw;
+  margin-bottom: 0;
+  margin-left: 0;
+}
+/* #endif */
+</style>

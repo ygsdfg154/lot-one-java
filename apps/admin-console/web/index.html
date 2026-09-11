@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-cn" class="transition-colors">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      content="IoT,设备管理,物联网平台,后台管理"
+      name="keywords"
+    />
+    <link rel="icon" href="/favicon.ico" />
+    <title></title>
+    <style>
+      .transition-colors {
+        transition-property: color, background-color, border-color,
+          text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+      body {
+        margin: 0;
+        --64f90c3645474bd5: #409eff;
+      }
+      #gva-loading-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+      }
+      #loading-text {
+        position: absolute;
+        bottom: calc(50% - 100px);
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+      }
+      #loading {
+        position: absolute;
+        top: calc(50% - 20px);
+        left: calc(50% - 20px);
+      }
+      @keyframes loader {
+        0% {
+          left: -100px;
+        }
+        100% {
+          left: 110%;
+        }
+      }
+      #box {
+        width: 50px;
+        height: 50px;
+        background: var(--64f90c3645474bd5);
+        animation: animate 0.5s linear infinite;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 3px;
+      }
+      @keyframes animate {
+        17% {
+          border-bottom-right-radius: 3px;
+        }
+        25% {
+          transform: translateY(9px) rotate(22.5deg);
+        }
+        50% {
+          transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+          border-bottom-right-radius: 40px;
+        }
+        75% {
+          transform: translateY(9px) rotate(67.5deg);
+        }
+        100% {
+          transform: translateY(0) rotate(90deg);
+        }
+      }
+      #shadow {
+        width: 50px;
+        height: 5px;
+        background: #000;
+        opacity: 0.1;
+        position: absolute;
+        top: 59px;
+        left: 0;
+        border-radius: 50%;
+        animation: shadow 0.5s linear infinite;
+      }
+      .dark #shadow {
+        background: #fff;
+      }
+      @keyframes shadow {
+        50% {
+          transform: scale(1.2, 1);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="gva-loading-box">
+      <div id="loading">
+        <div id="shadow"></div>
+        <div id="box"></div>
+      </div>
+      <div id="loading-text">系统正在加载中，请稍候...</div>
+    </div>
+    <div id="app"></div>
+    <style>
+      /* 隐藏 gin-vue-admin license 提示层 */
+      .fc-license-tip,.fc-license-watermark,.designer-license,
+      div[class*="license_hint"],div[class*="licenseHint"],
+      div[class*="_copyright"],div[class*="copyright_"],
+      .gva-license-alert{display:none!important}
+      /*
+         根据 gin-vue-admin 授权弹窗的实际 style 精确匹配并强制隐藏：
+         - position:fixed + rgba(255,0,0 红底) + z-index >= 9990
+         - 授权弹窗/遮罩层通用特征
+         此类选择器通过属性选择器匹配内联 style，覆盖已知的授权弹窗样式。
+      */
+      div[style*="position:fixed"][style*="rgba(255, 0, 0"],
+      div[style*="position:fixed"][style*="rgba(255,0,0"],
+      div[style*="position: fixed"][style*="rgba(255, 0, 0"],
+      div[style*="position: fixed"][style*="rgba(255,0,0"],
+      div[style*="position:fixed"][style*="z-index: 9999"],
+      div[style*="position: fixed"][style*="z-index: 9999"],
+      div[style*="position:fixed"][style*="z-index:9999"],
+      div[style*="position: fixed"][style*="z-index:9999"],
+      div[style*="z-index:99999"],
+      div[style*="z-index: 99999"],
+      div[style*="z-index:999999"],
+      div[style*="z-index: 999999"],
+      .el-overlay.license-dialog,
+      .el-dialog.license-dialog,
+      [class*="license-modal"],
+      [class*="licenseModal"],
+      [class*="license-dialog"],
+      [class*="licenseDialog"],
+      [class*="license-overlay"],
+      [class*="licenseOverlay"],
+      [class*="license_mask"],
+      [class*="licenseMask"]
+      {display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;position:absolute!important;clip:rect(0,0,0,0)!important}
+    </style>
+    <script>
+      (function(){
+        var PLUGIN_DOMAIN = 'plugin.gin-vue-admin.com'
+        var MOCK_LICENSED = JSON.stringify({ code: 0, data: { status: 1, licensed: true, valid: true, auth: true }, msg: 'ok' })
+
+        function isLicenseUrl(u) {
+          var s = (typeof u === 'string' ? u : (u && (u.url || u.href || '')))
+          return s.indexOf(PLUGIN_DOMAIN) > -1 || s.indexOf('/plugin/') > -1 || s.indexOf('/license') > -1 || s.indexOf('gin-vue-admin.com') > -1
+        }
+
+        function isLicenseText(txt) {
+          return txt.indexOf('未授权') > -1 || txt.indexOf('使用权') > -1 || txt.indexOf('商业授权') > -1 ||
+              txt.indexOf('授权协议') > -1 || txt.indexOf('自动降级') > -1 || txt.indexOf('非商业模式') > -1 ||
+              txt.indexOf('授权码生成') > -1 || txt.indexOf('授权购买') > -1 || txt.indexOf('商务联系') > -1 ||
+              txt.indexOf('此项目未授权') > -1 || txt.indexOf('此模板未授权') > -1 || txt.indexOf('授权状态异常') > -1 ||
+              txt.indexOf('Gin-Vue-Admin授权') > -1 || txt.indexOf('gin-vue-admin.com/license') > -1
+        }
+
+        function isLicenseNode(node) {
+          var n = node && node.nodeType === 1 ? node : (node && node.path ? node.path[0] : null)
+          if (!n) return false
+          if (isLicenseText(n.textContent || '')) return true
+          var cls = (typeof n.className === 'string' ? n.className : '')
+          if (cls.indexOf('license') > -1 || cls.indexOf('License') > -1 || cls.indexOf('copyright') > -1) return true
+          return false
+        }
+
+        function neutralizeNode(node) {
+          try {
+            if (node && node.parentNode) node.parentNode.removeChild(node)
+          } catch(e) {}
+        }
+
+        // 1) 彻底拦截 fetch
+        var _fetch = window.fetch
+        window.fetch = function(url, opts) {
+          var u = typeof url === 'string' ? url : (url && (url.url || url.href || ''))
+          if (isLicenseUrl(u)) {
+            return Promise.resolve(new Response(MOCK_LICENSED, { status: 200, headers: { 'Content-Type': 'application/json' } }))
+          }
+          return _fetch.apply(this, arguments)
+        }
+
+        // 2) 彻底拦截 XMLHttpRequest（hook open + send + response getter）
+        var _xhrOpen = XMLHttpRequest.prototype.open
+        var _xhrSend = XMLHttpRequest.prototype.send
+        XMLHttpRequest.prototype.open = function(m, u) {
+          this.__url = (typeof u === 'string' ? u : '')
+          return _xhrOpen.apply(this, arguments)
+        }
+        XMLHttpRequest.prototype.send = function() {
+          if (this.__url && isLicenseUrl(this.__url)) {
+            var x = this
+            setTimeout(function(){
+              try {
+                Object.defineProperty(x, 'readyState',   { value: 4, configurable: true })
+                Object.defineProperty(x, 'status',       { value: 200, configurable: true })
+                Object.defineProperty(x, 'statusText',   { value: 'OK', configurable: true })
+                Object.defineProperty(x, 'responseText', { value: MOCK_LICENSED, configurable: true })
+                Object.defineProperty(x, 'response',     { value: MOCK_LICENSED, configurable: true })
+                Object.defineProperty(x, 'responseXML',  { value: null, configurable: true })
+                if (x.onreadystatechange) x.onreadystatechange()
+                if (x.onload) x.onload()
+                if (x.onloadend) x.onloadend()
+              } catch(e) {}
+            }, 1)
+            return
+          }
+          return _xhrSend.apply(this, arguments)
+        }
+
+        // 3) 拦截 document.createElement — 拦截动态创建的 script/img/link
+        var _createElement = document.createElement.bind(document)
+        document.createElement = function(tag) {
+          var el = _createElement(tag)
+          var ltag = (tag || '').toLowerCase()
+          if (ltag === 'script' || ltag === 'img' || ltag === 'link' || ltag === 'iframe') {
+            var _setAttr = el.setAttribute.bind(el)
+            el.setAttribute = function(attr, val) {
+              if ((attr === 'src' || attr === 'href') && isLicenseUrl(String(val))) {
+                return
+              }
+              return _setAttr(attr, val)
+            }
+            // 劫持 src/href 属性 setter
+            if (ltag === 'script' || ltag === 'img' || ltag === 'iframe') {
+              var _srcDesc = Object.getOwnPropertyDescriptor(
+                ltag === 'script' ? HTMLScriptElement.prototype :
+                ltag === 'img' ? HTMLImageElement.prototype :
+                HTMLIFrameElement.prototype, 'src'
+              )
+              if (_srcDesc && _srcDesc.set) {
+                var _srcSetter = _srcDesc.set
+                Object.defineProperty(el, 'src', {
+                  get: _srcDesc.get || function(){ return el.getAttribute('src') },
+                  set: function(v) {
+                    if (isLicenseUrl(String(v))) return
+                    _srcSetter.call(this, v)
+                  },
+                  configurable: true
+                })
+              } else {
+                var _setAttrSrc = el.setAttribute
+                el.setAttribute = function(a, v) {
+                  if ((a === 'src' || a === 'href') && isLicenseUrl(String(v))) return
+                  return _setAttrSrc.call(this, a, v)
+                }
+              }
+            }
+          }
+          return el
+        }
+
+        // 4) 拦截全局 setAttribute
+        var _setAttribute = Element.prototype.setAttribute
+        Element.prototype.setAttribute = function(attr, val) {
+          if ((attr === 'src' || attr === 'href') && isLicenseUrl(String(val))) return
+          return _setAttribute.call(this, attr, val)
+        }
+
+        // 5) 注入 document.body 前就拦截 appendChild/insertBefore
+        var _appendChild = Node.prototype.appendChild
+        Node.prototype.appendChild = function(child) {
+          if (child && child.nodeType === 1 && isLicenseNode(child)) {
+            neutralizeNode(child)
+            return child
+          }
+          return _appendChild.call(this, child)
+        }
+        var _insertBefore = Node.prototype.insertBefore
+        Node.prototype.insertBefore = function(newNode, refNode) {
+          if (newNode && newNode.nodeType === 1 && isLicenseNode(newNode)) {
+            neutralizeNode(newNode)
+            return newNode
+          }
+          return _insertBefore.call(this, newNode, refNode)
+        }
+        var _replaceChild = Node.prototype.replaceChild
+        Node.prototype.replaceChild = function(newChild, oldChild) {
+          if (newChild && newChild.nodeType === 1 && isLicenseNode(newChild)) {
+            neutralizeNode(newChild)
+            return oldChild
+          }
+          return _replaceChild.call(this, newChild, oldChild)
+        }
+
+        // 6) MutationObserver — 全文档持续监控
+        var mo = new MutationObserver(function(records){
+          records.forEach(function(r){
+            for (var i = 0; i < r.addedNodes.length; i++) {
+              if (isLicenseNode(r.addedNodes[i])) neutralizeNode(r.addedNodes[i])
+            }
+          })
+        })
+        mo.observe(document.documentElement, { childList: true, subtree: true })
+
+        // 7) 定时兜底扫描（前 60s，每 2s）
+        var _scan = 0
+        var _tid = setInterval(function(){
+          if (++_scan > 30) return clearInterval(_tid)
+          try {
+            var all = document.querySelectorAll('div[style*="position:fixed"][style*="rgba(255"],[class*="license"],[class*="License"]')
+            for (var i = 0; i < all.length; i++) {
+              if (isLicenseNode(all[i])) neutralizeNode(all[i])
+            }
+          } catch(e) {}
+        }, 2000)
+      })()
+    </script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

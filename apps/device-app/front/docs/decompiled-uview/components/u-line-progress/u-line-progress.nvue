@@ -1,0 +1,121 @@
+<template>
+<view class="u-line-progress" :style="[$u.addStyle(customStyle)]">
+  <view
+    ref="u-line-progress__background"
+    class="u-line-progress__background"
+    :style="[{ backgroundColor: inactiveColor, height: $u.addUnit(height) }]"
+  ></view>
+  <view class="u-line-progress__line" :style="[progressStyle]">
+    <slot>
+      <text v-if="showText && percentage >= 10" class="u-line-progress__text" append="tree">
+        {{ innserPercentage + '%' }}
+      </text>
+    </slot>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uLineProgress
+ * 反编译自 webpack 模块 405（nvue 编译空间）
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod836 from '@/.unpacked/nvue/836.js'
+
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var i = e("dom"), s = {
+  name: "u-line-progress",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod836],
+  data: function () {
+    return {
+      lineWidth: 0
+    };
+  },
+  watch: {
+    percentage: function (e) {
+      this.resizeProgressWidth();
+    }
+  },
+  computed: {
+    progressStyle: function () {
+      var e = {};
+      return (e.width = this.lineWidth, e.backgroundColor = this.activeColor, e.height = uni.$u.addUnit(this.height), e);
+    },
+    innserPercentage: function () {
+      return uni.$u.range(0, 100, this.percentage);
+    }
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    init: function () {
+      var e = this;
+      uni.$u.sleep(20).then(function () {
+        e.resizeProgressWidth();
+      });
+    },
+    getProgressWidth: function () {
+      var e = this;
+      return new Promise(function (t) {
+        i.getComponentRect(e.$refs["u-line-progress__background"], function (e) {
+          t(e.size);
+        });
+      });
+    },
+    resizeProgressWidth: function () {
+      var e = this;
+      this.getProgressWidth().then(function (t) {
+        var n = t.width;
+        e.lineWidth = n * e.innserPercentage / 100 + "px";
+      });
+    }
+  }
+};
+export default s;
+
+</script>
+
+<style scoped>
+.u-line-progress {
+  align-items: stretch;
+  position: relative;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 100;
+}
+
+.u-line-progress__background {
+  background-color: #ececec;
+  border-radius: 100;
+  flex: 1;
+}
+
+.u-line-progress__line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  align-items: center;
+  flex-direction: row;
+  color: #ffffff;
+  border-radius: 100;
+  transition-property: width;
+  transition-duration: 500;
+  transition-timing-function: ease;
+  transition-delay: 0;
+  justify-content: flex-end;
+}
+
+.u-line-progress__text {
+  font-size: 10;
+  align-items: center;
+  text-align: right;
+  color: #FFFFFF;
+  margin-right: 5;
+  transform: scale(0.9);
+}
+</style>

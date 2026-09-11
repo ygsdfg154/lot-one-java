@@ -1,0 +1,113 @@
+<template>
+<view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 28rpx; margin-top: 20rpx; box-sizing: border-box;">
+  <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+    <text style="font-size: 30rpx; font-weight: bold; color: #333;" append="tree">
+      服务用量
+    </text>
+    <view v-if="!vipTime" style="display: flex; flex-direction: row; align-items: center;">
+      <text
+        v-if="totalText"
+        :style="{ color: selectedTypeItem ? selectedTypeItem.color : '#6081C7' }"
+        style="font-size: 26rpx;"
+        append="tree"
+      >
+        不限量套餐
+      </text>
+      <view v-else style="display: flex; flex-direction: row; align-items: center;">
+        <text style="font-size: 26rpx; color: #999;" append="tree">
+          剩余
+        </text>
+        <text :style="{ color: selectedTypeItem ? selectedTypeItem.color : '#6081C7' }" style="font-size: 26rpx; font-weight: bold;" append="tree">
+          {{ remain }}{{ (selectedTypeItem && 1 == selectedTypeItem.id) ? '分钟' : '条' }}
+        </text>
+        <text style="font-size: 26rpx; color: #999;" append="tree">
+          /共{{ minTotal }}{{ (selectedTypeItem && 1 == selectedTypeItem.id) ? '分钟' : '条' }}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view v-if="vipTime" style="margin-top: 16rpx; display: flex; flex-direction: column;">
+    <view v-if="selectedTypeItem && 1 == selectedTypeItem.id" style="display: flex; flex-direction: row; margin-bottom: 8rpx;">
+      <text style="color: #666; font-size: 26rpx; line-height: 36rpx;" append="tree">
+        无限声音安防套餐有效期内声音安防不限分钟
+      </text>
+    </view>
+    <view v-if="selectedTypeItem && 2 == selectedTypeItem.id" style="display: flex; flex-direction: row; margin-bottom: 8rpx;">
+      <text :style="{ color: selectedTypeItem ? selectedTypeItem.color : '#6081C7' }" style="font-size: 26rpx;" append="tree">
+        {{ noMoney ? '180天' : '90天' }}
+      </text>
+      <text style="font-size: 26rpx; color: #666;" append="tree">
+        内轨迹数据/
+      </text>
+      <text :style="{ color: selectedTypeItem ? selectedTypeItem.color : '#6081C7' }" style="font-size: 26rpx;" append="tree">
+        {{ noMoney ? '10s' : '30s' }}
+      </text>
+      <text style="font-size: 26rpx; color: #666;" append="tree">
+        上传间隔
+      </text>
+    </view>
+    <view v-if="selectedTypeItem && 4 == selectedTypeItem.id" style="display: flex; flex-direction: row; margin-bottom: 8rpx;">
+      <text style="color: #666; font-size: 26rpx; line-height: 36rpx;" append="tree">
+        定位分享套餐有效期内不限制分享次数
+      </text>
+    </view>
+    <text style="font-size: 24rpx; color: #888888;" append="tree">
+      过期时间：{{ vipTime }}
+    </text>
+  </view>
+
+  <view v-else style="margin-top: 20rpx;">
+    <u-line-progress
+      :percentage="setProgress(remain, minTotal)"
+      :activeColor="selectedTypeItem ? selectedTypeItem.color : '#6081C7'"
+      inactiveColor="#f5f5f5"
+    ></u-line-progress>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: unknown-962
+ * 反编译自 webpack 模块 633（nvue 编译空间）
+ */
+"use strict";
+export default {
+  data: function () {
+    return {};
+  },
+  props: ["selectedTypeItem", "vipTime", "totalText", "remain", "minTotal", "noMoney"],
+  methods: {
+    setProgress: function (e, t) {
+      if (this.totalText) return 100;
+      var n = (e / t * 100).toFixed(2);
+      return n || 0;
+    }
+  }
+};
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.box {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding-top: 24rpx;
+  padding-right: 28rpx;
+  padding-bottom: 36rpx;
+  padding-left: 28rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.box {
+  background-color: #ffffff;
+  border-radius: 2.1333vw;
+  padding-top: 3.2vw;
+  padding-right: 3.7333vw;
+  padding-bottom: 4.8vw;
+  padding-left: 3.7333vw;
+}
+/* #endif */
+</style>

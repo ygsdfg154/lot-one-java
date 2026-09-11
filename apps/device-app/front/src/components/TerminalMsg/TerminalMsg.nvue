@@ -1,0 +1,339 @@
+<template>
+<view :style="{ paddingBottom: deleteShow ? '160rpx' : '140rpx' }">
+  <view v-for="(t, r) in alarmList" :key="r" style="margin-bottom: 24rpx;">
+    <view style="display: flex; flex-direction: row; align-items: center;">
+      <view v-if="deleteShow" style="margin-right: 20rpx;">
+        <u-icon v-if="t.isShowDelete" :name="cdn + '/ikon/qzwl-yse-strat.png'" size="38rpx"></u-icon>
+        <u-icon v-if="!(t.isShowDelete)" :name="cdn + '/ikon/qzwl-msg-no-delete.png'" size="38rpx"></u-icon>
+      </view>
+      
+      <view style="flex: 1; background-color: #ffffff; border-radius: 20rpx; padding: 24rpx 28rpx; box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.03); box-sizing: border-box;">
+        <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding-bottom: 18rpx; border-bottom: 1rpx solid #F1F5F9;">
+          <view style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoAlarmDetail(t)">
+            <u-icon :name="cdn + '/ikon/qzwl-msg-notice@2x.png'" size="44rpx"></u-icon>
+            <text style="font-size: 30rpx; font-weight: bold; color: #FA8D0C; margin-left: 12rpx;" append="tree">
+              {{ t.alarmTypeName }}
+            </text>
+          </view>
+          <u-icon :name="cdn + '/ikon/qzwl-msg-trash.png'" size="36rpx" color="#94A3B8" @click="itemDeleteChange(t)"></u-icon>
+        </view>
+
+        <view style="margin-top: 16rpx; cursor: pointer;" @click="gotoAlarmDetail(t)">
+          <view style="display: flex; flex-direction: row; margin-bottom: 10rpx;">
+            <text style="font-size: 26rpx; color: #64748B; width: 150rpx;" append="tree">设备名称：</text>
+            <text style="font-size: 26rpx; color: #1E293B; font-weight: 500;" append="tree">{{ t.terminalName || '-' }}</text>
+          </view>
+          
+          <view style="display: flex; flex-direction: row; margin-bottom: 10rpx;">
+            <text style="font-size: 26rpx; color: #64748B; width: 150rpx;" append="tree">设备号：</text>
+            <text style="font-size: 26rpx; color: #1E293B;" append="tree">{{ t.terminalNo || '-' }}</text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; margin-bottom: 10rpx;">
+            <text style="font-size: 26rpx; color: #64748B; width: 150rpx;" append="tree">告警时间：</text>
+            <text style="font-size: 26rpx; color: #1E293B;" append="tree">{{ t.beginTime || '-' }}</text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: flex-start;">
+            <text style="font-size: 26rpx; color: #64748B; width: 150rpx;" append="tree">告警地点：</text>
+            <text v-if="t.address" style="font-size: 26rpx; color: #1E293B; flex: 1; line-height: 36rpx;" append="tree">
+              {{ t.address }}
+            </text>
+            <text
+              v-else-if="t.beginLng && t.beginLat"
+              style="font-size: 26rpx; color: #6081C7; flex: 1;"
+              append="tree"
+              @click.stop="getItemAddress(t)"
+            >
+              点击解析地址 ({{ t.beginLng }}, {{ t.beginLat }})
+            </text>
+            <text v-else style="font-size: 26rpx; color: #94A3B8;" append="tree">
+              暂无位置信息
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view v-if="deleteShow" class="foot-delete">
+    <view class="flex-row justify-between items-center">
+      <view class="flex-row items-center" @click="setShowAllDeleteList">
+        <text class="text m-r-sm" append="tree">
+          全选
+        </text>
+        <u-icon v-if="isShowAllDelete" :name="cdn + '/ikon/qzwl-yse-strat.png'" size="38rpx"></u-icon>
+        <u-icon v-if="!(isShowAllDelete)" :name="cdn + '/ikon/qzwl-msg-no-delete.png'" size="38rpx"></u-icon>
+      </view>
+      <view class="flex-row">
+        <view class="m-l">
+          <u-button
+            class="foot-delete-but"
+            type="primary"
+            :plain="true"
+            size="mini"
+            text="全部清空"
+            @click="allDeleteMsg"
+          ></u-button>
+        </view>
+        <view class="m-l">
+          <u-button
+            class="foot-delete-but"
+            type="error"
+            :plain="true"
+            size="mini"
+            :text="l('common.delete.but')"
+            @click="deleteMsg"
+          ></u-button>
+        </view>
+      </view>
+    </view>
+  </view>
+  <u-popup :show="filterShow" :round="15" mode="right" @close="filterClose">
+    <TerminalFilter :filterData="filterData" @fetchData="fetchData" @filterClose="filterClose"></TerminalFilter>
+  </u-popup>
+  <u-loadmore
+    v-if="alarmList.length"
+    :status="status"
+    :line="true"
+    :loadmoreText="l('common.load.more')"
+    :loadingText="l('common.loading')"
+    :nomoreText="l('common.no.more')"
+  ></u-loadmore>
+  <u-empty
+    v-if="!(alarmList.length)"
+    :text="l('common.no.more')"
+    :icon="cdn + '/draw/qzwl-empty.png'"
+  ></u-empty>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: TerminalMsg
+ * 反编译自 webpack 模块 537（nvue 编译空间）
+ * async/await 还原: 5 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import mod922 from '../TerminalFilter/TerminalFilter.nvue';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var m = getApp().globalData, f = {
+  components: {
+    TerminalFilter: mod922
+  },
+  computed: {
+    ...mod25.mapState("alarmLog", ["alarmList", "status", "listNeedRefresh"]),
+    ...mod25.mapGetters(["userType", "selectedTerminal", "sysInfo"])
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      isShowAllDelete: false,
+      filterData: null
+    };
+  },
+  props: ["deleteShow", "filterShow"],
+  mounted: function () {},
+  methods: {
+    ...mod25.mapActions("alarmLog", ["GetAlermList", "GetAlarmStatistics", "BatchDeleteAlarm", "AllDeleteAlarm", "DelAlermLog"]),
+    ...mod25.mapActions("device", ["GetGeocode"]),
+    ...mod25.mapMutations("alarmLog", ["setListNeedRefresh", "setDeleteShowList", "initState", "setListAddress"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    fetchData: function (e) {
+      var t = this;
+      return mod23(mod22.mark(function n() {
+        var r;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if ((t.filterData = null, t.setListNeedRefresh(e.value), t.selectedTerminal)) {
+                n.next = 6;
+                break;
+              }
+              return (t.initState(), uni.stopPullDownRefresh(), n.abrupt("return"));
+            case 6:
+              return (r = {
+                terminalId: t.selectedTerminal.id
+              }, e.param && (r = {
+                terminalId: t.selectedTerminal.id,
+                alarmTypes: e.param.alarmTypes,
+                beginTime: e.param.beginTime,
+                endTime: e.param.endTime
+              }, t.filterData = r), r = {
+                ...r,
+                terminalNo: e.terminalNo
+              }, n.next = 11, t.GetAlermList(r));
+            case 11:
+              uni.stopPullDownRefresh();
+            case 12:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    getItemAddress: function (e) {
+      var t = this;
+      return (async function () {
+        var r;
+        (r = await t.GetGeocode({
+          longitude: e.beginLngWGS84,
+          latitude: e.beginLatWGS84
+        }), t.setListAddress({
+          id: e.id,
+          address: r.address
+        }));
+      })();
+    },
+    setDeleteShowTerminal: function () {
+      return 1 != this.userType && (!!this.alarmList.length || (mod166.qzwlToast("\u5f53\u524d\u65e0\u53ef\u5220\u9664\u7684\u544a\u8b66\u6d88\u606f", "none"), false));
+    },
+    gotoAlarmDetail: function (e) {
+      this.deleteShow ? this.setDeleteShowList(e) : uni.navigateTo({
+        url: ("/pagesMore/message/statement?id=").concat(e.id)
+      });
+    },
+    setShowAllDeleteList: function () {
+      (this.isShowAllDelete ? this.setDeleteShowList() : this.setDeleteShowList({
+        all: true
+      }), this.isShowAllDelete = !this.isShowAllDelete);
+    },
+    itemDeleteChange: function (e) {
+      var t = this, n = (function () {
+        var n = async function () {
+          (await t.DelAlermLog({
+            id: e.id
+          })).succeeded && (mod166.qzwlToast(m.$t("common.deleted.success"), "none"), t.fetchData({
+            value: true
+          }));
+        };
+        return function () {
+          return n.apply(this, arguments);
+        };
+      })();
+      uni.showModal({
+        title: m.$t("common.confirm-delete"),
+        cancelText: m.$t("common.cancel"),
+        confirmText: m.$t("common.confirm"),
+        success: function (e) {
+          e.cancel || n();
+        }
+      });
+    },
+    deleteMsg: function () {
+      var e = this, t = (function () {
+        var t = async function () {
+          var n;
+          n = e.alarmList.map(function (e) {
+            if (e.isShowDelete) return e.id;
+          }).filter(function (e) {
+            return !!e;
+          });
+          (await e.BatchDeleteAlarm({
+            data: n
+          })).succeeded && (mod166.qzwlToast(m.$t("common.deleted.success"), "none"), e.$emit("setDeleteShow", false), e.fetchData({
+            value: true
+          }));
+        };
+        return function () {
+          return t.apply(this, arguments);
+        };
+      })();
+      uni.showModal({
+        title: m.$t("common.confirm-delete"),
+        cancelText: m.$t("common.cancel"),
+        confirmText: m.$t("common.confirm"),
+        success: function (e) {
+          e.cancel || t();
+        }
+      });
+    },
+    allDeleteMsg: function () {
+      var t = this;
+      return (async function () {
+        var r;
+        (r = (function () {
+          var n = async function () {
+            var r;
+            (r = await t.AllDeleteAlarm({
+              id: t.selectedTerminal.id
+            }), e("log", r, "result", " at pages/msg/components/terminalMsg.nvue:294"), r.succeeded && (mod166.qzwlToast(m.$t("common.all.clear.success"), "none"), t.$emit("setDeleteShow", false), t.fetchData({
+              value: true
+            })));
+          };
+          return function () {
+            return n.apply(this, arguments);
+          };
+        })(), uni.showModal({
+          title: m.$t("common.confirm-clear"),
+          cancelText: m.$t("common.cancel"),
+          confirmText: m.$t("common.confirm"),
+          success: function (e) {
+            e.cancel || r();
+          }
+        }));
+      })();
+    },
+    filterClose: function () {
+      this.$emit("msgFilter", false);
+    }
+  },
+  watch: {
+    deleteShow: {
+      immediate: true,
+      handler: function () {
+        this.deleteShow || (this.setDeleteShowList(), this.isShowAllDelete = false);
+      }
+    }
+  }
+};
+export default f;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.foot-delete {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-top: 16rpx;
+  padding-right: 32rpx;
+  padding-bottom: 48rpx;
+  padding-left: 32rpx;
+  background-color: #ffffff;
+}
+
+.foot-delete-but {
+  width: 136rpx;
+  height: 56rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.foot-delete {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-top: 2.1333vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 6.4vw;
+  padding-left: 4.2667vw;
+  background-color: #ffffff;
+}
+
+.foot-delete-but {
+  width: 18.1333vw;
+  height: 7.4667vw;
+}
+/* #endif */
+</style>

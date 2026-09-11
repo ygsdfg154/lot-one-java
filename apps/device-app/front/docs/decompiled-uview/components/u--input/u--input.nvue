@@ -1,0 +1,71 @@
+<template>
+<uvInput
+  :value="value"
+  :type="type"
+  :fixed="fixed"
+  :disabled="disabled"
+  :disabledColor="disabledColor"
+  :clearable="clearable"
+  :password="password"
+  :maxlength="maxlength"
+  :placeholder="placeholder"
+  :placeholderClass="placeholderClass"
+  :placeholderStyle="placeholderStyle"
+  :showWordLimit="showWordLimit"
+  :confirmType="confirmType"
+  :confirmHold="confirmHold"
+  :holdKeyboard="holdKeyboard"
+  :focus="focus"
+  :autoBlur="autoBlur"
+  :disableDefaultPadding="disableDefaultPadding"
+  :cursor="cursor"
+  :cursorSpacing="cursorSpacing"
+  :selectionStart="selectionStart"
+  :selectionEnd="selectionEnd"
+  :adjustPosition="adjustPosition"
+  :inputAlign="inputAlign"
+  :fontSize="fontSize"
+  :color="color"
+  :prefixIcon="prefixIcon"
+  :suffixIcon="suffixIcon"
+  :suffixIconStyle="suffixIconStyle"
+  :prefixIconStyle="prefixIconStyle"
+  :border="border"
+  :readonly="readonly"
+  :shape="shape"
+  :customStyle="customStyle"
+  :formatter="formatter"
+  :ignoreCompositionEvent="ignoreCompositionEvent"
+  @focus="$emit('focus')"
+  @blur="$emit('blur', t)"
+  @keyboardheightchange="$emit('keyboardheightchange')"
+  @change="$emit('change', t)"
+  @input="$emit('input', t)"
+  @confirm="$emit('confirm', t)"
+  @clear="$emit('clear')"
+  @click="$emit('click')"
+>
+  <slot name="prefix" :slot="'prefix'"></slot>
+  <slot name="suffix" :slot="'suffix'"></slot>
+</uvInput>
+</template>
+
+<script>
+/*
+ * 组件: u-Input
+ * 反编译自 webpack 模块 187（nvue 编译空间）
+ */
+import mod254 from 'uview-ui/components/u-input/u-input.vue'
+import mod227 from '@/.unpacked/nvue/227.js'
+
+"use strict";
+var o = {
+  name: "u--input",
+  mixins: [uni.$u.mpMixin, mod227, uni.$u.mixin],
+  components: {
+    uvInput: mod254
+  }
+};
+export default o;
+
+</script>

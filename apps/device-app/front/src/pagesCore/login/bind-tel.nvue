@@ -1,0 +1,216 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="u-page">
+    <view class="bg-white br-md main">
+      <view>
+        <u--input :placeholder="l('common.tel')" v-model="userPhone"></u--input>
+      </view>
+      <view class="m-t-lg">
+        <u--input type="code" :placeholder="l('common.code')" v-model="code">
+          <template slot="suffix">
+            <u-code
+              ref="ztxCode"
+              :keepRunning="true"
+              uniqueKey="page-a"
+              seconds="60"
+              :changeText="l('common.x.get.code')"
+              :startText="l('common.get.code')"
+              :endText="l('common.anew.code')"
+              @change="codeTimeChange"
+              @start="disabled = true"
+              @end="disabled = false"
+            ></u-code>
+            <u--text type="primary" :text="codeTime" @click="getSmsCode"></u--text>
+          </template>
+        </u--input>
+      </view>
+      <view class="m-t-lg" style="flex-direction: row; justify-content: flex-end">
+        <text class="text text-primary" append="tree" @click="goback">
+          {{ l('common.Return.signin') }}
+        </text>
+      </view>
+    </view>
+    <view class="m-t-xl">
+      <u-button
+        type="primary"
+        size="large"
+        shape="circle"
+        :text="l('common.bind')"
+        @click="bindUserPhone"
+      ></u-button>
+    </view>
+    <verificationCode
+      v-if="imgCaptchaShow"
+      ref="imgCaptchaRef"
+      :phoneNumber="userPhone"
+      @imgCaptchaChange="imgCaptchaChange"
+      @smsCodeChange="smsCodeChange"
+    ></verificationCode>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/login/bind-tel
+ * 反编译自 webpack 模块 734（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod368 from '../../components/verificationCode/verificationCode.nvue'
+
+function a(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var d = (a(require("../../common/config.nvue.js")), require("../../common/utils.nvue.js"));
+var c = getApp().globalData, m = {
+  components: {
+    verificationCode: mod368
+  },
+  data: function () {
+    return {
+      userPhone: "",
+      code: "",
+      terminalNo: "",
+      userPwd: "",
+      codeTime: "",
+      disabled: false,
+      imgCaptchaShow: false
+    };
+  },
+  onLoad: function (e) {
+    (this.terminalNo = e.terminalNo, this.userPwd = e.password);
+  },
+  methods: {
+    ...mod25.mapActions("account", ["BindUserPhone", "SignIn"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    codeTimeChange: function (e) {
+      this.codeTime = e;
+    },
+    imgCaptchaChange: function (e) {
+      this.imgCaptchaShow = e;
+    },
+    smsCodeChange: function () {
+      (d.qzwlToast(c.$t("common.code.sent"), "none"), this.$refs.ztxCode.start(), this.imgCaptchaShow = false);
+    },
+    getSmsCode: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.please.tel"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (e.$refs.ztxCode.canGetCode) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.operation"), "none"));
+            case 6:
+              e.imgCaptchaShow = true;
+            case 7:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    bindUserPhone: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        var n;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim() && e.code.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.content"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (uni.$u.test.rangeLength(e.code, [4, 6])) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast(c.$t("common.please.valid.mobile.code"), "none"));
+            case 6:
+              return (t.next = 8, e.BindUserPhone({
+                username: e.terminalNo.trim(),
+                password: e.userPwd.trim(),
+                phoneNumber: e.userPhone.trim(),
+                captcha: e.code.trim()
+              }));
+            case 8:
+              if (!t.sent.succeeded) {
+                t.next = 15;
+                break;
+              }
+              return (d.qzwlToast(c.$t("common.bind.success"), "none"), t.next = 13, e.SignIn({
+                username: e.terminalNo,
+                password: e.userPwd
+              }));
+            case 13:
+              (n = t.sent).succeeded ? uni.reLaunch({
+                url: "/pages/home/home"
+              }) : (d.qzwlToast(n.msg, "none"), uni.reLaunch({
+                url: "/pagesCore/login/index"
+              }));
+            case 15:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    goback: function () {
+      uni.reLaunch({
+        url: "/pagesCore/login/index"
+      });
+    },
+    gotoPage: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+.main {
+  padding-top: 15;
+  padding-right: 15;
+  padding-bottom: 15;
+  padding-left: 15;
+}
+</style>

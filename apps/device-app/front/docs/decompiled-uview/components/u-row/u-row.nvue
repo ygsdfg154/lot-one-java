@@ -1,0 +1,65 @@
+<template>
+<view ref="u-row" class="u-row" :style="[$data.rowStyle]" @click="$data.clickHandler">
+  <slot></slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uRow
+ * 反编译自 webpack 模块 411（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod840 from '@/.unpacked/nvue/840.js';
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var o = e("dom"), d = {
+  name: "u-row",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod840],
+  data: function () {
+    return {};
+  },
+  computed: {
+    uJustify: function () {
+      return "end" == this.justify || "start" == this.justify ? "flex-" + this.justify : "around" == this.justify || "between" == this.justify ? "space-" + this.justify : this.justify;
+    },
+    uAlignItem: function () {
+      return "top" == this.align ? "flex-start" : "bottom" == this.align ? "flex-end" : this.align;
+    },
+    rowStyle: function () {
+      var e = {
+        alignItems: this.uAlignItem,
+        justifyContent: this.uJustify
+      };
+      return (this.gutter && (e.marginLeft = uni.$u.addUnit(-Number(this.gutter) / 2), e.marginRight = uni.$u.addUnit(-Number(this.gutter) / 2)), uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    }
+  },
+  methods: {
+    clickHandler: function (e) {
+      this.$emit("click");
+    },
+    getComponentWidth: function () {
+      var e = this;
+      return (async function () {
+        await uni.$u.sleep();
+        return new Promise(function (t) {
+          o.getComponentRect(e.$refs["u-row"], function (e) {
+            t(e.size.width);
+          });
+        });
+      })();
+    }
+  }
+};
+export default d;
+
+</script>
+
+<style scoped>
+.u-row {
+  flex-direction: row;
+}
+</style>

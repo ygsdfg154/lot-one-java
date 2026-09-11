@@ -1,0 +1,193 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="page flex-1 h100 b-top">
+    <view v-if="bindedShow" class="wechatTop flex-col justify-center items-center">
+      <image class="wechatTop-logoImg br-md" :src="wechatImgurl" />
+      <text class="text-bold m-t-md" style="font-size: 40rpx" append="tree">
+        {{ wechatName }}
+      </text>
+      <text class="text-gray m-t-lg text" append="tree">
+        {{ l('tel-pay.wx-bind') }}
+      </text>
+      <view class="flex-row items-center">
+        <view class="m-t-lg m-r" style="width: 152rpx">
+          <u-button
+            style="height: 56rpx"
+            :text="l('tel-pay.wx-unbind')"
+            type="primary"
+            @click="confirmBind"
+          ></u-button>
+        </view>
+        <view v-if="!(isAuditMode)" class="m-t-lg" style="width: 152rpx">
+          <u-button style="height: 56rpx" :text="l('device.pay')" type="primary" @click="payWxAlarm"></u-button>
+        </view>
+      </view>
+    </view>
+    <view class="content flex-col justify-center items-center">
+      <image class="content-logoImg" :src="cdn + '/draw/qzwl-logo.png'" />
+      <text class="text-bold m-t-md" style="font-size: 40rpx" append="tree">
+        {{ l('tel-pay.wx-name') }}
+      </text>
+      <text v-if="bindedShow" class="text-gray m-t-lg text" append="tree">
+        {{ l('tel-pay.wx-tencent') }}
+      </text>
+      <text class="text-gray m-t-lg text" append="tree">
+        {{ l('tel-pay.wx-tencent-push') }}
+      </text>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/alerts-set/wx
+ * 反编译自 webpack 模块 707（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import mod15 from '../../../common/config.nvue.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+import * as mod25 from 'vuex';
+"use strict";
+var m = getApp().globalData, c = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      wechatName: "",
+      wechatImgurl: "",
+      wechatId: 0,
+      bindedShow: true
+    };
+  },
+  onLoad: function (e) {
+    (this.wechatName = e.wechatName, this.wechatImgurl = e.wechatImgurl, this.wechatId = e.wechatId);
+  },
+  onHide: function () {
+    clearInterval(undefined);
+  },
+  computed: {
+    ...mod25.mapGetters(["isAuditMode", "selectedTerminal", "access_token"])
+  },
+  methods: {
+    ...mod25.mapActions("account", ["UnbindAccount"]),
+    ...mod25.mapActions("alarm", ["SetNotifyChannel"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    /**
+     * 解绑微信 = 契约 2.2 `POST /auth/app/unbind-wechat`（原版打的是
+     * `/terminal-alarm-setting/set-wechat-alarm`，那只是关推送开关，不是解绑）。
+     * 解绑后微信推送就没有投递目标了，顺手把渠道开关也关掉，避免留一个开着但发不出去的开关。
+     * 21014：账号没绑手机号时不允许解绑（微信是唯一登录方式）。
+     */
+    unbindWx: function () {
+      var e = this;
+      return (async function () {
+        var res = await e.UnbindAccount({ mode: "wechat" });
+        if (!res.succeeded) {
+          if (res.msg) mod166.qzwlToast(res.msg, "none");
+          return;
+        }
+        await e.SetNotifyChannel({
+          deviceId: e.selectedTerminal && e.selectedTerminal.id,
+          key: "wechat",
+          status: false
+        });
+        (mod166.qzwlToast(m.$t("tel-pay.wx-unbind-success")), e.bindedShow = false, uni.navigateBack());
+      })();
+    },
+    confirmBind: function () {
+      var e = this;
+      uni.showModal({
+        title: m.$t("tel-pay.wx-unbind-account"),
+        cancelText: m.$t("common.cancel"),
+        confirmText: m.$t("common.ok"),
+        success: function (t) {
+          t.cancel || e.unbindWx();
+        }
+      });
+    },
+    payWxAlarm: function () {
+      mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: "/pagesPay/value-added/index?type=3&alarm=0",
+        access_token: this.access_token
+      });
+    }
+  }
+};
+export default c;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.page {
+  background-color: #f6f6f6;
+}
+
+.wechatTop {
+  background-color: #ffffff;
+  padding-top: 80rpx;
+  padding-bottom: 50rpx;
+}
+
+.wechatTop-logoImg {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 16rpx;
+}
+
+.content {
+  background-color: #ffffff;
+  padding-top: 80rpx;
+  padding-bottom: 50rpx;
+  margin-top: 20rpx;
+}
+
+.content-logoImg {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 16rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.page {
+  background-color: #f6f6f6;
+}
+
+.wechatTop {
+  background-color: #ffffff;
+  padding-top: 10.6667vw;
+  padding-bottom: 6.6667vw;
+}
+
+.wechatTop-logoImg {
+  width: 14.9333vw;
+  height: 14.9333vw;
+  border-radius: 2.1333vw;
+}
+
+.content {
+  background-color: #ffffff;
+  padding-top: 10.6667vw;
+  padding-bottom: 6.6667vw;
+  margin-top: 2.6667vw;
+}
+
+.content-logoImg {
+  width: 14.9333vw;
+  height: 14.9333vw;
+  border-radius: 2.1333vw;
+}
+/* #endif */
+</style>

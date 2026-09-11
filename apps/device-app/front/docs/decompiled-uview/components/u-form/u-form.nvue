@@ -1,0 +1,127 @@
+<template>
+<view class="u-form">
+  <slot></slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uvForm
+ * 反编译自 webpack 模块 339（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ * 变量 d 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 a 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import a from '@/.unpacked/nvue/22.js';
+import mod472 from '@/.unpacked/nvue/472.js';
+import o from '@/.unpacked/nvue/5.js';
+import s from '@/.unpacked/nvue/23.js';
+import d from '@/.unpacked/nvue/440.js';
+import mod476 from '@/.unpacked/nvue/476.js';
+"use strict";
+mod476.warning = function () {};
+var l = {
+  name: "u-form",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, d],
+  provide: function () {
+    return {
+      uForm: this
+    };
+  },
+  data: function () {
+    return {
+      formRules: {},
+      validator: {},
+      originalModel: null
+    };
+  },
+  watch: {
+    rules: {
+      immediate: true,
+      handler: function (e) {
+        this.setRules(e);
+      }
+    },
+    propsChange: function (e) {
+      var t;
+      null !== (t = this.children) && undefined !== t && t.length && this.children.map(function (e) {
+        "function" == typeof e.updateParentData && e.updateParentData();
+      });
+    },
+    model: {
+      immediate: true,
+      handler: function (e) {
+        this.originalModel || (this.originalModel = uni.$u.deepClone(e));
+      }
+    }
+  },
+  computed: {
+    propsChange: function () {
+      return [this.errorType, this.borderBottom, this.labelPosition, this.labelWidth, this.labelAlign, this.labelStyle];
+    }
+  },
+  created: function () {
+    this.children = [];
+  },
+  methods: {
+    setRules: function (e) {
+      0 !== Object.keys(e).length && (this.formRules = e, this.validator = new mod476(e));
+    },
+    resetFields: function () {
+      this.resetModel();
+    },
+    resetModel: function (e) {
+      var t = this;
+      this.children.map(function (e) {
+        var n = null == e ? undefined : e.prop, r = uni.$u.getProperty(t.originalModel, n);
+        uni.$u.setProperty(t.model, n, r);
+      });
+    },
+    clearValidate: function (e) {
+      (e = [].concat(e), this.children.map(function (t) {
+        (undefined === e[0] || e.includes(t.prop)) && (t.message = null);
+      }));
+    },
+    validateField: function (e, t) {
+      var n = arguments, r = this;
+      return (async function () {
+        var d;
+        (d = n.length > 2 && undefined !== n[2] ? n[2] : null, r.$nextTick(function () {
+          var n = [];
+          (e = [].concat(e), r.children.map(function (t) {
+            var a = [];
+            if (e.includes(t.prop)) {
+              var s = uni.$u.getProperty(r.model, t.prop), l = t.prop.split("."), _ = l[l.length - 1], c = r.formRules[t.prop];
+              if (!c) return;
+              for (var m = [].concat(c), f = 0; f < m.length; f++) {
+                var p = m[f], h = [].concat(null == p ? undefined : p.trigger);
+                if (!d || h.includes(d)) new mod476(o({}, _, p)).validate(o({}, _, s), function (e, r) {
+                  var o, s;
+                  (uni.$u.test.array(e) && (n.push.apply(n, mod472(e)), a.push.apply(a, mod472(e))), t.message = null !== (o = null === (s = a[0]) || undefined === s ? undefined : s.message) && undefined !== o ? o : null);
+                });
+              }
+            }
+          }), "function" == typeof t && t(n));
+        }));
+      })();
+    },
+    validate: function (e) {
+      var t = this;
+      return new Promise(function (e, n) {
+        t.$nextTick(function () {
+          var r = t.children.map(function (e) {
+            return e.prop;
+          });
+          t.validateField(r, function (r) {
+            r.length ? ("toast" === t.errorType && uni.$u.toast(r[0].message), n(r)) : e(true);
+          });
+        });
+      });
+    }
+  }
+};
+export default l;
+
+</script>

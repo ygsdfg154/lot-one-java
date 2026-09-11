@@ -1,0 +1,70 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="flex-1 flex-row justify-center items-center">
+    <view class="flex-col justify-center items-center" style="margin-top: 200rpx">
+      <u-icon size="128" :name="$data.cdn + '/draw/qzwlAuthorizeLoading.png'"></u-icon>
+      <text class="m-t-lg" append="tree">
+        登录授权中...
+      </text>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/public/qzwl-authorize
+ * 反编译自 webpack 模块 605（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var p = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      url: ""
+    };
+  },
+  computed: {
+    ...mod25.mapGetters([])
+  },
+  methods: {
+    ...mod25.mapActions("terminal", ["GetTerminalInfo"]),
+    ...mod25.mapActions("user", ["GetSystemUserInfo"]),
+    ...mod25.mapMutations("account", ["setLogedIn"]),
+    ...mod25.mapMutations("sys", ["setAppMpShow"]),
+    getInfo: function (t) {
+      var e = this;
+      return (async function () {
+        await e.GetTerminalInfo({
+          id: t
+        });
+        await e.GetSystemUserInfo();
+        (e.setAppMpShow(true), setTimeout(function () {
+          uni.reLaunch({
+            url: e.url
+          });
+        }, 1e3));
+      })();
+    }
+  },
+  onLoad: function (t) {
+    (this.url = t.url, this.setLogedIn({
+      access_token: t.access_token
+    }), this.getInfo(t.id));
+  }
+};
+export default p;
+
+</script>

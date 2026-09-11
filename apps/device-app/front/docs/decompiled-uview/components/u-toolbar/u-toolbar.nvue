@@ -1,0 +1,128 @@
+<template>
+<view v-if="show" class="u-toolbar" @touchmove="noop">
+  <view class="u-toolbar__cancel__wrapper" hoverClass="u-hover-class">
+    <text
+      class="u-toolbar__wrapper__cancel"
+      :style="{ color: cancelColor }"
+      append="tree"
+      @click="cancel"
+    >
+      {{ cancelText }}
+    </text>
+  </view>
+  <text v-if="title" class="u-toolbar__title u-line-1" append="tree">
+    {{ title }}
+  </text>
+  <view class="u-toolbar__confirm__wrapper" hoverClass="u-hover-class">
+    <text
+      class="u-toolbar__wrapper__confirm"
+      :style="{ color: confirmColor }"
+      append="tree"
+      @click="confirm"
+    >
+      {{ confirmText }}
+    </text>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uToolbar
+ * 反编译自 webpack 模块 236（nvue 编译空间）
+ */
+import mod311 from '@/.unpacked/nvue/311.js'
+
+"use strict";
+var i = {
+  name: "u-toolbar",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod311],
+  methods: {
+    cancel: function () {
+      this.$emit("cancel");
+    },
+    confirm: function () {
+      this.$emit("confirm");
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.u-toolbar {
+  height: 42;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.u-toolbar__wrapper__cancel {
+  color: #909193;
+  font-size: 15;
+  padding-top: 0;
+  padding-right: 15;
+  padding-bottom: 0;
+  padding-left: 15;
+}
+
+.u-toolbar__title {
+  color: #303133;
+  padding-top: 0;
+  padding-right: 60rpx;
+  padding-bottom: 0;
+  padding-left: 60rpx;
+  font-size: 16;
+  flex: 1;
+  text-align: center;
+}
+
+.u-toolbar__wrapper__confirm {
+  color: #6081C7;
+  font-size: 15;
+  padding-top: 0;
+  padding-right: 15;
+  padding-bottom: 0;
+  padding-left: 15;
+}
+/* #endif */
+/* #ifdef H5 */
+.u-toolbar {
+  height: 42;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.u-toolbar__wrapper__cancel {
+  color: #909193;
+  font-size: 15;
+  padding-top: 0;
+  padding-right: 15;
+  padding-bottom: 0;
+  padding-left: 15;
+}
+
+.u-toolbar__title {
+  color: #303133;
+  padding-top: 0;
+  padding-right: 8vw;
+  padding-bottom: 0;
+  padding-left: 8vw;
+  font-size: 16;
+  flex: 1;
+  text-align: center;
+}
+
+.u-toolbar__wrapper__confirm {
+  color: #6081C7;
+  font-size: 15;
+  padding-top: 0;
+  padding-right: 15;
+  padding-bottom: 0;
+  padding-left: 15;
+}
+/* #endif */
+</style>

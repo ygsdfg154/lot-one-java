@@ -1,0 +1,57 @@
+<template>
+<u-transition
+  :show="$data.show"
+  customClass="u-overlay"
+  :duration="$data.duration"
+  :customStyle="$data.overlayStyle"
+  @click="$data.clickHandler"
+>
+  <slot></slot>
+</u-transition>
+</template>
+
+<script>
+/*
+ * 组件: uOverlay
+ * 反编译自 webpack 模块 175（nvue 编译空间）
+ */
+import mod248 from '@/.unpacked/nvue/248.js'
+
+"use strict";
+var i = {
+  name: "u-overlay",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod248],
+  computed: {
+    overlayStyle: function () {
+      var e = {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: this.zIndex,
+        bottom: 0,
+        "background-color": ("rgba(0, 0, 0, ").concat(this.opacity, ")")
+      };
+      return uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle));
+    }
+  },
+  methods: {
+    clickHandler: function () {
+      this.$emit("click");
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100;
+  height: 100;
+  background-color: rgba(0,0,0,0.7);
+}
+</style>

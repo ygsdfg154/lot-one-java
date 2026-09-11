@@ -1,0 +1,111 @@
+// webpack 模块 784  [nvue]
+// 出现于: pagesCore/login/bind-tel-more.js
+const __r = require('./__runtime.js').wrap();
+(function (e, t, n) {
+  "use strict";
+  (n.d(t, "b", function () {
+    return r;
+  }), n.d(t, "c", function () {
+    return i;
+  }), n.d(t, "a", function () {
+    return a;
+  }));
+  var a = {
+    "u-Input": require("uview-ui/components/u--input/u--input.vue").default,
+    uCode: require("uview-ui/components/u-code/u-code.vue").default,
+    "u-Text": require("uview-ui/components/u--text/u--text.vue").default,
+    uButton: require("uview-ui/components/u-button/u-button.vue").default
+  }, r = function () {
+    var e = this, t = e.$createElement, n = e._self._c || t;
+    return n("scroll-view", {
+      staticStyle: {
+        flexDirection: "column"
+      },
+      attrs: {
+        scrollY: !0,
+        showScrollbar: !0,
+        enableBackToTop: !0,
+        bubble: "true"
+      }
+    }, [n("view", {
+      staticClass: ["u-page"]
+    }, [n("view", {
+      staticClass: ["bg-white", "br-md", "main"]
+    }, [n("view", [n("u--input", {
+      attrs: {
+        placeholder: "\u624b\u673a\u53f7"
+      },
+      model: {
+        value: e.userPhone,
+        callback: function (t) {
+          e.userPhone = t;
+        },
+        expression: "userPhone"
+      }
+    })], 1), n("view", {
+      staticClass: ["m-t-lg"]
+    }, [n("u--input", {
+      attrs: {
+        type: "code",
+        placeholder: "\u77ed\u4fe1\u9a8c\u8bc1\u7801"
+      },
+      model: {
+        value: e.code,
+        callback: function (t) {
+          e.code = t;
+        },
+        expression: "code"
+      }
+    }, [n("template", {
+      slot: "suffix"
+    }, [n("u-code", {
+      ref: "ztxCode",
+      attrs: {
+        keepRunning: !0,
+        uniqueKey: "page-a",
+        seconds: "60",
+        changeText: e.l("common.x.get.code"),
+        startText: e.l("common.get.code"),
+        endText: e.l("common.anew.code")
+      },
+      on: {
+        change: e.codeTimeChange,
+        start: function (t) {
+          e.disabled = !0;
+        },
+        end: function (t) {
+          e.disabled = !1;
+        }
+      }
+    }), n("u--text", {
+      attrs: {
+        type: "primary",
+        text: e.codeTime
+      },
+      on: {
+        click: e.getSmsCode
+      }
+    })], 1)], 2)], 1)]), n("view", {
+      staticClass: ["m-t-xl"]
+    }, [n("u-button", {
+      attrs: {
+        type: "primary",
+        size: "large",
+        shape: "circle",
+        text: "\u7ed1\u5b9a"
+      },
+      on: {
+        click: e.bindUserPhone
+      }
+    })], 1), e.imgCaptchaShow ? n("verificationCode", {
+      ref: "imgCaptchaRef",
+      attrs: {
+        phoneNumber: e.userPhone
+      },
+      on: {
+        imgCaptchaChange: e.imgCaptchaChange,
+        smsCodeChange: e.smsCodeChange
+      }
+    }) : e._e()], 1)]);
+  }, i = [];
+})(module, exports, __r);

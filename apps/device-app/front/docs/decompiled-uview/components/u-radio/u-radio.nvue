@@ -1,0 +1,206 @@
+<template>
+<view
+  class="u-radio"
+  :class="['u-radio-label--' + parentData.iconPlacement, parentData.borderBottom && 'column' === parentData.placement && 'u-border-bottom']"
+  :style="[radioStyle]"
+  @click="wrapperClickHandler"
+>
+  <view
+    class="u-radio__icon-wrap"
+    :class="iconClasses"
+    :style="[iconWrapStyle]"
+    @click="iconClickHandler"
+  >
+    <slot name="icon">
+      <u-icon
+        class="u-radio__icon-wrap__icon"
+        name="checkbox-mark"
+        :size="elIconSize"
+        :color="elIconColor"
+      ></u-icon>
+    </slot>
+  </view>
+  <slot>
+    <text
+      class="u-radio__text"
+      :style="{ color: elDisabled ? elInactiveColor : elLabelColor, fontSize: elLabelSize, lineHeight: elLabelSize }"
+      append="tree"
+      @click="labelClickHandler"
+    >
+      {{ label }}
+    </text>
+  </slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uRadio
+ * 反编译自 webpack 模块 390（nvue 编译空间）
+ */
+import mod828 from '@/.unpacked/nvue/828.js'
+
+"use strict";
+var i = {
+  name: "u-radio",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod828],
+  data: function () {
+    return {
+      checked: false,
+      parentData: {
+        iconSize: 12,
+        labelDisabled: null,
+        disabled: null,
+        shape: null,
+        activeColor: null,
+        inactiveColor: null,
+        size: 18,
+        value: null,
+        iconColor: null,
+        placement: "row",
+        borderBottom: false,
+        iconPlacement: "left"
+      }
+    };
+  },
+  computed: {
+    elDisabled: function () {
+      return "" !== this.disabled ? this.disabled : null !== this.parentData.disabled && this.parentData.disabled;
+    },
+    elLabelDisabled: function () {
+      return "" !== this.labelDisabled ? this.labelDisabled : null !== this.parentData.labelDisabled && this.parentData.labelDisabled;
+    },
+    elSize: function () {
+      return this.size ? this.size : this.parentData.size ? this.parentData.size : 21;
+    },
+    elIconSize: function () {
+      return this.iconSize ? this.iconSize : this.parentData.iconSize ? this.parentData.iconSize : 12;
+    },
+    elActiveColor: function () {
+      return this.activeColor ? this.activeColor : this.parentData.activeColor ? this.parentData.activeColor : "#6081C7";
+    },
+    elInactiveColor: function () {
+      return this.inactiveColor ? this.inactiveColor : this.parentData.inactiveColor ? this.parentData.inactiveColor : "#c8c9cc";
+    },
+    elLabelColor: function () {
+      return this.labelColor ? this.labelColor : this.parentData.labelColor ? this.parentData.labelColor : "#606266";
+    },
+    elShape: function () {
+      return this.shape ? this.shape : this.parentData.shape ? this.parentData.shape : "circle";
+    },
+    elLabelSize: function () {
+      return uni.$u.addUnit(this.labelSize ? this.labelSize : this.parentData.labelSize ? this.parentData.labelSize : "15");
+    },
+    elIconColor: function () {
+      var e = this.iconColor ? this.iconColor : this.parentData.iconColor ? this.parentData.iconColor : "#ffffff";
+      return this.elDisabled ? this.checked ? this.elInactiveColor : "transparent" : this.checked ? e : "transparent";
+    },
+    iconClasses: function () {
+      var e = [];
+      return (e.push("u-radio__icon-wrap--" + this.elShape), this.elDisabled && e.push("u-radio__icon-wrap--disabled"), this.checked && this.elDisabled && e.push("u-radio__icon-wrap--disabled--checked"), e);
+    },
+    iconWrapStyle: function () {
+      var e = {};
+      return (e.backgroundColor = this.checked && !this.elDisabled ? this.elActiveColor : "#ffffff", e.borderColor = this.checked && !this.elDisabled ? this.elActiveColor : this.elInactiveColor, e.width = uni.$u.addUnit(this.elSize), e.height = uni.$u.addUnit(this.elSize), "right" === this.parentData.iconPlacement && (e.marginRight = 0), e);
+    },
+    radioStyle: function () {
+      var e = {};
+      return (this.parentData.borderBottom && "row" === this.parentData.placement && uni.$u.error("\u68c0\u6d4b\u5230\u60a8\u5c06borderBottom\u8bbe\u7f6e\u4e3atrue\uff0c\u9700\u8981\u540c\u65f6\u5c06u-radio-group\u7684placement\u8bbe\u7f6e\u4e3acolumn\u624d\u6709\u6548"), this.parentData.borderBottom && "column" === this.parentData.placement && (e.paddingBottom = "ios" === uni.$u.os() ? "12px" : "8px"), uni.$u.deepMerge(e, uni.$u.addStyle(this.customStyle)));
+    }
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    init: function () {
+      (this.updateParentData(), this.parent || uni.$u.error("u-radio\u5fc5\u987b\u642d\u914du-radio-group\u7ec4\u4ef6\u4f7f\u7528"), this.checked = this.name === this.parentData.value);
+    },
+    updateParentData: function () {
+      this.getParentData("u-radio-group");
+    },
+    iconClickHandler: function (e) {
+      (this.preventEvent(e), this.elDisabled || this.setRadioCheckedStatus());
+    },
+    wrapperClickHandler: function (e) {
+      "right" === this.parentData.iconPlacement && this.iconClickHandler(e);
+    },
+    labelClickHandler: function (e) {
+      (this.preventEvent(e), this.elLabelDisabled || this.elDisabled || this.setRadioCheckedStatus());
+    },
+    emitEvent: function () {
+      var e = this;
+      this.checked || (this.$emit("change", this.name), this.$nextTick(function () {
+        uni.$u.formValidate(e, "change");
+      }));
+    },
+    setRadioCheckedStatus: function () {
+      (this.emitEvent(), this.checked = true, "function" == typeof this.parent.unCheckedOther && this.parent.unCheckedOther(this));
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-radio {
+  overflow: hidden;
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-radio-label--left {
+  flex-direction: row;
+}
+
+.u-radio-label--right {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.u-radio__icon-wrap {
+  color: rgba(0,0,0,0);
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-right: 6;
+  font-size: 20;
+  border-width: 1;
+  border-color: #c8c9cc;
+  border-style: solid;
+}
+
+.u-radio__icon-wrap--circle {
+  border-radius: 100;
+}
+
+.u-radio__icon-wrap--square {
+  border-radius: 3;
+}
+
+.u-radio__icon-wrap--checked {
+  color: #ffffff;
+  background-color: #FF0000;
+  border-color: #6081C7;
+}
+
+.u-radio__icon-wrap--disabled {
+  background-color: #ebedf0;
+}
+
+.u-radio__icon-wrap--disabled--checked {
+  color: #c8c9cc;
+}
+
+.u-radio__label {
+  margin-left: 5;
+  margin-right: 12;
+  color: #606266;
+  font-size: 15;
+}
+
+.u-radio__label--disabled {
+  color: #c8c9cc;
+}
+</style>

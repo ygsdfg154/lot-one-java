@@ -1,0 +1,99 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #ffffff; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      隐私政策
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #ffffff; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 40rpx 36rpx 100rpx 36rpx; background-color: #ffffff;">
+      <text style="font-size: 40rpx; font-weight: bold; color: #1E293B; text-align: center; display: block; margin-bottom: 32rpx;" append="tree">
+        铭智物联 隐私政策
+      </text>
+
+      <view style="background-color: #F8FAFC; border-radius: 16rpx; padding: 28rpx 32rpx; margin-bottom: 40rpx; border-left: 8rpx solid #6081C7;">
+        <text style="font-size: 26rpx; color: #334155; line-height: 42rpx; display: block;" append="tree">
+          铭智物联（以下简称“我们”）非常重视用户的隐私和个人信息保护。您在使用我们的产品与/或服务时，我们可能会收集和使用您的相关信息。我们希望通过本《隐私政策》向您说明在您使用我们的产品与/或服务时，我们如何收集、使用、保存、共享和转让这些信息，以及我们为您提供的访问、更新、删除和保护这些信息的方式。
+        </text>
+      </view>
+
+      <!-- 一、适用范围 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          一、适用范围
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          1.1 在您注册铭智物联账号时，您根据铭智物联要求提供的个人注册信息（包括手机号码、密码等）；
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          1.2 在您使用铭智物联网络服务，或访问铭智物联平台网页时，铭智物联自动接收并记录的您的浏览器和计算机上的信息，包括但不限于您的IP地址、浏览器的类型、使用的语言、访问日期和时间、软硬件特征信息及您需求的网页记录等数据。
+        </text>
+      </view>
+
+      <!-- 二、信息使用 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          二、信息使用
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          2.1 铭智物联不会向任何无关第三方提供、出售、出租、分享或交易您的个人信息，除非事先得到您的许可。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          2.2 铭智物联亦不允许任何第三方以任何手段收集、编辑、出售或者无偿传播您的个人信息。
+        </text>
+      </view>
+
+      <!-- 三、信息披露 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          三、信息披露
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          在如下情况下，铭智物联将依据您的个人意愿或法律的规定全部或部分的披露您的个人信息：
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 8rpx; display: block;" append="tree">
+          · 经您事先同意，向第三方披露；
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 8rpx; display: block;" append="tree">
+          · 为提供您所要求的产品和服务，而必须和第三方分享您的个人信息；
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; display: block;" append="tree">
+          · 根据法律的有关规定，或行政/司法机构的要求，向第三方或者行政、司法机构披露。
+        </text>
+      </view>
+
+      <!-- 四、信息安全与存储 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          四、信息安全与存储
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          4.1 铭智物联帐号均有安全保护功能，请妥善保管您的用户名及密码信息。铭智物联将通过对用户密码进行加密等安全措施确保您的信息不丢失，不被滥用和变造。
+        </text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {
+    gotoBack() {
+      uni.navigateBack();
+    }
+  }
+};
+</script>

@@ -1,0 +1,76 @@
+<template>
+<view
+  v-if="show"
+  class="u-notice-bar"
+  :style="[{ backgroundColor: bgColor }, $u.addStyle(customStyle)]"
+>
+  <u-column-notice
+    v-if="'column' === direction || 'row' === direction && step"
+    :color="color"
+    :bgColor="bgColor"
+    :text="text"
+    :mode="mode"
+    :step="step"
+    :icon="icon"
+    :disableTouch="disableTouch"
+    :fontSize="fontSize"
+    :duration="duration"
+    @close="close"
+    @click="click"
+  ></u-column-notice>
+  <u-row-notice
+    v-else
+    :color="color"
+    :bgColor="bgColor"
+    :text="text"
+    :mode="mode"
+    :fontSize="fontSize"
+    :speed="speed"
+    :url="url"
+    :linkType="linkType"
+    :icon="icon"
+    @close="close"
+    @click="click"
+  ></u-row-notice>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uNoticeBar
+ * 反编译自 webpack 模块 560（nvue 编译空间）
+ */
+import mod932 from '@/.unpacked/nvue/932.js'
+
+"use strict";
+var i = {
+  name: "u-notice-bar",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod932],
+  data: function () {
+    return {
+      show: true
+    };
+  },
+  methods: {
+    click: function (e) {
+      (this.$emit("click", e), this.url && this.linkType && this.openPage());
+    },
+    close: function () {
+      (this.show = false, this.$emit("close"));
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-notice-bar {
+  overflow: hidden;
+  padding-top: 9;
+  padding-right: 12;
+  padding-bottom: 9;
+  padding-left: 12;
+  flex: 1;
+}
+</style>

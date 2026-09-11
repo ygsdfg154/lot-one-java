@@ -1,0 +1,100 @@
+{
+  "name": "铭智物联",
+  "appid": "__UNI__7115D8B",
+  "description": "铭智物联定位平台，提供设备定位、声音安防、历史轨迹、分享定位等服务",
+  "versionName": "1.2.0",
+  "versionCode": 107,
+  "transformPx": false,
+  "locale": "zh-Hans",
+  "fallbackLocale": "zh-Hans",
+  "app-plus": {
+    "usingComponents": true,
+    "nvueCompiler": "uni-app",
+    "nvueStyleCompiler": "weex",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "autoclose": true,
+      "delay": 0,
+      "target": "id:1",
+      "waiting": true
+    },
+    "modules": {
+      "Webview-x5": {
+        "description": "Webview-x5"
+      },
+      "Geolocation": {
+        "description": "Geolocation"
+      },
+      "Maps": {
+        "description": "Maps"
+      },
+      "Share": {
+        "description": "Share"
+      },
+      "Barcode": {
+        "description": "Barcode"
+      },
+      "Camera": {
+        "description": "Camera"
+      },
+      "OAuth": {
+        "description": "OAuth"
+      },
+      "Payment": {
+        "description": "Payment"
+      },
+      "UniNView": {
+        "description": "UniNView"
+      }
+    },
+    "distribute": {
+      "android": {
+        "permissions": []
+      },
+      "ios": {},
+      "sdkConfigs": {}
+    },
+    "optimization": {
+      "subPackages": true
+    },
+    "safearea": {
+      "bottom": {
+        "offset": "none"
+      }
+    },
+    "statusbar": {
+      "immersed": "supportedDevice",
+      "style": "dark",
+      "background": "#FFFFFF"
+    },
+    "popGesture": "close",
+    "uni-app": {
+      "compilerVersion": "4.75",
+      "control": "uni-v3",
+      "nvueCompiler": "uni-app",
+      "renderer": "auto",
+      "nvue": {
+        "flex-direction": "column"
+      },
+      "nvueLaunchMode": "normal"
+    },
+    "nvue": {
+      "flex-direction": "column"
+    },
+    "nvueLaunchMode": "normal",
+    "renderer": "auto",
+    "allowsInlineMediaPlayback": true,
+    "channel": "huawei"
+  },
+  "h5": {
+    "sdkConfigs": {
+      "maps": {
+        "amap": {
+          "key": "fc9232a479afd34ea3f25bd5a596db58",
+          "securityJsCode": "105ff72d07e60b1e42e7bb0e340a6b7e"
+        }
+      }
+    }
+  },
+  "__原始manifest": "完整原文见 docs/manifest.origin.json（含 confusion 签名、adid 等打包期字段）"
+}

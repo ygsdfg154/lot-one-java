@@ -1,0 +1,420 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('common.specifics') || '订单详情' }}
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 24rpx 28rpx 140rpx 28rpx; background-color: #f6f6f6;">
+      <!-- 订单主要信息卡片 -->
+      <view style="background-color: #ffffff; border-radius: 20rpx; padding: 12rpx 28rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.03); margin-bottom: 24rpx;">
+        <view
+          v-for="(t, a) in Object.keys(infoListObj).map(function (k) { return infoListObj[k]; })"
+          :key="t.id"
+          style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 0; border-bottom: 1rpx solid #F1F5F9;"
+        >
+          <text style="font-size: 28rpx; color: #64748B; width: 180rpx;" append="tree">
+            {{ t.title }}
+          </text>
+          
+          <view style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: flex-end;">
+            <text
+              style="font-size: 28rpx; font-weight: 500;"
+              :style="{ color: t.name === 'status' ? getStatusColor(t.text) : (t.name === 'totalFee' ? '#EF4444' : '#1E293B') }"
+              append="tree"
+            >
+              {{ t.text || '-' }}
+            </text>
+            <text
+              v-if="2 == t.type && t.text"
+              style="font-size: 26rpx; color: #6081C7; margin-left: 20rpx; cursor: pointer;"
+              append="tree"
+              @click="onCopyValue(t.text, t.title.replace('平台', '') + '已复制')"
+            >
+              点击复制
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 订单退款申请详情卡片 -->
+      <view v-if="hasRefundListObj" style="background-color: #ffffff; border-radius: 20rpx; padding: 12rpx 28rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.03); margin-bottom: 24rpx;">
+        <view style="padding: 20rpx 0 12rpx 0; border-bottom: 1rpx solid #F1F5F9;">
+          <text style="font-size: 30rpx; font-weight: bold; color: #1E293B;" append="tree">
+            订单退款申请详情
+          </text>
+        </view>
+        <view
+          v-for="(t, a) in Object.keys(refundListObj).map(function (k) { return refundListObj[k]; })"
+          :key="t.id"
+        >
+          <view v-if="t.text" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 0; border-bottom: 1rpx solid #F1F5F9;">
+            <text style="font-size: 28rpx; color: #64748B; width: 220rpx;" append="tree">
+              {{ t.title }}
+            </text>
+            <view style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: flex-end;">
+              <text style="font-size: 28rpx; color: #1E293B; font-weight: 500;" append="tree">
+                {{ t.text }}
+              </text>
+              <text
+                v-if="2 == t.type && t.text"
+                style="font-size: 26rpx; color: #6081C7; margin-left: 20rpx; cursor: pointer;"
+                append="tree"
+                @click="onCopyValue(t.text, t.title.replace('平台', '') + '已复制')"
+              >
+                点击复制
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 疑问与退款入口 -->
+      <view v-if="0 === userRefundRequest.status" style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 20rpx; padding: 0 10rpx;">
+        <text style="font-size: 26rpx; color: #64748B;" append="tree">订单退款审核中，请先 </text>
+        <text style="font-size: 26rpx; color: #6081C7; cursor: pointer;" append="tree" @click="onCopyValue(orderNo, '订单号已复制')">复制订单号</text>
+        <text style="font-size: 26rpx; color: #64748B;" append="tree">，然后 </text>
+        <text style="font-size: 26rpx; color: #6081C7; cursor: pointer;" append="tree" @click="questionSelect({ name: null, key: 1 })">联系客服</text>
+        <text style="font-size: 26rpx; color: #64748B;" append="tree"> 处理</text>
+      </view>
+      <view
+        v-if="1 === userRefundRequest.status || 2 === userRefundRequest.status"
+        style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 20rpx; padding: 0 10rpx;"
+      >
+        <text style="font-size: 26rpx; color: #64748B;" append="tree">对订单有疑问？请 </text>
+        <text style="font-size: 26rpx; color: #6081C7; cursor: pointer;" append="tree" @click="questionSelect({ name: null, key: 1 })">联系客服</text>
+        <text style="font-size: 26rpx; color: #64748B;" append="tree"> 处理</text>
+      </view>
+      <view v-if="actions && actions.length" style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 20rpx; padding: 0 10rpx;">
+        <text style="font-size: 26rpx; color: #64748B;" append="tree">对订单有疑问？ </text>
+        <text style="font-size: 26rpx; color: #6081C7; cursor: pointer;" append="tree" @click="questionSelect({ name: null, key: 2 })">点我申请退款</text>
+      </view>
+
+      <u-action-sheet
+        :safeAreaInsetBottom="true"
+        :show="showQuestion"
+        :actions="actions"
+        :round="10"
+        cancelText="取消"
+        @close="showQuestion = false"
+        @select="questionSelect"
+      ></u-action-sheet>
+
+      <refundOrder
+        v-if="showRefund"
+        ref="refundOrderRef"
+        :orderId="orderID"
+        :requestFee="totalFee"
+        @refundOrder="refundOrder"
+      ></refundOrder>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesPay/list/specifics
+ * 反编译自 webpack 模块 616（nvue 编译空间）
+ * async/await 还原: 3 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/5.js';
+import o from '@/.unpacked/nvue/23.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod957 from '../../components/refundOrder/refundOrder.nvue';
+import '../../common/config.nvue.js';
+"use strict";
+var c = getApp().globalData, m = {
+  components: {
+    refundOrder: mod957
+  },
+  data: function () {
+    return {
+      showQuestion: false,
+      showRefund: false,
+      showRefundList: false,
+      actions: [],
+      infoListObj: {
+        orderNo: {
+          id: 1,
+          type: 2,
+          name: "orderNo",
+          title: "\u5e73\u53f0\u8ba2\u5355\u53f7",
+          text: ""
+        },
+        totalFee: {
+          id: 2,
+          type: 3,
+          name: "totalFee",
+          title: "\u8ba2\u5355\u603b\u91d1\u989d",
+          text: ""
+        },
+        provider: {
+          id: 3,
+          type: 3,
+          name: "provider",
+          title: "\u652f\u4ed8\u65b9\u5f0f",
+          text: ""
+        },
+        status: {
+          id: 4,
+          type: 5,
+          name: "status",
+          title: "\u8ba2\u5355\u72b6\u6001",
+          text: ""
+        },
+        description: {
+          id: 5,
+          type: 5,
+          name: "description",
+          title: "\u652f\u4ed8\u63cf\u8ff0",
+          text: ""
+        },
+        createTime: {
+          id: 6,
+          type: 3,
+          name: "createTime",
+          title: "\u521b\u5efa\u65f6\u95f4",
+          text: ""
+        }
+      },
+      userRefundRequest: {},
+      refundListObj: {
+        requestFee: {
+          id: 9,
+          type: 3,
+          name: "requestFee",
+          title: "\u7533\u8bf7\u9000\u6b3e\u91d1\u989d",
+          text: ""
+        },
+        contactName: {
+          id: 11,
+          type: 3,
+          name: "contactName",
+          title: "\u8054\u7cfb\u4eba",
+          text: ""
+        },
+        contactTel: {
+          id: 12,
+          type: 3,
+          name: "contactTel",
+          title: "\u8054\u7cfb\u4eba\u7535\u8bdd",
+          text: ""
+        },
+        allowCall: {
+          id: 13,
+          type: 3,
+          name: "allowCall",
+          title: "\u5141\u8bb8\u7535\u8bdd\u8054\u7cfb"
+        },
+        status: {
+          id: 14,
+          type: 3,
+          name: "status",
+          title: "\u5ba1\u6838\u72b6\u6001"
+        },
+        approvalOpinion: {
+          id: 15,
+          type: 3,
+          name: "approvalOpinion",
+          title: "\u9000\u6b3e\u5ba1\u6279\u610f\u89c1"
+        },
+        requestTime: {
+          id: 8,
+          type: 3,
+          name: "requestTime",
+          title: "\u9000\u6b3e\u7533\u8bf7\u65f6\u95f4",
+          text: ""
+        },
+        outRefundNo: {
+          id: 7,
+          type: 3,
+          name: "outRefundNo",
+          title: "\u9000\u6b3e\u5355\u53f7",
+          text: ""
+        }
+      },
+      hasRefundListObj: false,
+      orderID: null,
+      // 支付渠道中文名由后端给（11.2.3 payChannelName），不在前端按码猜
+      payChannelName: "",
+      totalFee: 0,
+      orderNo: ""
+    };
+  },
+  onLoad: function (e) {
+    var t = this;
+    return (async function () {
+      await t.getData(e.id);
+    })();
+  },
+  onPullDownRefresh: function () {
+    var e = this;
+    return (async function () {
+      await e.getData(e.orderID);
+      uni.stopPullDownRefresh();
+    })();
+  },
+  methods: {
+    ...mod25.mapActions("order", ["GetTopupById"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    getStatusColor: function (s) {
+      if (!s) return '#6081C7';
+      var str = String(s);
+      if (str.indexOf('未') !== -1 || str.indexOf('待') !== -1) return '#FF9900';
+      if (str.indexOf('已支付') !== -1 || str.indexOf('成功') !== -1) return '#6081C7';
+      if (str.indexOf('取消') !== -1 || str.indexOf('退款') !== -1) return '#94A3B8';
+      return '#1E293B';
+    },
+    getData: function (e) {
+      var t = this;
+      return (async function () {
+        var a, i, o;
+        // 订单对外标识是 orderNo（契约不暴露自增 ID），页面的 orderID 存的就是它
+        (a = await t.GetTopupById({
+          orderNo: e
+        })).succeeded && (i = a.data, t.orderID = i.orderNo, t.payChannelName = i.providerName || "", t.totalFee = i.totalFee, t.orderNo = i.orderNo, t.infoListObj.orderNo.text = i.orderNo, t.infoListObj.totalFee.text = (.01 * i.totalFee).toFixed(2) + "\u5143", t.infoListObj.provider.text = t.getPayment(i.provider), t.infoListObj.status.text = t.getOrderStatus(i.status), t.infoListObj.description.text = i.description, t.infoListObj.createTime.text = i.createTime, i.userRefundRequests && i.userRefundRequests.length > 0 && (o = i.userRefundRequests[i.userRefundRequests.length - 1], t.userRefundRequest = o, t.refundListObj.requestFee.text = (.01 * o.requestFee).toFixed(2) + "\u5143", t.refundListObj.contactName.text = o.contactName, t.refundListObj.contactTel.text = o.contactTel, t.refundListObj.allowCall.text = o.allowCall ? "\u5141\u8bb8" : "\u4e0d\u5141\u8bb8", t.refundListObj.status.text = t.getRefundStatus(o.status), t.refundListObj.approvalOpinion.text = o.approvalOpinion, t.refundListObj.requestTime.text = o.requestTime, t.refundListObj.outRefundNo.text = o.outRefundNo, t.refundStatus = o.status, t.hasRefundListObj = true), t.hasRefundListObj || 1 !== i.status ? t.actions = [] : t.actions = [{
+          name: "\u8054\u7cfb\u5ba2\u670d",
+          key: 1
+        }, {
+          name: "\u7533\u8bf7\u9000\u6b3e",
+          color: "#fc2b23",
+          key: 2
+        }]);
+      })();
+    },
+    refundOrder: function (e) {
+      (this.showRefund = e.dialog, e.hasRequest && this.getData(this.orderID));
+    },
+    /**
+     * 支付渠道文案。契约的 `payChannel` 是数字（1 微信 2 支付宝）且另给了
+     * `payChannelName`，优先用后端文案；原版按 'wxpay'/'ali' 前缀判断字符串，
+     * 拿到数字会走进 `e.slice` 直接抛错。
+     */
+    getPayment: function (e) {
+      if (this.payChannelName) return this.payChannelName;
+      var n = Number(e);
+      return n === 2 ? "\u963f\u91cc\u652f\u4ed8" : n === 1 ? "\u5fae\u4fe1\u652f\u4ed8" : "-";
+    },
+    getOrderStatus: function (e) {
+      return -1 === e ? "\u5df2\u53d6\u6d88" : 0 === e ? "\u672a\u652f\u4ed8" : 1 === e ? "\u5df2\u652f\u4ed8" : 2 === e ? "\u5df2\u90e8\u4efd\u9000\u6b3e" : 3 === e ? "\u5df2\u5168\u989d\u9000\u6b3e" : undefined;
+    },
+    /** 退款状态：契约 0 待处理 1 已同意 2 已拒绝 **3 已退款**（原版漏了 3，显示空白）。 */
+    getRefundStatus: function (e) {
+      var n = Number(e);
+      return n === 0 ? "\u7b49\u5f85\u5ba1\u6838" : n === 1 ? "\u5ba1\u6838\u901a\u8fc7" : n === 2 ? "\u5ba1\u6838\u4e0d\u901a\u8fc7" : n === 3 ? "\u5df2\u9000\u6b3e" : "-";
+    },
+    onCopyValue: function (e) {
+      uni.setClipboardData({
+        data: e,
+        showToast: false,
+        success: function () {
+          mod166.qzwlToast("\u5185\u5bb9\u5df2\u590d\u5236");
+        }
+      });
+    },
+    question: function () {
+      this.showQuestion = true;
+    },
+    getPackageType: function () {},
+    questionSelect: function (e) {
+      var t = this;
+      return o(mod22.mark(function n() {
+        var a;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if ((e.name, a = e.key, t.showQuestion = false, 1 !== a)) {
+                n.next = 7;
+                break;
+              }
+              if (plus.runtime.isApplicationExist({
+                pname: "com.tencent.mm",
+                action: "weixin://"
+              })) {
+                n.next = 6;
+                break;
+              }
+              return (mod166.qzwlToast("\u8bf7\u5148\u5b89\u88c5\u5fae\u4fe1"), n.abrupt("return"));
+            case 6:
+              uni.navigateTo({
+                url: "/pagesMore/my/support"
+              });
+            case 7:
+              2 === a && (t.showRefund = true);
+            case 8:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.box {
+  padding-top: 20rpx;
+  padding-right: 20rpx;
+  padding-bottom: 20rpx;
+  padding-left: 20rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom-width: 2rpx;
+  border-bottom-style: solid;
+  border-bottom-color: #ededed;
+}
+
+.box-title {
+  width: 190rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+/* #endif */
+/* #ifdef H5 */
+.box {
+  padding-top: 2.6667vw;
+  padding-right: 2.6667vw;
+  padding-bottom: 2.6667vw;
+  padding-left: 2.6667vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom-width: 0.2667vw;
+  border-bottom-style: solid;
+  border-bottom-color: #ededed;
+}
+
+.box-title {
+  width: 25.3333vw;
+  font-size: 3.7333vw;
+  font-weight: bold;
+}
+/* #endif */
+</style>

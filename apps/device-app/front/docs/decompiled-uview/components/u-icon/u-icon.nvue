@@ -1,0 +1,136 @@
+<template>
+<view class="u-icon" :class="['u-icon--' + labelPos]" @click="clickHandler">
+  <image
+    v-if="isImg"
+    class="u-icon__img"
+    :style="[imgStyle, $u.addStyle(customStyle)]"
+    :src="name"
+    :mode="imgMode"
+   />
+  <text
+    v-else
+    class="u-icon__icon"
+    :class="uClasses"
+    :style="[iconStyle, $u.addStyle(customStyle)]"
+    :hoverClass="hoverClass"
+    append="tree"
+  >
+    {{ icon }}
+  </text>
+  <text
+    v-if="'' !== label"
+    class="u-icon__label"
+    :style="{ color: labelColor, fontSize: $u.addUnit(labelSize), marginLeft: 'right' == labelPos ? $u.addUnit(space) : 0, marginTop: 'bottom' == labelPos ? $u.addUnit(space) : 0, marginRight: 'left' == labelPos ? $u.addUnit(space) : 0, marginBottom: 'top' == labelPos ? $u.addUnit(space) : 0 }"
+    append="tree"
+  >
+    {{ label }}
+  </text>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uIcon
+ * 反编译自 webpack 模块 7（nvue 编译空间）
+ */
+import mod199 from '@/.unpacked/nvue/199.js'
+import mod200 from '@/.unpacked/nvue/200.js'
+
+"use strict";
+weex.requireModule("dom").addRule("fontFace", {
+  fontFamily: "uicon-iconfont",
+  src: ("url('").concat("/static/app-plus/qzwl-font.ttf", "')")
+});
+var o = {
+  name: "u-icon",
+  data: function () {
+    return {};
+  },
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod200],
+  computed: {
+    uClasses: function () {
+      var e = [];
+      return (e.push(this.customPrefix + "-" + this.name), this.color && uni.$u.config.type.includes(this.color) && e.push("u-icon__icon--" + this.color), e);
+    },
+    iconStyle: function () {
+      var e = {};
+      return (e = {
+        fontSize: uni.$u.addUnit(this.size),
+        lineHeight: uni.$u.addUnit(this.size),
+        fontWeight: this.bold ? "bold" : "normal",
+        top: uni.$u.addUnit(this.top)
+      }, this.color && !uni.$u.config.type.includes(this.color) && (e.color = this.color), e);
+    },
+    isImg: function () {
+      return -1 !== this.name.indexOf("/");
+    },
+    imgStyle: function () {
+      var e = {};
+      return (e.width = this.width ? uni.$u.addUnit(this.width) : uni.$u.addUnit(this.size), e.height = this.height ? uni.$u.addUnit(this.height) : uni.$u.addUnit(this.size), e);
+    },
+    icon: function () {
+      return mod199["uicon-" + this.name] || this.name;
+    }
+  },
+  methods: {
+    clickHandler: function (e) {
+      (this.$emit("click", this.index), this.stop && this.preventEvent(e));
+    }
+  }
+};
+export default o;
+
+</script>
+
+<style scoped>
+.u-icon {
+  align-items: center;
+}
+
+.u-icon--left {
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.u-icon--right {
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-icon--top {
+  flex-direction: column-reverse;
+  justify-content: center;
+}
+
+.u-icon--bottom {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.u-icon__icon {
+  font-family: uicon-iconfont;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-icon__icon--primary {
+  color: #6081C7;
+}
+
+.u-icon__icon--success {
+  color: #5ac725;
+}
+
+.u-icon__icon--error {
+  color: #f56c6c;
+}
+
+.u-icon__icon--warning {
+  color: #f9ae3d;
+}
+
+.u-icon__icon--info {
+  color: #909399;
+}
+</style>

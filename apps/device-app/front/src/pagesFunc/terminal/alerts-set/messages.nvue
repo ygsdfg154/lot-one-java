@@ -1,0 +1,309 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="flex-1 bg-white p-lg b-top">
+    <view>
+      <view class="flex-row items-center">
+        <text class="text-md text-bold" append="tree">
+          {{ l('tel-pay.alarm-tel') }}
+        </text>
+      </view>
+      <u--form ref="form1" labelWidth="80" labelAlign="left">
+        <u-form-item :label="l('common.tel') + '1'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[0]"
+            ></u--input>
+          </view>
+        </u-form-item>
+        <u-form-item :label="l('common.tel') + '2'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[1]"
+            ></u--input>
+          </view>
+        </u-form-item>
+        <u-form-item :label="l('common.tel') + '3'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[2]"
+            ></u--input>
+          </view>
+        </u-form-item>
+        <u-form-item :label="l('common.tel') + '4'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[3]"
+            ></u--input>
+          </view>
+        </u-form-item>
+        <u-form-item :label="l('common.tel') + '5'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[4]"
+            ></u--input>
+          </view>
+        </u-form-item>
+        <u-form-item :label="l('common.tel') + '6'">
+          <view>
+            <u--input
+              class="m-l-md"
+              :style="{ width: '526rpx', backgroundColor: '#FAFAFA' }"
+              type="number"
+              :placeholder="l('common.please.tel')"
+              maxlength="20"
+              v-model="alarmSmsList[5]"
+            ></u--input>
+          </view>
+        </u-form-item>
+      </u--form>
+    </view>
+    <view class="main flex-row items-center justify-between b-bottom b-top">
+      <text class="text-md" append="tree">
+        {{ l('tel-pay.remaining-sms') }}
+      </text>
+      <view class="flex-row items-center">
+        <text class="text-md" :style="{ marginRight: '50rpx' }" append="tree">
+          {{ smsRemain }}
+        </text>
+        <view v-if="!(isAuditMode)" class="plyButton flex-row">
+          <u-button
+            :style="{ height: '65rpx' }"
+            :text="l('device.pay')"
+            type="primary"
+            @click="gotoTopup"
+          ></u-button>
+        </view>
+      </view>
+    </view>
+    <view class="text-md" :style="{ paddingTop: '34rpx' }">
+      <text class="text text-bold" :style="{ color: '#f56c6b' }" append="tree">
+        {{ l('tel-pay.notice-tel') }}：
+      </text>
+      <text class="text-sm text-gray" append="tree">
+        {{ l('tel-pay.notice-sms-content2') }}
+      </text>
+    </view>
+    <view class="bottomBar">
+      <u-button :text="l('mine.setup.save')" type="primary" @click="saveAlarmTel"></u-button>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/alerts-set/messages
+ * 反编译自 webpack 模块 698（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+function a(m) {
+  return m && m.__esModule ? m : {
+    default: m
+  };
+}
+"use strict";
+var o = (a(require("../../../common/config.nvue.js")), require("vuex"));
+var _ = getApp().globalData, m = {
+  data: function () {
+    return {
+      alarmSmsList: [],
+      // 剩余次数来自 VIP 配额（7.3 items[].remainingQuota），不在告警设置里；
+      // 订阅包没有配额概念，此时为 null，页面显示"不限量"
+      smsRemain: "",
+      quotaUnit: ""
+    };
+  },
+  onShow: function () {
+    this.fetchData();
+  },
+  computed: {
+    ...o.mapGetters(["isAuditMode", "selectedTerminal", "access_token"]),
+    telSum: function () {
+      var e = 0;
+      return !(this.alarmSmsList.reduce(function (t, n) {
+        return e = n ? ++e : e;
+      }, 0) >= 1);
+    }
+  },
+  methods: {
+    ...o.mapActions("alarm", ["GetAlarmSettings", "SetNotifyPhones", "GetAlarmQuota"]),
+    l: function (e) {
+      return _.$t(e);
+    },
+    /**
+     * 短信告警接收号码（8.6.2b smsPhones）。这份名单与另一个渠道的名单**互相独立**，
+     * 保存时 store 会把对方那份原样带回，不会互相清空。
+     */
+    fetchData: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetAlarmSettings({
+          deviceId: self.selectedTerminal && self.selectedTerminal.id
+        });
+        if (res.succeeded && res.data) {
+          // 补齐到 6 个空位，模板按下标绑定输入框
+          var phones = (res.data.smsPhones || []).slice(0, 6);
+          while (phones.length < 6) phones.push("");
+          self.alarmSmsList = phones;
+        }
+        var q = await self.GetAlarmQuota({
+          deviceId: self.selectedTerminal && self.selectedTerminal.id
+        });
+        if (q && q.quota) {
+          self.smsRemain = q.quota.remaining == null ? "不限量" : String(q.quota.remaining);
+          self.quotaUnit = q.quota.unitName || "";
+        } else {
+          self.smsRemain = "-";
+        }
+      })();
+    },
+    saveAlarmTel: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        var n;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (!e.telSum) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(_.$t("common.save.one.tel"), "none"));
+            case 2:
+              if ((n = e.alarmSmsList.filter(function (e) {
+                return e;
+              }), n.every(function (e) {
+                return uni.$u.test.mobile(e);
+              }))) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(_.$t("common.please.valid.mobile.tel"), "none"));
+            case 6:
+              if (!(Array.from(new Set(n)).length < n.length)) {
+                t.next = 9;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(_.$t("common.please.equal.tel"), "none"));
+            case 9:
+              return (t.next = 11, e.SetNotifyPhones({
+                deviceId: e.selectedTerminal && e.selectedTerminal.id,
+                channel: "sms",
+                phones: e.alarmSmsList
+              }));
+            case 11:
+              if (!t.sent.succeeded) {
+                t.next = 16;
+                break;
+              }
+              return (t.next = 15, e.fetchData(true));
+            case 15:
+              mod166.qzwlToast(_.$t("common.save.success"), "none");
+            case 16:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    gotoTopup: function () {
+      mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: "/pagesPay/value-added/index?type=3&alarm=2",
+        access_token: this.access_token
+      });
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.plyButton {
+  width: 130rpx;
+}
+
+.main {
+  margin-top: 80rpx;
+  padding-top: 32rpx;
+  padding-right: 0;
+  padding-bottom: 32rpx;
+  padding-left: 0;
+}
+
+.bottomBar {
+  background-color: #ffffff;
+  padding-top: 32rpx;
+  padding-right: 0rpx;
+  padding-bottom: 64rpx;
+  padding-left: 0rpx;
+  position: fixed;
+  bottom: 0;
+  left: 32rpx;
+  right: 32rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.plyButton {
+  width: 17.3333vw;
+}
+
+.main {
+  margin-top: 10.6667vw;
+  padding-top: 4.2667vw;
+  padding-right: 0;
+  padding-bottom: 4.2667vw;
+  padding-left: 0;
+}
+
+.bottomBar {
+  background-color: #ffffff;
+  padding-top: 4.2667vw;
+  padding-right: 0vw;
+  padding-bottom: 8.5333vw;
+  padding-left: 0vw;
+  position: fixed;
+  bottom: 0;
+  left: 4.2667vw;
+  right: 4.2667vw;
+}
+/* #endif */
+</style>

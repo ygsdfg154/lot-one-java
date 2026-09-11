@@ -1,0 +1,218 @@
+<template>
+<view>
+  <view v-if="showCalendar" style="position: absolute">
+    <u-popup
+      mode="center"
+      :round="16"
+      zIndex="10070"
+      :show="showCalendar"
+      :safeAreaInsetBottom="false"
+      :closeOnClickOverlay="true"
+      @close="closeCurrentDate"
+    >
+      <view style="width: 640rpx; padding: 36rpx 32rpx; background-color: #ffffff; border-radius: 28rpx; box-sizing: border-box;">
+        <!-- Title -->
+        <view style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-bottom: 32rpx;">
+          <text style="font-size: 32rpx; font-weight: bold; color: #1E293B;" append="tree">
+            {{ l('common.selected-time') || '请选择时间' }}
+          </text>
+        </view>
+
+        <!-- Quick Tabs (今天 / 昨天 / 前天) -->
+        <view style="display: flex; flex-direction: row; justify-content: space-between; gap: 16rpx; margin-bottom: 32rpx;">
+          <view
+            v-for="(label, idx) in [l('common.today') || '今天', l('common.yesterday') || '昨天', l('common.anteayer') || '前天']"
+            :key="idx"
+            style="flex: 1; height: 72rpx; display: flex; align-items: center; justify-content: center; border-radius: 16rpx; cursor: pointer; transition: all 0.2s;"
+            :style="{
+              backgroundColor: idx == classBut ? '#6081C7' : '#F1F5F9',
+            }"
+            @click="confirmPicker(idx)"
+          >
+            <text
+              style="font-size: 28rpx;"
+              :style="{
+                color: idx == classBut ? '#FFFFFF' : '#475569',
+                fontWeight: idx == classBut ? 'bold' : 'normal'
+              }"
+              append="tree"
+            >
+              {{ label }}
+            </text>
+          </view>
+        </view>
+
+        <!-- Time On (开始时间) -->
+        <view style="display: flex; flex-direction: row; align-items: center; margin-bottom: 24rpx;">
+          <text style="font-size: 28rpx; color: #64748B; width: 160rpx;" append="tree">
+            {{ l('common.time-on') || '开始时间' }}：
+          </text>
+          <view
+            style="flex: 1; height: 80rpx; background-color: #F8FAFC; border: 1rpx solid #E2E8F0; border-radius: 16rpx; padding: 0 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;"
+            @click="startDataShow = true"
+          >
+            <text style="font-size: 26rpx; color: #1E293B; font-weight: 500;" append="tree">
+              {{ currentStartModel }}
+            </text>
+            <u-icon name="arrow-down" size="28rpx" color="#94A3B8"></u-icon>
+          </view>
+        </view>
+
+        <!-- Time Off (结束时间) -->
+        <view style="display: flex; flex-direction: row; align-items: center; margin-bottom: 36rpx;">
+          <text style="font-size: 28rpx; color: #64748B; width: 160rpx;" append="tree">
+            {{ l('common.time-off') || '结束时间' }}：
+          </text>
+          <view
+            style="flex: 1; height: 80rpx; background-color: #F8FAFC; border: 1rpx solid #E2E8F0; border-radius: 16rpx; padding: 0 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;"
+            @click="endDataShow = true"
+          >
+            <text style="font-size: 26rpx; color: #1E293B; font-weight: 500;" append="tree">
+              {{ currentEndModel }}
+            </text>
+            <u-icon name="arrow-down" size="28rpx" color="#94A3B8"></u-icon>
+          </view>
+        </view>
+
+        <!-- Bottom Action Buttons (取消 / 确认) -->
+        <view style="display: flex; flex-direction: row; gap: 20rpx; margin-top: 10rpx;">
+          <view
+            style="flex: 1; height: 84rpx; background-color: #F1F5F9; border-radius: 42rpx; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+            @click="closeCurrentDate"
+          >
+            <text style="font-size: 30rpx; color: #64748B; font-weight: 500;" append="tree">
+              {{ l('common.cancel') || '取消' }}
+            </text>
+          </view>
+          <view
+            style="flex: 1; height: 84rpx; background-color: #6081C7; border-radius: 42rpx; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+            @click="confirmDate"
+          >
+            <text style="font-size: 30rpx; color: #FFFFFF; font-weight: bold;" append="tree">
+              {{ l('common.confirm') || '确认' }}
+            </text>
+          </view>
+        </view>
+      </view>
+    </u-popup>
+  </view>
+
+  <u-datetime-picker
+    style="position: absolute"
+    mode="datetime"
+    :title="l('common.selected-date') || '选择日期时间'"
+    :show="startDataShow"
+    :maxDate="timeChangeMs(currentEndModel)"
+    :closeOnClickOverlay="true"
+    @close="startDataShow = false"
+    @cancel="startDataShow = false"
+    @confirm="confirmPicker($event, 'start')"
+    v-model="currentStartModel"
+  ></u-datetime-picker>
+
+  <u-datetime-picker
+    style="position: absolute"
+    mode="datetime"
+    :title="l('common.selected-date') || '选择日期时间'"
+    :show="endDataShow"
+    :maxDate="timeChangeMs(maxDate)"
+    :minDate="timeChangeMs(currentStartModel)"
+    :closeOnClickOverlay="true"
+    @close="endDataShow = false"
+    @cancel="endDataShow = false"
+    @confirm="confirmPicker($event, 'end')"
+    v-model="currentEndModel"
+  ></u-datetime-picker>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: selectTime
+ * 反编译自 webpack 模块 685（nvue 编译空间）
+ */
+import mod1 from '@/.unpacked/nvue/1.js'
+import mod0 from 'moment'
+
+"use strict";
+var s = new Date(), o = s.getFullYear(), d = s.getMonth() + 1;
+d = d < 10 ? ("0").concat(d) : d;
+var u = s.getDate();
+u = u < 10 ? ("0").concat(u) : u;
+var l = getApp().globalData, _ = {
+  data: function () {
+    return {
+      theDate: [mod0(s).format("YYYY-MM-DD"), mod0().subtract(1, "days").format("YYYY-MM-DD"), mod0().subtract(2, "days").format("YYYY-MM-DD")],
+      maxDate: ("").concat(o, "-").concat(d, "-").concat(u, " 23:59:59"),
+      startDataShow: false,
+      endDataShow: false,
+      currentStartDate: "",
+      currentEndDate: "",
+      showCalendar: false
+    };
+  },
+  computed: {
+    classBut: function () {
+      var e;
+      return (e = this.currentStartModel.slice(0, 10) == this.currentEndModel.slice(0, 10) ? this.theDate.indexOf(this.currentStartModel.slice(0, 10)) : -1, e);
+    },
+    currentStartModel: function () {
+      return this.currentStartDate || ("").concat(this.currentDate, " 00:00:00");
+    },
+    currentEndModel: function () {
+      return this.currentEndDate || ("").concat(this.currentDate, " 23:59:59");
+    }
+  },
+  props: ["currentDate", "closeDate"],
+  methods: {
+    l: function (e) {
+      return l.$t(e);
+    },
+    timeChangeMs: function (e) {
+      return mod0(e).valueOf();
+    },
+    confirmDate: function () {
+      (this.showCalendar = false, this.currentStartDate = this.currentStartModel, this.currentEndDate = this.currentEndModel, this.$emit("confirmCalendar", [this.currentStartModel, this.currentEndModel]));
+    },
+    closeCurrentDate: function () {
+      (this.showCalendar = false, "object" == mod1(this.closeDate) && null != u ? (this.currentStartDate = this.closeDate.strat, this.currentEndDate = this.closeDate.end) : (this.currentStartDate = "", this.currentEndDate = ""));
+    },
+    confirmPicker: function (e, t) {
+      if (("number" == typeof e && (this.currentStartDate = ("").concat(this.theDate[e], " 00:00:00"), this.currentEndDate = ("").concat(this.theDate[e], " 23:59:59")), "object" == mod1(e) && null != e)) {
+        var n = mod0(e.value).format("YYYY-MM-DD HH:mm:ss");
+        "start" == t ? this.currentStartDate = n : this.currentEndDate = n;
+      }
+      (this.startDataShow = false, this.endDataShow = false);
+    }
+  }
+};
+export default _;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.but {
+  width: 120rpx;
+  height: 70rpx;
+  justify-content: center;
+  align-items: center;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #eeeeee;
+  border-radius: 8;
+}
+/* #endif */
+/* #ifdef H5 */
+.but {
+  width: 16vw;
+  height: 9.3333vw;
+  justify-content: center;
+  align-items: center;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #eeeeee;
+  border-radius: 8;
+}
+/* #endif */
+</style>

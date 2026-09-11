@@ -1,0 +1,47 @@
+<template>
+<uvText
+  :type="type"
+  :show="show"
+  :text="text"
+  :prefixIcon="prefixIcon"
+  :suffixIcon="suffixIcon"
+  :mode="mode"
+  :href="href"
+  :format="format"
+  :call="call"
+  :openType="openType"
+  :bold="bold"
+  :block="block"
+  :lines="lines"
+  :color="color"
+  :decoration="decoration"
+  :size="size"
+  :iconStyle="iconStyle"
+  :margin="margin"
+  :lineHeight="lineHeight"
+  :align="align"
+  :wordWrap="wordWrap"
+  :customStyle="customStyle"
+  @click="$emit('click')"
+></uvText>
+</template>
+
+<script>
+/*
+ * 组件: u-Text
+ * 反编译自 webpack 模块 260（nvue 编译空间）
+ */
+import mod356 from 'uview-ui/components/u-text/u-text.vue'
+import mod303 from '@/.unpacked/nvue/303.js'
+
+"use strict";
+var s = {
+  name: "u--text",
+  mixins: [uni.$u.mpMixin, mod303, uni.$u.mixin],
+  components: {
+    uvText: mod356
+  }
+};
+export default s;
+
+</script>

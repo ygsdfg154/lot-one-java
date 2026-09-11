@@ -1,0 +1,148 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('device.orders') || '设备充值记录' }}
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 24rpx 28rpx 140rpx 28rpx; background-color: #f6f6f6;">
+      <view v-if="orderList && orderList.length">
+        <view
+          v-for="(t, a) in orderList"
+          :key="a"
+          style="background-color: #ffffff; border-radius: 20rpx; padding: 24rpx 28rpx; margin-bottom: 24rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.03);"
+        >
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-bottom: 16rpx; border-bottom: 1rpx solid #F1F5F9; margin-bottom: 16rpx;">
+            <text style="font-size: 26rpx; color: #64748B;" append="tree">
+              {{ l('mine.pay.order') || '订单号' }}：{{ t.orderNo }}
+            </text>
+            <text style="font-size: 26rpx; font-weight: bold;" :style="{ color: getStatusColor(t.orderStatus) }" append="tree">
+              {{ t.orderStatus }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-bottom: 16rpx; border-bottom: 1rpx solid #F1F5F9; margin-bottom: 16rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #1E293B;" append="tree">
+              {{ t.description || '套餐充值' }}
+            </text>
+            <text style="font-size: 34rpx; font-weight: bold; color: #EF4444;" append="tree">
+              ¥{{ (t.totalFee / 100).toFixed(2) }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+            <text v-if="t.payTime" style="font-size: 24rpx; color: #94A3B8;" append="tree">
+              {{ l('mine-pay.pay-time') || '支付时间' }}：{{ t.payTime }}
+            </text>
+            <text v-else style="font-size: 24rpx; color: #94A3B8;" append="tree">
+              {{ l('mine-pay.create-time') || '创建时间' }}：{{ t.createTime }}
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <view v-if="orderList && orderList.length" style="margin-top: 24rpx;">
+        <u-loadmore
+          :line="true"
+          :status="status"
+          :loadmoreText="l('common.load.more')"
+          :loadingText="l('common.loading')"
+          :nomoreText="l('common.no.more')"
+        ></u-loadmore>
+      </view>
+
+      <view v-if="!orderList || !orderList.length" style="padding: 120rpx 0;">
+        <u-empty
+          :text="l('mine.pay.no-order')"
+          :icon="cdn + '/draw/qzwl-empty.png'"
+        ></u-empty>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesPay/list/indent-device
+ * 反编译自 webpack 模块 622（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var m = getApp().globalData, c = {
+  components: {},
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      orderList: [],
+      status: "loadmore",
+      page: 1,
+      limit: 20
+    };
+  },
+  onLoad: function () {
+    (this.status = "loadmore", this.orderList = [], this.page = 1, this.fetchData());
+  },
+  onPullDownRefresh: function () {
+    (this.status = "loadmore", this.orderList = [], this.page = 1, this.fetchData());
+  },
+  onReachBottom: function () {
+    "nomore" != this.status && "loading" != this.status && this.fetchData();
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal"])
+  },
+  methods: {
+    ...mod25.mapActions("order", ["GetDeviceOrderPage"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    getStatusColor: function (s) {
+      if (!s) return '#6081C7';
+      var str = String(s);
+      if (str.indexOf('待') !== -1 || str.indexOf('未') !== -1 || str.indexOf('处理') !== -1) return '#FF9900';
+      if (str.indexOf('已支付') !== -1 || str.indexOf('成功') !== -1 || str.indexOf('完成') !== -1) return '#6081C7';
+      if (str.indexOf('取消') !== -1 || str.indexOf('关闭') !== -1 || str.indexOf('失败') !== -1) return '#94A3B8';
+      return '#6081C7';
+    },
+    fetchData: function () {
+      var t = this;
+      return (async function () {
+        var a, i;
+        t.status = "loading";
+        (a = await t.GetDeviceOrderPage({
+          page: t.page,
+          limit: t.limit,
+          terminalId: t.selectedTerminal.id
+        }), e("log", "result", a, " at pagesPay/list/indent-device.nvue:99"), a.succeeded && a.data.list.length ? (i = a.data.list.map(function (e) {
+          return (e.orderStatus = mod166.orderStatus(e.status), e);
+        }), t.orderList = t.orderList.concat(i), t.status = t.orderList.length < a.data.count ? "loadmore" : "nomore", t.page = t.page + 1) : t.status = "nomore", uni.stopPullDownRefresh());
+      })();
+    }
+  }
+};
+export default c;
+
+</script>

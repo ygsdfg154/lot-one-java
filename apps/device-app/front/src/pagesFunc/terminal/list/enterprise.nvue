@@ -1,0 +1,131 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view style="padding-bottom: 50rpx">
+    <view class="p-h-xl p-v bg-white m-b">
+      <u-search
+        placeholder="输入机构名称"
+        shape="round"
+        :showAction="false"
+        @search="searchEnterpriseHandler"
+        @clear=""
+        v-model="searchValue"
+      ></u-search>
+    </view>
+    <view v-if="searchEnterpriseList.length">
+      <view
+        v-for="e in searchEnterpriseList"
+        :key="e.id"
+        class="flex-row justify-between items-center p b-bottom bg-white"
+      >
+        <view class="flex-row flex-1 items-center" @click="setEnterprise(e)">
+          <text class="text m-l" append="tree">
+            {{ e.name }}
+          </text>
+        </view>
+        <u-icon name="arrow-right" size="17" color="#999"></u-icon>
+      </view>
+    </view>
+    <tree v-else class="b-top" :enterpriseList="enterpriseList" @updateStateById="updateStateById"></tree>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/list/enterprise
+ * 反编译自 webpack 模块 663（nvue 编译空间）
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 内层仍在调用 o()，已就地重建 interopRequireDefault
+ */
+import i from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+
+function o(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var u = {
+  components: {
+    Tree: o(require("../../../components/Tree/Tree.nvue")).default
+  },
+  data: function () {
+    return {
+      enterpriseList: [],
+      searchEnterpriseList: [],
+      maxEnterpriseInfo: null
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["enterpriseInfo"])
+  },
+  onLoad: function () {
+    this.init();
+  },
+  methods: {
+    ...mod25.mapMutations("account", ["setEnterpriseId", "setRefreshTerminalPage"]),
+    init: function () {
+      (this.maxEnterpriseInfo = this.enterpriseInfo.reduce(function (t, e) {
+        return e.id.length < t.id.length ? e : t;
+      }), this.enterpriseList = this.buildRoleTree(this.enterpriseInfo, this.maxEnterpriseInfo.parentId), this.addStateToTree(this.enterpriseList));
+    },
+    buildRoleTree: function (t, e) {
+      for (var r = [], o = 0; o < t.length; o++) if (t[o].parentId == e) {
+        var i = {
+          id: t[o].id,
+          parentId: t[o].parentId,
+          name: t[o].name,
+          openShow: (t[o].parentId, this.maxEnterpriseInfo.parentId, true),
+          iconShow: true,
+          children: this.buildRoleTree(t, t[o].id)
+        };
+        r.push(i);
+      }
+      return r;
+    },
+    addStateToTree: function (t) {
+      var e = this, r = arguments.length > 1 && undefined !== arguments[1] ? arguments[1] : 0;
+      t.forEach(function (t) {
+        (t.state = r, t.children && t.children.length > 0 && e.addStateToTree(t.children, r + 1));
+      });
+    },
+    updateStateById: function (t) {
+      var e = this;
+      t.list.forEach(function (r) {
+        if (r.id === t.id || t.isTopLevel) {
+          if (t.isTopLevel) return (r.iconShow = false, r.openShow = false, void (r.children && r.children.length > 0 && e.updateStateById({
+            list: r.children,
+            id: t.id,
+            isTopLevel: true
+          })));
+          (r.iconShow = !r.iconShow, r.children.forEach(function (o) {
+            r.iconShow ? o.openShow = true : (o.iconShow = false, o.openShow = false, o.children && o.children.length > 0 && e.updateStateById({
+              list: o.children,
+              id: t.id,
+              isTopLevel: true
+            }));
+          }));
+        }
+        r.children && r.children.length > 0 && e.updateStateById({
+          list: r.children,
+          id: t.id
+        });
+      });
+    },
+    searchEnterpriseHandler: function (t) {
+      (t || (this.searchEnterpriseList = []), this.searchEnterpriseList = this.enterpriseInfo.filter(function (e) {
+        return e.name.includes(t);
+      }));
+    },
+    setEnterprise: function (t) {
+      (this.setEnterpriseId(t.id), this.setRefreshTerminalPage(true), uni.navigateBack());
+    }
+  }
+};
+export default u;
+
+</script>

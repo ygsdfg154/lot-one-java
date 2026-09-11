@@ -1,0 +1,527 @@
+// 由打包产物 app-config-service.js 中的 __uniConfig / __uniRoutes 还原
+// nvue 页面已在 style 里用 __comment_nvue 标注，实际源码后缀为 .nvue
+{
+  "pages": [
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationBarTitleText": "%app.index%",
+        "enablePullDownRefresh": false,
+        "__comment_nvue": "该页面源码为 .nvue"
+      }
+    },
+    {
+      "path": "pages/my/my",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "enablePullDownRefresh": false,
+        "navigationStyle": "custom",
+        "__comment_nvue": "该页面源码为 .nvue"
+      }
+    },
+    {
+      "path": "pages/ability/index",
+      "style": {
+        "navigationBarTitleText": "功能",
+        "enablePullDownRefresh": false,
+        "__comment_nvue": "该页面源码为 .nvue"
+      }
+    },
+    {
+      "path": "pages/msg/index",
+      "style": {
+        "navigationBarTitleText": "消息",
+        "enablePullDownRefresh": true,
+        "__comment_nvue": "该页面源码为 .nvue"
+      }
+    },
+    {
+      "path": "pages/app-updateVersions/pages/upgrade-popup",
+      "style": {
+        "navigationBarTitleText": "应用升级"
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pagesMore",
+      "pages": [
+        {
+          "path": "public/locate",
+          "style": {
+            "navigationBarTitleText": "%device.share.locate%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "public/qzwl-authorize",
+          "style": {
+            "navigationBarTitleText": "自动授权登录",
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "message/statement",
+          "style": {
+            "navigationBarTitleText": "告警消息详情",
+            "enablePullDownRefresh": false,
+            "navigationStyle": "custom",
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "message/table",
+          "style": {
+            "navigationBarTitleText": "告警消息",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "my/support",
+          "style": {
+            "navigationBarTitleText": "%mine.custome.us%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "my/developers/developers",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.dev.mode%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "my/developers/push-msgs",
+          "style": {
+            "navigationBarTitleText": "Push Messages",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "my/setups/privacy_notice",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.privacy.notice%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "my/setups/as",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.about%",
+            "enablePullDownRefresh": false
+          }
+        },
+        {
+          "path": "my/setups/service_terms",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.service.agreement%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "notice/index",
+          "style": {
+            "navigationBarTitleText": "公告",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pagesPay",
+      "pages": [
+        {
+          "path": "paySuccess/index",
+          "style": {
+            "navigationBarTitleText": "支付成功",
+            "enablePullDownRefresh": false,
+            "navigationStyle": "custom"
+          }
+        },
+        {
+          "path": "appreciation/index",
+          "style": {
+            "navigationBarTitleText": "%device.appreciation%",
+            "enablePullDownRefresh": false
+          }
+        },
+        {
+          "path": "value-added/index",
+          "style": {
+            "navigationBarTitleText": "%device.vip.service%",
+            "enablePullDownRefresh": false,
+            "navigationStyle": "custom",
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "card/index",
+          "style": {
+            "navigationBarTitleText": "%device.pay%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "list/indent",
+          "style": {
+            "navigationBarTitleText": "%mine.pay.orders%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "list/indent-device",
+          "style": {
+            "navigationBarTitleText": "%device.orders%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "list/specifics",
+          "style": {
+            "navigationBarTitleText": "订单详情",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pagesFunc",
+      "pages": [
+        {
+          "path": "terminal/alerts-set/index",
+          "style": {
+            "navigationBarTitleText": "%device.alarm.setup%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/alerts-set/wx",
+          "style": {
+            "navigationBarTitleText": "%device.alarm.setup.bind.wx%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/alerts-set/wx-mp",
+          "style": {
+            "navigationBarTitleText": "%device.alarm.setup.bind.wx-mp%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/alerts-set/phone",
+          "style": {
+            "navigationBarTitleText": "%device.alarm.setup.phone%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/alerts-set/messages",
+          "style": {
+            "navigationBarTitleText": "%device.alarm.setup.note%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/audio/index",
+          "style": {
+            "navigationBarTitleText": "%device.audio%",
+            "enablePullDownRefresh": true
+          }
+        },
+        {
+          "path": "terminal/locate-mode/index",
+          "style": {
+            "navigationBarTitleText": "%device.locate.mode%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/locus/index",
+          "style": {
+            "navigationBarTitleText": "%device.locus%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/remote-setup/index",
+          "style": {
+            "navigationBarTitleText": "%device.remote.setup%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/remote-setup/list",
+          "style": {
+            "navigationBarTitleText": "%device.set.list%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": true,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/list/index",
+          "style": {
+            "navigationBarTitleText": "%device.list%",
+            "enablePullDownRefresh": true,
+            "navigationStyle": "custom",
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/list/enterprise",
+          "style": {
+            "navigationBarTitleText": "选择机构",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/trip-report/list",
+          "style": {
+            "navigationBarTitleText": "%device.statement%",
+            "enablePullDownRefresh": true
+          }
+        },
+        {
+          "path": "terminal/trip-report/detail",
+          "style": {
+            "navigationBarTitleText": "%common.specifics%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/self-detection",
+          "style": {
+            "navigationBarTitleText": "%device.self-test%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/device-card",
+          "style": {
+            "navigationBarTitleText": "%device.traffic.card%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/corral/list",
+          "style": {
+            "navigationBarTitleText": "%device.enclosure%",
+            "navigationStyle": "custom",
+            "disableScroll": false,
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "terminal/corral/info",
+          "style": {
+            "navigationBarTitleText": "%device.enclosure.info%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "deviceInfo/index",
+          "style": {
+            "navigationBarTitleText": "%device.terminal.info%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "deviceInfo/set-icon",
+          "style": {
+            "navigationBarTitleText": "切换图标",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pagesCore",
+      "pages": [
+        {
+          "path": "login/index",
+          "style": {
+            "navigationBarTitleText": "%index.signin%",
+            "enablePullDownRefresh": false,
+            "navigationStyle": "custom",
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "login/register",
+          "style": {
+            "navigationBarTitleText": "注册",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "login/bind-tel",
+          "style": {
+            "navigationBarTitleText": "绑定手机",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "login/find-pas",
+          "style": {
+            "navigationBarTitleText": "找回密码",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "login/logout",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.account.cancelled%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "login/bind-tel-more",
+          "style": {
+            "navigationBarTitleText": "绑定用户",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "account/account-safety",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.account.safety%",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "account/revise-pwd",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.revise.pwd%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "account/revise-userInfo",
+          "style": {
+            "navigationBarTitleText": "%mine.setup.revise.userInfo%",
+            "navigationStyle": "custom",
+            "enablePullDownRefresh": false,
+            "__comment_nvue": "该页面源码为 .nvue"
+          }
+        },
+        {
+          "path": "webframe",
+          "style": {
+            "enablePullDownRefresh": false,
+            "bounce": "none",
+            "titleNView": {
+              "buttons": [
+                {
+                  "type": "close",
+                  "float": "left"
+                },
+                {
+                  "type": "menu",
+                  "float": "right"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F6F6F6",
+    "backgroundColorTop": "#F6F6F6",
+    "backgroundColorBottom": "#F6F6F6",
+    "softinputmode": "adjustPan"
+  },
+  "tabBar": {
+    "color": "#CCCCCC",
+    "selectedColor": "#6081C7",
+    "borderStyle": "black",
+    "backgroundColor": "#FFFFFF",
+    "height": "50px",
+    "fontSize": "10px",
+    "iconWidth": "24px",
+    "spacing": "3px",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home_active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/ability/index",
+        "iconPath": "static/icons/ability.png",
+        "selectedIconPath": "static/icons/ability_active.png",
+        "text": "功能"
+      },
+      {
+        "pagePath": "pages/msg/index",
+        "iconPath": "static/icons/msgs.png",
+        "selectedIconPath": "static/icons/msgs_active.png",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "iconPath": "static/icons/my.png",
+        "selectedIconPath": "static/icons/my_active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u--(.*)": "uview-ui/components/u--$1/u--$1.vue",
+      "^up-(.*)": "uview-ui/components/u-$1/u-$1.vue",
+      "^u-([^-].*)": "uview-ui/components/u-$1/u-$1.vue",
+      "^uni-(.*)": "@/uni_modules/uni-ui/components/uni-$1/uni-$1.nvue"
+    }
+  },
+  "fallbackLocale": "zh-Hans"
+}

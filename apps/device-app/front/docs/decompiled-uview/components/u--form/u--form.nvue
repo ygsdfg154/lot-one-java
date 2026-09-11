@@ -1,0 +1,59 @@
+<template>
+<uvForm
+  ref="uForm"
+  :model="model"
+  :rules="rules"
+  :errorType="errorType"
+  :borderBottom="borderBottom"
+  :labelPosition="labelPosition"
+  :labelWidth="labelWidth"
+  :labelAlign="labelAlign"
+  :labelStyle="labelStyle"
+  :customStyle="customStyle"
+>
+  <slot></slot>
+</uvForm>
+</template>
+
+<script>
+/*
+ * 组件: u-Form
+ * 反编译自 webpack 模块 337（nvue 编译空间）
+ */
+import mod471 from 'uview-ui/components/u-form/u-form.vue'
+import mod440 from '@/.unpacked/nvue/440.js'
+
+"use strict";
+var o = {
+  name: "u--form",
+  mixins: [uni.$u.mpMixin, mod440, uni.$u.mixin],
+  components: {
+    uvForm: mod471
+  },
+  created: function () {
+    this.children = [];
+  },
+  methods: {
+    setRules: function (e) {
+      this.$refs.uForm.setRules(e);
+    },
+    validate: function () {
+      return this.$refs.uForm.validate();
+    },
+    validateField: function (e, t) {
+      return this.$refs.uForm.validateField(e, t);
+    },
+    resetFields: function () {
+      return this.$refs.uForm.resetFields();
+    },
+    clearValidate: function (e) {
+      return this.$refs.uForm.clearValidate(e);
+    },
+    setMpData: function () {
+      this.$refs.uForm.children = this.children;
+    }
+  }
+};
+export default o;
+
+</script>

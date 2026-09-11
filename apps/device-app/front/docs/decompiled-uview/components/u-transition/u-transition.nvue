@@ -1,0 +1,58 @@
+<template>
+<view
+  v-if="$data.inited"
+  ref="u-transition"
+  class="u-transition"
+  :class="$data.classes"
+  :style="[$data.mergeStyle]"
+  @touchmove="$data.noop"
+  @click="$data.clickHandler"
+>
+  <slot></slot>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uTransition
+ * 反编译自 webpack 模块 168（nvue 编译空间）
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import mod244 from '@/.unpacked/nvue/244.js'
+import mod245 from '@/.unpacked/nvue/245.js'
+
+"use strict";
+var u = {
+  name: "u-transition",
+  data: function () {
+    return {
+      inited: false,
+      viewStyle: {},
+      status: "",
+      transitionEnded: false,
+      display: false,
+      classes: ""
+    };
+  },
+  computed: {
+    mergeStyle: function () {
+      var e = this.viewStyle, t = this.customStyle;
+      return {
+        ...uni.$u.addStyle(t),
+        ...e
+      };
+    }
+  },
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod245, mod244],
+  watch: {
+    show: {
+      handler: function (e) {
+        e ? this.nvueEnter() : this.nvueLeave();
+      },
+      immediate: true
+    }
+  }
+};
+export default u;
+
+</script>

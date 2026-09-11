@@ -1,0 +1,194 @@
+<template>
+<u-popup
+  :show="show"
+  mode="bottom"
+  :safeAreaInsetBottom="safeAreaInsetBottom"
+  :round="round"
+  @close="closeHandler"
+>
+  <view class="u-action-sheet">
+    <view v-if="title" class="u-action-sheet__header">
+      <text class="u-action-sheet__header__title u-line-1" append="tree">
+        {{ title }}
+      </text>
+      <view class="u-action-sheet__header__icon-wrap" @click="cancel">
+        <u-icon name="close" size="17" color="#c8c9cc" :bold="true"></u-icon>
+      </view>
+    </view>
+    <text
+      v-if="description"
+      class="u-action-sheet__description"
+      :style="[{ marginTop: '' + (title && description ? 0 : '18px') }]"
+      append="tree"
+    >
+      {{ description }}
+    </text>
+    <slot>
+      <u-line v-if="description"></u-line>
+      <view class="u-action-sheet__item-wrap">
+        <block v-for="(t, a) in actions">
+          <view
+            v-for="(t, a) in actions"
+            class="u-action-sheet__item-wrap__item"
+            :hoverClass="t.disabled || t.loading ? '' : 'u-action-sheet--hover'"
+            :hoverStayTime="150"
+            @click="selectHandler(a)"
+          >
+            <u-loading-icon
+              v-if="t.loading"
+              customClass="van-action-sheet__loading"
+              size="18"
+              mode="circle"
+            ></u-loading-icon>
+            <text
+              v-else
+              class="u-action-sheet__item-wrap__item__name"
+              :style="[itemStyle(a)]"
+              append="tree"
+            >
+              {{ t.name }}
+            </text>
+            <text v-if="t.subname" class="u-action-sheet__item-wrap__item__subname" append="tree">
+              {{ t.subname }}
+            </text>
+          </view>
+          <u-line v-for="(t, a) in actions" v-if="a !== actions.length - 1"></u-line>
+        </block>
+      </view>
+    </slot>
+    <u-gap v-if="cancelText" bgColor="#eaeaec" height="6"></u-gap>
+    <view hoverClass="u-action-sheet--hover">
+      <text
+        v-if="cancelText"
+        class="u-action-sheet__cancel-text"
+        :hoverStayTime="150"
+        append="tree"
+        @touchmove=""
+        @click="cancel"
+      >
+        {{ cancelText }}
+      </text>
+    </view>
+  </view>
+</u-popup>
+</template>
+
+<script>
+/*
+ * 组件: uActionSheet
+ * 反编译自 webpack 模块 613（nvue 编译空间）
+ */
+import mod218 from '@/.unpacked/nvue/218.js'
+import mod217 from '@/.unpacked/nvue/217.js'
+import mod956 from '@/.unpacked/nvue/956.js'
+
+"use strict";
+var s = {
+  name: "u-action-sheet",
+  mixins: [mod218, mod217, uni.$u.mixin, mod956],
+  data: function () {
+    return {};
+  },
+  computed: {
+    itemStyle: function () {
+      var e = this;
+      return function (t) {
+        var n = {};
+        return (e.actions[t].color && (n.color = e.actions[t].color), e.actions[t].fontSize && (n.fontSize = uni.$u.addUnit(e.actions[t].fontSize)), e.actions[t].disabled && (n.color = "#c0c4cc"), n);
+      };
+    }
+  },
+  methods: {
+    closeHandler: function () {
+      this.closeOnClickOverlay && this.$emit("close");
+    },
+    cancel: function () {
+      this.$emit("close");
+    },
+    selectHandler: function (e) {
+      var t = this.actions[e];
+      !t || t.disabled || t.loading || (this.$emit("select", t), this.closeOnClickAction && this.$emit("close"));
+    }
+  }
+};
+export default s;
+
+</script>
+
+<style scoped>
+.u-reset-button {
+  width: 100;
+}
+
+.u-action-sheet {
+  text-align: center;
+}
+
+.u-action-sheet__header {
+  position: relative;
+  padding-top: 12;
+  padding-right: 30;
+  padding-bottom: 12;
+  padding-left: 30;
+}
+
+.u-action-sheet__header__title {
+  font-size: 16;
+  color: #303133;
+  font-weight: bold;
+  text-align: center;
+}
+
+.u-action-sheet__header__icon-wrap {
+  position: absolute;
+  right: 15;
+  top: 15;
+}
+
+.u-action-sheet__description {
+  font-size: 13;
+  color: #909193;
+  margin-top: 18;
+  margin-right: 15;
+  margin-bottom: 18;
+  margin-left: 15;
+  text-align: center;
+}
+
+.u-action-sheet__item-wrap__item {
+  padding-top: 15;
+  padding-right: 15;
+  padding-bottom: 15;
+  padding-left: 15;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-action-sheet__item-wrap__item__name {
+  font-size: 16;
+  color: #303133;
+  text-align: center;
+}
+
+.u-action-sheet__item-wrap__item__subname {
+  font-size: 13;
+  color: #c0c4cc;
+  margin-top: 10;
+  text-align: center;
+}
+
+.u-action-sheet__cancel-text {
+  font-size: 16;
+  color: #606266;
+  text-align: center;
+  padding-top: 16;
+  padding-right: 16;
+  padding-bottom: 16;
+  padding-left: 16;
+}
+
+.u-action-sheet--hover {
+  background-color: #f2f3f5;
+}
+</style>

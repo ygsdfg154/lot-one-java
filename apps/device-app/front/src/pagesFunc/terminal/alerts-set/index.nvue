@@ -1,0 +1,542 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding: 24rpx 32rpx 60rpx 32rpx; background-color: #f6f6f6;">
+    <view v-if="pushState" style="margin-bottom: 32rpx;">
+      <text style="font-size: 28rpx; color: #999999; font-weight: bold; margin-bottom: 16rpx; display: block;" append="tree">
+        {{ l('alarm.setup.msg.push') }}
+      </text>
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 0 24rpx;">
+        <view v-if="showPushAlarm" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.app.push') }}
+          </text>
+          <u-switch
+            :loading="loadingList.push"
+            :activeColor="primaryColor"
+            @change="setPushOn"
+            v-model="stateOnList.push"
+          ></u-switch>
+        </view>
+
+        <view v-if="showWechatAlarm" style="display: flex; flex-direction: column; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+            <text style="font-size: 30rpx; color: #333333;" append="tree">
+              {{ l('alarm.setup.wx.push') }}
+            </text>
+            <u-switch
+              :loading="loadingList.wechat"
+              :activeColor="primaryColor"
+              @change="changeWechatOn"
+              v-model="stateOnList.wechat"
+            ></u-switch>
+          </view>
+          <view
+            v-if="wechatTextOn"
+            style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 20rpx; cursor: pointer;"
+            @click="gotoPage('/pagesFunc/terminal/alerts-set/wx?wechatImgurl=' + wechatHeadimgurl + '&wechatName=' + wechatNickname + '&wechatId=' + id)"
+          >
+            <text style="font-size: 26rpx; color: #888888;" append="tree">
+              {{ l('alarm.setup.wx.account') }}
+            </text>
+            <view style="display: flex; flex-direction: row; align-items: center;">
+              <text style="font-size: 26rpx; color: #888888; margin-right: 8rpx;" append="tree">
+                {{ wechatNickname }}
+              </text>
+              <u-icon name="arrow-right" color="#999999" size="24rpx"></u-icon>
+            </view>
+          </view>
+        </view>
+
+        <view v-if="showTelAlarm" style="display: flex; flex-direction: column; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+            <text style="font-size: 30rpx; color: #333333;" append="tree">
+              {{ l('alarm.setup.tel.notice') }}
+            </text>
+            <u-switch
+              :loading="loadingList.tel"
+              :activeColor="primaryColor"
+              @change="setTelAlarmNotice"
+              v-model="stateOnList.tel"
+            ></u-switch>
+          </view>
+          <view
+            v-if="stateOnList.tel"
+            style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 20rpx; cursor: pointer;"
+            @click="gotoPage('/pagesFunc/terminal/alerts-set/phone')"
+          >
+            <text style="font-size: 26rpx; color: #888888;" append="tree">
+              {{ l('alarm.setup.tel.setting') }}
+            </text>
+            <view style="display: flex; flex-direction: row; align-items: center;">
+              <text style="font-size: 26rpx; color: #888888; margin-right: 8rpx;" append="tree">
+                {{ '' + l('alarm.setup.soudn.setting') + telSum + l('alarm.setup.number') }}
+              </text>
+              <u-icon name="arrow-right" color="#999999" size="24rpx"></u-icon>
+            </view>
+          </view>
+        </view>
+
+        <view v-if="showSmsAlarm" style="display: flex; flex-direction: column; padding: 28rpx 0;">
+          <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+            <text style="font-size: 30rpx; color: #333333;" append="tree">
+              {{ l('alarm.setup.sms.notice') }}
+            </text>
+            <u-switch
+              :loading="loadingList.sms"
+              :activeColor="primaryColor"
+              @change="setSmsAlarmNotice"
+              v-model="stateOnList.sms"
+            ></u-switch>
+          </view>
+          <view
+            v-if="stateOnList.sms"
+            style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 20rpx; cursor: pointer;"
+            @click="gotoPage('/pagesFunc/terminal/alerts-set/messages')"
+          >
+            <text style="font-size: 26rpx; color: #888888;" append="tree">
+              {{ l('alarm.setup.tel.setting') }}
+            </text>
+            <view style="display: flex; flex-direction: row; align-items: center;">
+              <text style="font-size: 26rpx; color: #888888; margin-right: 8rpx;" append="tree">
+                {{ '' + l('alarm.setup.soudn.setting') + smsSum + l('alarm.setup.number') }}
+              </text>
+              <u-icon name="arrow-right" color="#999999" size="24rpx"></u-icon>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view style="margin-bottom: 32rpx;">
+      <text style="font-size: 28rpx; color: #999999; font-weight: bold; margin-bottom: 16rpx; display: block;" append="tree">
+        告警推送开关
+      </text>
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 0 24rpx;">
+        <view v-if="terminalFuncShow(43)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.vibration') }}
+          </text>
+          <u-switch
+            :loading="loadingList.vibration"
+            :activeColor="primaryColor"
+            @change="vibrationHandler"
+            v-model="stateOnList.vibration"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(59) || terminalFuncShow(35)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.sos-alarm') }}
+          </text>
+          <u-switch
+            :loading="loadingList.sos"
+            :activeColor="primaryColor"
+            @change="sosHandler"
+            v-model="stateOnList.sos"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(45)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.dismantle') }}
+          </text>
+          <u-switch
+            :loading="loadingList.dismantle"
+            :activeColor="primaryColor"
+            @change="dismantleHandler"
+            v-model="stateOnList.dismantle"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(55)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.battery') }}
+          </text>
+          <u-switch
+            :loading="loadingList.battery"
+            :activeColor="primaryColor"
+            @change="batteryHandler"
+            v-model="stateOnList.battery"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(44)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm.setup.speed') }}
+          </text>
+          <u-switch
+            :loading="loadingList.speed"
+            :activeColor="primaryColor"
+            @change="speedHandler"
+            v-model="stateOnList.speed"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(60)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm-setup.cut-power') }}
+          </text>
+          <u-switch
+            :loading="loadingList.cutPower"
+            :activeColor="primaryColor"
+            @change="cutPowerHandler"
+            v-model="stateOnList.cutPower"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(46)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm-setup.Voice') }}
+          </text>
+          <u-switch
+            :loading="loadingList.voice"
+            :activeColor="primaryColor"
+            @change="voiceHandler"
+            v-model="stateOnList.voice"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(47)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            静止告警
+          </text>
+          <u-switch
+            :loading="loadingList.rest"
+            :activeColor="primaryColor"
+            @change="restHandler"
+            v-model="stateOnList.rest"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(65)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0; border-bottom: 1rpx solid #f0f0f0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            离线告警
+          </text>
+          <u-switch
+            :loading="loadingList.offline"
+            :activeColor="primaryColor"
+            @change="offlineHandler"
+            v-model="stateOnList.offline"
+          ></u-switch>
+        </view>
+
+        <view v-if="terminalFuncShow(16)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 28rpx 0;">
+          <text style="font-size: 30rpx; color: #333333;" append="tree">
+            {{ l('alarm-setup.fence') }}
+          </text>
+          <u-switch
+            :loading="loadingList.fence"
+            :activeColor="primaryColor"
+            @change="fenceHandler"
+            v-model="stateOnList.fence"
+          ></u-switch>
+        </view>
+      </view>
+    </view>
+
+    <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; box-sizing: border-box;">
+      <text style="font-size: 26rpx; color: #F56C6C; font-weight: bold; margin-bottom: 8rpx; display: block;" append="tree">
+        {{ l('alarm-setup.clue') }}：
+      </text>
+      <text style="font-size: 24rpx; color: #888888; line-height: 36rpx; display: block;" append="tree">
+        {{ l('alarm-setup.clue1') }}
+      </text>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/alerts-set/index —— 告警设置
+ *
+ * 重写自反编译产物（webpack 模块 710）。原版 14 个开关各打一个原厂接口
+ * （`/terminal-alarm-setting/set-*-alarm`，都按 `{id, status}` 提交），契约把它们
+ * 分成两个维度（见 store/modules/alarm.js）：告警类型开关走 8.6.2，通知渠道走 8.6.2b。
+ *
+ * 三处按契约纠正：
+ *   - 四个渠道入口原来由前端配置常量 `config.wechatAlarm.enable` 等 × 设备字段
+ *     `enableWechatAlarm` 决定显隐。契约没有这些字段（那是厂商的运营开关），渠道
+ *     属于平台侧能力，对所有设备一致可用，直接显示；
+ *   - 电话/短信接收号码是**两份独立名单**（8.6.2b telPhones/smsPhones），
+ *     两个入口各自的数量分别来自各自的名单，不再共用一个 telSum；
+ *   - 告警项开关失败时回滚 UI（原版只在部分分支回滚，失败后开关显示成功态）。
+ */
+import * as o from 'vuex';
+import d from '../../../common/config.nvue.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+
+"use strict";
+var c = getApp().globalData;
+
+/** 开关键 → 成功提示的 i18n key（开/关两条）。缺省用通用文案。 */
+var TOAST_KEYS = {
+  sos: ["common.open.sos.alarm", "common.close.sos.alarm"],
+  dismantle: ["common.open.dismantle.alarm", "common.close.dismantle.alarm"],
+  battery: ["common.open.battery.alarm", "common.close.battery.alarm"],
+  vibration: ["common.open.vibration.alarm", "common.close.vibration.alarm"],
+  speed: ["common.open.speed.alarm", "common.close.speed.alarm"],
+  cutPower: ["common.open.cutPower.alarm", "common.close.cutPower.alarm"],
+  voice: ["common.open.voice.alarm", "common.close.voice.alarm"],
+  tel: ["common.open.tel", "common.close.tel"],
+  sms: ["common.open.sms", "common.close.sms"]
+};
+
+export default {
+  data: function () {
+    return {
+      primaryColor: d.primaryColor,
+      cdn: d.cdn,
+      loadingList: {
+        wechat: false, push: false, sms: false, tel: false, sos: false,
+        dismantle: false, battery: false, vibration: false, speed: false,
+        cutPower: false, voice: false
+      },
+      stateOnList: {
+        push: false, wechat: false, sms: false, tel: false, sos: false,
+        dismantle: false, battery: false, vibration: false, speed: false,
+        cutPower: false, voice: false
+      },
+      // 微信昵称/头像：契约 2.3 只给 provider + boundAt（昵称头像要客户端授权后
+      // 才能拿到，服务端用 code 换不出来），所以这里显示默认头像与匿名文案
+      wechatNickname: "",
+      wechatHeadimgurl: "",
+      wechatTextOn: false,
+      // 两份独立名单各自的数量
+      telSum: 0,
+      smsSum: 0
+    };
+  },
+  computed: {
+    ...o.mapGetters(["selectedTerminal", "terminalFuncs", "sysInfo"]),
+    /** 四个通知渠道都是平台侧能力，不按机型显隐（契约 6.1"设备能力"小节的注）。 */
+    pushState: function () {
+      return true;
+    },
+    showPushAlarm: function () {
+      return true;
+    },
+    showWechatAlarm: function () {
+      return true;
+    },
+    showTelAlarm: function () {
+      return true;
+    },
+    showSmsAlarm: function () {
+      return true;
+    }
+  },
+  onShow: function () {
+    this.fetchData();
+  },
+  methods: {
+    ...o.mapActions("alarm", ["GetAlarmSettings", "SetAlarmEnabled", "SetNotifyChannel", "SetNotifyPhones"]),
+    ...o.mapActions("account", ["BindWechatAccount"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    terminalFuncShow: function (e) {
+      return mod166.funcShowHandler(this.terminalFuncs, e);
+    },
+    gotoPage: function (e) {
+      uni.navigateTo({ url: e });
+    },
+    fetchData: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetAlarmSettings({
+          deviceId: self.selectedTerminal && self.selectedTerminal.id
+        });
+        if (!res.succeeded || !res.data) return;
+        self.stateOnList = res.data.stateOnList;
+        self.wechatTextOn = self.stateOnList.wechat;
+        self.telSum = (res.data.telPhones || []).length;
+        self.smsSum = (res.data.smsPhones || []).length;
+        self.wechatNickname = self.wechatNickname || c.$t("tel-pay.wx-anonymous");
+        self.wechatHeadimgurl = self.wechatHeadimgurl || self.cdn + "/draw/wcDefault.png";
+        self.loadingList.wechat = false;
+      })();
+    },
+    /** 告警类型开关（8.6.2）。失败一律回滚 UI，别让开关停在假的成功态。 */
+    toggleAlarm: function (key, on) {
+      var self = this;
+      return (async function () {
+        self.loadingList[key] = true;
+        var res = await self.SetAlarmEnabled({
+          deviceId: self.selectedTerminal.id,
+          key: key,
+          status: on
+        });
+        self.loadingList[key] = false;
+        if (!res || !res.succeeded) {
+          self.stateOnList[key] = !on;
+          return;
+        }
+        var keys = TOAST_KEYS[key];
+        mod166.qzwlToast(keys ? c.$t(keys[on ? 0 : 1]) : (on ? "已开启" : "已关闭"), "none");
+      })();
+    },
+    /** 通知渠道开关（8.6.2b，整体覆盖由 store 负责合并快照）。 */
+    toggleChannel: function (key, on) {
+      var self = this;
+      return (async function () {
+        self.loadingList[key] = true;
+        var res = await self.SetNotifyChannel({
+          deviceId: self.selectedTerminal.id,
+          key: key,
+          status: on
+        });
+        self.loadingList[key] = false;
+        if (!res || !res.succeeded) {
+          self.stateOnList[key] = !on;
+          return;
+        }
+        var keys = TOAST_KEYS[key];
+        if (keys) mod166.qzwlToast(c.$t(keys[on ? 0 : 1]), "none");
+      })();
+    },
+    sosHandler: function (e) {
+      return this.toggleAlarm("sos", e);
+    },
+    dismantleHandler: function (e) {
+      return this.toggleAlarm("dismantle", e);
+    },
+    batteryHandler: function (e) {
+      return this.toggleAlarm("battery", e);
+    },
+    vibrationHandler: function (e) {
+      return this.toggleAlarm("vibration", e);
+    },
+    speedHandler: function (e) {
+      return this.toggleAlarm("speed", e);
+    },
+    cutPowerHandler: function (e) {
+      return this.toggleAlarm("cutPower", e);
+    },
+    voiceHandler: function (e) {
+      return this.toggleAlarm("voice", e);
+    },
+    setTelAlarmNotice: function (e) {
+      return this.toggleChannel("tel", e);
+    },
+    setSmsAlarmNotice: function (e) {
+      return this.toggleChannel("sms", e);
+    },
+    setPushOn: function (e) {
+      return this.toggleChannel("push", e);
+    },
+    /**
+     * 微信推送开关。开启前要求账号已绑微信（契约 2.1）：拿 wx.login 的 code 去绑，
+     * 绑定成功（或本来就绑过，2.1 幂等）再开渠道开关。
+     */
+    changeWechatOn: function (on) {
+      var self = this;
+      if (!on) {
+        this.wechatTextOn = false;
+        return this.toggleChannel("wechat", false);
+      }
+      this.loadingList.wechat = true;
+      uni.login({
+        provider: "weixin",
+        onlyAuthorize: true,
+        success: function (loginRes) {
+          (async function () {
+            var bind = await self.BindWechatAccount({ credential: loginRes.code });
+            if (!bind || !bind.succeeded) {
+              self.loadingList.wechat = false;
+              self.stateOnList.wechat = false;
+              self.wechatTextOn = false;
+              // 21013：该微信已绑定其他账号
+              if (bind && bind.msg) mod166.qzwlToast(bind.msg, "none");
+              return;
+            }
+            await self.toggleChannel("wechat", true);
+            self.wechatTextOn = self.stateOnList.wechat;
+          })();
+        },
+        fail: function () {
+          self.loadingList.wechat = false;
+          self.stateOnList.wechat = false;
+          self.wechatTextOn = false;
+          mod166.qzwlToast(c.$t("alarm-setup.bindwx-faild"), "none");
+        }
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.bottomBar {
+  height: 150rpx;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.speed {
+  padding-top: 60rpx;
+  padding-right: 50rpx;
+  padding-bottom: 100rpx;
+  padding-left: 50rpx;
+}
+
+.speed-title {
+  font-size: 38rpx;
+}
+
+.speed-input {
+  margin-top: 35rpx;
+  margin-right: 0;
+  margin-bottom: 35rpx;
+  margin-left: 0;
+}
+
+.telText {
+  padding-top: 10rpx;
+  padding-right: 24rpx;
+  padding-bottom: 10rpx;
+  padding-left: 0rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.bottomBar {
+  height: 20vw;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.speed {
+  padding-top: 8vw;
+  padding-right: 6.6667vw;
+  padding-bottom: 13.3333vw;
+  padding-left: 6.6667vw;
+}
+
+.speed-title {
+  font-size: 5.0667vw;
+}
+
+.speed-input {
+  margin-top: 4.6667vw;
+  margin-right: 0;
+  margin-bottom: 4.6667vw;
+  margin-left: 0;
+}
+
+.telText {
+  padding-top: 1.3333vw;
+  padding-right: 3.2vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 0vw;
+}
+/* #endif */
+</style>

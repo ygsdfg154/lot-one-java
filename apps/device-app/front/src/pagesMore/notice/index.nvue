@@ -1,0 +1,74 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="flex-1 bg-white">
+    <view v-if="noticeInfo" class="b-top1">
+      <view class="flex-col justify-center" style="padding: 24rpx 36rpx 20rpx 36rpx">
+        <text class="text-lg text-bold" append="tree">
+          {{ noticeInfo.title }}
+        </text>
+        <text class="text-sm text-grey m-t-md" append="tree">
+          {{ noticeInfo.createTime }}
+        </text>
+        <text class="text-sm text-grey m-t-md" append="tree">
+          发布单位：{{ noticeInfo.tenantName }}
+        </text>
+      </view>
+      <view class="flex-col p-t-lg p-b-xl m-h-lg b-top1">
+        <view class="p-h-sm">
+          <text class="text m-t-base" style="width: 670rpx" append="tree">
+            {{ noticeInfo.description }}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/notice/index
+ * 反编译自 webpack 模块 587（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod0 from 'moment';
+"use strict";
+var m = getApp().globalData, l = {
+  data: function () {
+    return {
+      noticeInfo: null
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["noticeData", "username"])
+  },
+  onLoad: function () {
+    this.init();
+  },
+  methods: {
+    ...mod25.mapActions("app", ["GetNoticeDetails"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    init: function () {
+      var e = this;
+      return (async function () {
+        var a;
+        (a = await e.GetNoticeDetails(e.noticeData.id)).succeeded && (a.data.issueTime = mod0(a.data.createTime, "YYYY/MM/DD HH:mm:ss").format("YYYY\u5e74M\u6708D\u53f7"), e.noticeInfo = a.data);
+      })();
+    }
+  }
+};
+export default l;
+
+</script>

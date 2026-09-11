@@ -1,0 +1,144 @@
+{
+  "id": "__UNI__7115D8B",
+  "name": "铭智物联",
+  "version": {
+    "name": "1.2.0",
+    "code": 107
+  },
+  "description": "铭智物联定位平台，提供设备定位、声音安防、历史轨迹、分享定位等服务",
+  "launch_path": "",
+  "developer": {
+    "name": "",
+    "email": "",
+    "url": ""
+  },
+  "permissions": {
+    "Webview-x5": {
+      "description": "Webview-x5"
+    },
+    "Geolocation": {
+      "description": "Geolocation"
+    },
+    "Maps": {
+      "description": "Maps"
+    },
+    "Share": {
+      "description": "Share"
+    },
+    "Barcode": {
+      "description": "Barcode"
+    },
+    "Camera": {
+      "description": "Camera"
+    },
+    "OAuth": {
+      "description": "OAuth"
+    },
+    "Payment": {
+      "description": "Payment"
+    },
+    "UniNView": {
+      "description": "UniNView"
+    }
+  },
+  "plus": {
+    "useragent": {
+      "value": "uni-app",
+      "concatenate": true
+    },
+    "splashscreen": {
+      "autoclose": true,
+      "delay": 0,
+      "target": "id:1",
+      "waiting": true
+    },
+    "popGesture": "close",
+    "launchwebview": {
+      "id": "1",
+      "kernel": "WKWebview",
+      "render": "always",
+      "uniNView": {
+        "path": "pages/home/home.js"
+      }
+    },
+    "statusbar": {
+      "immersed": "supportedDevice",
+      "style": "dark",
+      "background": "#FFFFFF"
+    },
+    "confusion": "BQ81KwABAAMAAABAO3s/CbgTfZNIbPwS9MLDoeVjLw48ZX1aRDx+3D5LC43lA8T+iLx7GkeXwy29egR/vvdDwCC8p01HGrMf292FzX+U9ZyzLvgvHRwmyfhHT9Jx69CAMComvMfZrbOT7Dbx4WRt3uIEDY39i3l/g2ySXPuX1wMVoeU5Tptx9QbbpwuIkT0tytuHQMLhwka7QmXQe1AK9ygv7w/H1GhwwpuO9kzmZco/fPpRdv+RyNzgz9lOHs/erYKvlZ8zq7Upz5MeVrhPyHF1R9hNtsuayr3HyrZNAN/q5xXxSP81nIsv0AMIMz8w7om5NMnn9mhSKTDPWSwg6wzVpCjqpqTpFnL+xoQGTJg41VWPGc9ot5evu0J7U/qA6sIrsQQP5uUjouj3aywrktpJlGoaLDUpLLxxJdG5irBew8sr51gZGqct3YM=",
+    "compatible": {
+      "ignoreVersion": true
+    },
+    "optimization": {
+      "subPackages": true
+    },
+    "safearea": {
+      "bottom": {
+        "offset": "none"
+      }
+    },
+    "usingComponents": true,
+    "nvueCompiler": "uni-app",
+    "compilerVersion": 3,
+    "uniStatistics": {
+      "version": "2",
+      "enable": false
+    },
+    "allowsInlineMediaPlayback": true,
+    "uni-app": {
+      "compilerVersion": "4.75",
+      "control": "uni-v3",
+      "nvueCompiler": "uni-app",
+      "renderer": "auto",
+      "nvue": {
+        "flex-direction": "column"
+      },
+      "nvueLaunchMode": "normal"
+    },
+    "tabBar": {
+      "color": "#CCCCCC",
+      "selectedColor": "#6081C7",
+      "borderStyle": "rgba(0,0,0,0.4)",
+      "backgroundColor": "#FFFFFF",
+      "height": "50px",
+      "fontSize": "10px",
+      "iconWidth": "24px",
+      "spacing": "3px",
+      "list": [
+        {
+          "pagePath": "pages/home/home",
+          "iconPath": "static/icons/home.png",
+          "selectedIconPath": "static/icons/home_active.png",
+          "text": "首页"
+        },
+        {
+          "pagePath": "pages/ability/index",
+          "iconPath": "static/icons/ability.png",
+          "selectedIconPath": "static/icons/ability_active.png",
+          "text": "功能"
+        },
+        {
+          "pagePath": "pages/msg/index",
+          "iconPath": "static/icons/msgs.png",
+          "selectedIconPath": "static/icons/msgs_active.png",
+          "text": "消息"
+        },
+        {
+          "pagePath": "pages/my/my",
+          "iconPath": "static/icons/my.png",
+          "selectedIconPath": "static/icons/my_active.png",
+          "text": "我的"
+        }
+      ],
+      "child": [
+        "lauchwebview"
+      ]
+    },
+    "adid": "120472030608",
+    "channel": "huawei",
+    "runmode": "liberate"
+  },
+  "locale": "zh-Hans",
+  "fallbackLocale": "zh-Hans"
+}

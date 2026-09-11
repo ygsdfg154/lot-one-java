@@ -1,0 +1,68 @@
+<template>
+<view v-if="isPermissionAlertShow" class="main p bg-white">
+  <text class="text-md" append="tree">
+    {{ permissionDeclare.title }}：
+  </text>
+  <text class="text text-gray m-t-mini" append="tree">
+    {{ permissionDeclare.details }}
+  </text>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: permissionPopup
+ * 反编译自 webpack 模块 583（nvue 编译空间）
+ * 辅助函数 i 仍被引用，保留原定义
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+
+function i(e, t) {
+  var n = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var r = Object.getOwnPropertySymbols(e);
+    (t && (r = r.filter(function (t) {
+      return Object.getOwnPropertyDescriptor(e, t).enumerable;
+    })), n.push.apply(n, r));
+  }
+  return n;
+}
+
+"use strict";
+var o = {
+  computed: (function (e) {
+    for (var t = 1; t < arguments.length; t++) {
+      var n = null != arguments[t] ? arguments[t] : {};
+      t % 2 ? i(Object(n), true).forEach(function (t) {
+        mod5(e, t, n[t]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(n)) : i(Object(n)).forEach(function (t) {
+        Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(n, t));
+      });
+    }
+    return e;
+  })({}, require("vuex").mapGetters(["isPermissionAlertShow", "permissionDeclare", "sysInfo"]))
+};
+export default o;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.main {
+  width: 700rpx;
+  position: fixed;
+  left: 25rpx;
+  top: 0rpx;
+  border-radius: 30rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.main {
+  width: 93.3333vw;
+  position: fixed;
+  left: 3.3333vw;
+  top: 0vw;
+  border-radius: 4vw;
+}
+/* #endif */
+</style>

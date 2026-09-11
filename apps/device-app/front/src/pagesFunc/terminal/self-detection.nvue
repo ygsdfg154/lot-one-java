@@ -1,0 +1,373 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding: 24rpx 32rpx 60rpx 32rpx; background-color: #f6f6f6;">
+    <view style="display: flex; flex-direction: column; margin-bottom: 24rpx;">
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 16rpx;">
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 64rpx; height: 64rpx" :src="cdn + '/ikon/qzwl-self-online.png'" />
+          <view style="display: flex; flex-direction: column; margin-left: 20rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #333333;" append="tree">
+              {{ l('self-test.starting-state') }}
+            </text>
+            <text style="font-size: 24rpx; color: #888888; margin-top: 4rpx;" append="tree">
+              {{ l('self-test.detection-starting') }}
+            </text>
+          </view>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 28rpx; height: 28rpx" :src="cdn + '/ikon/qzwl-self-ok.png'" />
+          <text style="font-size: 26rpx; color: #1FC886; font-weight: bold; margin-left: 8rpx;" append="tree">
+            {{ online }}
+          </text>
+        </view>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 16rpx;">
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 64rpx; height: 64rpx" :src="cdn + '/ikon/qzwl-self-mesh.png'" />
+          <view style="display: flex; flex-direction: column; margin-left: 20rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #333333;" append="tree">
+              {{ l('self-test.terminal.network') }}
+            </text>
+            <text style="font-size: 24rpx; color: #888888; margin-top: 4rpx;" append="tree">
+              {{ l('self-test.detection-network') }}
+            </text>
+          </view>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 28rpx; height: 28rpx" :src="cdn + '/ikon/qzwl-self-ok.png'" />
+          <text style="font-size: 26rpx; color: #1FC886; font-weight: bold; margin-left: 8rpx;" append="tree">
+            {{ genGsmSignal }}
+          </text>
+        </view>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 16rpx;">
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 64rpx; height: 64rpx" :src="cdn + '/ikon/qzwl-self-el.png'" />
+          <view style="display: flex; flex-direction: column; margin-left: 20rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #333333;" append="tree">
+              {{ wirelessDeviceState ? l('self-test.power-state') : l('self-test.battery-capacity') }}
+            </text>
+            <text style="font-size: 24rpx; color: #888888; margin-top: 4rpx;" append="tree">
+              {{ wirelessDeviceState ? l('self-test.power-state-capacity') : l('self-test.detection-battery-capacity') }}
+            </text>
+          </view>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 28rpx; height: 28rpx" :src="cdn + '/ikon/qzwl-self-ok.png'" />
+          <text style="font-size: 26rpx; color: #1FC886; font-weight: bold; margin-left: 8rpx;" append="tree">
+            {{ genBettery }}
+          </text>
+        </view>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 64rpx; height: 64rpx" :src="cdn + '/ikon/qzwl-self-moon.png'" />
+          <view style="display: flex; flex-direction: column; margin-left: 20rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #333333;" append="tree">
+              GPS {{ l('self-test.satellite') }}
+            </text>
+            <text style="font-size: 24rpx; color: #888888; margin-top: 4rpx;" append="tree">
+              {{ l('self-test.detection-satellite') }}
+            </text>
+          </view>
+        </view>
+        <view style="display: flex; flex-direction: row; align-items: center;">
+          <image style="width: 28rpx; height: 28rpx" :src="cdn + '/ikon/qzwl-self-ok.png'" />
+          <text style="font-size: 26rpx; color: #1FC886; font-weight: bold; margin-left: 8rpx;" append="tree">
+            {{ genWLSignal }} {{ genGpsSum }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 24rpx;">
+      <text style="font-size: 30rpx; font-weight: bold; color: #333333; text-align: center; display: block; margin-bottom: 16rpx;" append="tree">
+        {{ l('self-test.config-param') }}
+      </text>
+      
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.locate-switch') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ l('self-test.locate-switch-state') }}
+        </text>
+      </view>
+
+      <view v-if="workModel" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.working-mode') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ workModel || '-' }}
+        </text>
+      </view>
+
+      <view v-if="terminalFuncShow(22)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.remote.onOff') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ online || '-' }}
+        </text>
+      </view>
+
+      <view v-if="betteryAlarmState" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.low-power') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ betteryAlarmState || '-' }}
+        </text>
+      </view>
+
+      <view v-if="shockAlarmState" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.vibration-induction') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ shockAlarmState || '-' }}
+        </text>
+      </view>
+
+      <view v-if="garrison" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          设防状态:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ garrison }}
+        </text>
+      </view>
+    </view>
+
+    <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx;">
+      <text style="font-size: 30rpx; font-weight: bold; color: #333333; text-align: center; display: block; margin-bottom: 16rpx;" append="tree">
+        {{ l('self-test.basic-information') }}
+      </text>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          ICCID:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ iccid || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('device.terminal.model') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ terminalTypeDisplayName || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.communication-time') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ genTime || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.satellite-quantity') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ (selectedTerminal && selectedTerminal.gnssCount) || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('self-test.terminal.network') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ genGsmSignal || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ wirelessDeviceState ? l('self-test.power-state') : l('self-test.battery-capacity') }}:
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ genBettery || '-' }}
+        </text>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/self-detection
+ * 反编译自 webpack 模块 656（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import s from '@/.unpacked/nvue/23.js';
+import i from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var m = getApp().globalData, c = {
+  components: {},
+  onLoad: function () {
+    this.selectedTerminal && (this.iccid = this.selectedTerminal.iccid, this.terminalTypeDisplayName = this.selectedTerminal.terminalTypeDisplayName, this.online = 3 === this.selectedTerminal.deviceState ? m.$t("common.device.status.shutdown") : m.$t("common.device.status.starting-up"), this.fetchData());
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      iccid: "",
+      terminalTypeDisplayName: "",
+      betteryAlarmState: "",
+      shockAlarmState: "",
+      workModel: "",
+      online: "",
+      garrison: ""
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "userId", "terminalFuncs"]),
+    wirelessDeviceState: function () {
+      if (this.selectedTerminal) return mod15.wirelessDevice.includes(this.selectedTerminal.terminalTypeDisplayName);
+    },
+    genBettery: function () {
+      if (!this.selectedTerminal) return "-";
+      this.selectedTerminal.battery;
+      var e = this.selectedTerminal.batteryState, t = this.selectedTerminal.terminalTypeDisplayName;
+      if (this.wirelessDeviceState) return m.$t(mod166.batteryStateHangle(e, t));
+      var a = this.selectedTerminal.battery;
+      return a < 0 ? "100%" : ("").concat(a, "%");
+    },
+    genWLSignal: function () {
+      var e = this.selectedTerminal.gnssCount;
+      return e <= 12 || e >= 13 && e <= 18 ? m.$t("common.general") : e >= 19 ? m.$t("common.excellent") : undefined;
+    },
+    genGpsSum: function () {
+      var e = this.selectedTerminal.gnssCount;
+      return ("").concat(m.$t("self-test.satellite-quantity"), " ").concat(e);
+    },
+    genTime: function () {
+      return this.selectedTerminal ? this.selectedTerminal.lastAlive : null;
+    },
+    genGsmSignal: function () {
+      var e = this.selectedTerminal.wlSignal;
+      return e <= 20 || e > 20 && e <= 50 ? ("").concat(m.$t("common.general")) : e > 50 && e <= 80 ? ("").concat(m.$t("common.good")) : e > 80 && e <= 100 ? ("").concat(m.$t("common.excellent")) : undefined;
+    }
+  },
+  methods: {
+    ...mod25.mapActions("remoteSet", ["GetDirectiveState", "GetLocationMode"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    /**
+     * "配置参数"区各项的权威源不同（原版全从 /terminal/set-params 一个接口取）：
+     *   - 低电/震动告警开关 → 8.6.1 alarm-settings
+     *   - 定位模式          → 8.4.1 location-mode
+     *   - 设防状态          → 9.3.1 switch-status（三态，unknown 显示"待同步"）
+     * 某一项该设备没有就留空，模板本来就用 v-if 兜住了。
+     */
+    fetchData: function () {
+      var self = this;
+      return (async function () {
+        await Promise.all([
+          self.loadAlarmState("LowBatteryAlarm", "betteryAlarmState"),
+          self.loadAlarmState("Vibration", "shockAlarmState"),
+          self.loadPosMode(),
+          mod166.funcShowHandler(self.terminalFuncs, 1) ? self.getGarrison() : null
+        ]);
+      })();
+    },
+    loadAlarmState: function (param, field) {
+      var self = this;
+      return (async function () {
+        var res = await self.GetDirectiveState({
+          deviceId: self.selectedTerminal.id,
+          param: param
+        });
+        if (!res || !res.succeeded || !res.data || res.data.unavailable) return;
+        self[field] = res.data.on ? m.$t("common.open") : m.$t("common.close");
+      })();
+    },
+    loadPosMode: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetLocationMode({
+          terminalId: self.selectedTerminal.id
+        });
+        if (!res || !res.succeeded || !res.data) return;
+        self.workModel = res.data.modeName || "";
+      })();
+    },
+    terminalFuncShow: function (e) {
+      return mod166.funcShowHandler(this.terminalFuncs, e);
+    },
+    getGarrison: function () {
+      var self = this;
+      return (async function () {
+        var res = await self.GetDirectiveState({
+          deviceId: self.selectedTerminal.id,
+          param: "Garrison"
+        });
+        if (!res || !res.succeeded || !res.data) return;
+        if (res.data.unavailable) return;
+        // 无快照也无下发记录时不能说"已撤防"——那是猜的
+        self.garrison = res.data.unknown
+          ? "待同步"
+          : res.data.on ? m.$t("common.garrison-on") : m.$t("common.garrison-off");
+      })();
+    }
+  }
+};
+export default c;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.grid-item {
+  margin-top: 16rpx;
+  padding-top: 18rpx;
+  padding-right: 24rpx;
+  padding-bottom: 18rpx;
+  padding-left: 24rpx;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+/* #endif */
+/* #ifdef H5 */
+.grid-item {
+  margin-top: 2.1333vw;
+  padding-top: 2.4vw;
+  padding-right: 3.2vw;
+  padding-bottom: 2.4vw;
+  padding-left: 3.2vw;
+  background-color: #ffffff;
+  border-radius: 3.2vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+/* #endif */
+</style>

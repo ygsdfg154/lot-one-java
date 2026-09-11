@@ -1,0 +1,116 @@
+<template>
+<view ref="u-scroll-list" class="u-scroll-list">
+  <scroller
+    ref="u-scroll-list__scroll-view"
+    class="u-scroll-list__scroll-view"
+    scrollDirection="horizontal"
+    :showScrollbar="false"
+    :offsetAccuracy="1"
+    @scroll="nvueScrollHandler"
+  >
+    <view class="u-scroll-list__scroll-view__content">
+      <slot></slot>
+    </view>
+  </scroller>
+  <view v-if="indicator" class="u-scroll-list__indicator" :style="[$u.addStyle(indicatorStyle)]">
+    <view class="u-scroll-list__indicator__line" :style="[lineStyle]">
+      <view
+        ref="u-scroll-list__indicator__line__bar"
+        class="u-scroll-list__indicator__line__bar"
+        :style="[barStyle]"
+      ></view>
+    </view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uScrollList
+ * 反编译自 webpack 模块 379（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod821 from '@/.unpacked/nvue/821.js';
+import mod822 from '@/.unpacked/nvue/822.js';
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var a, l = e("dom"), c = (a = {
+  name: "u-scroll-list",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod822]
+}, mod5(a, "mixins", [uni.$u.mpMixin, uni.$u.mixin, mod821, mod822]), mod5(a, "data", function () {
+  return {
+    scrollInfo: {
+      scrollLeft: 0,
+      scrollWidth: 0
+    },
+    scrollWidth: 0
+  };
+}), mod5(a, "computed", {
+  barStyle: function () {
+    var e = {};
+    return (e.width = uni.$u.addUnit(this.indicatorBarWidth), e.backgroundColor = this.indicatorActiveColor, e);
+  },
+  lineStyle: function () {
+    var e = {};
+    return (e.width = uni.$u.addUnit(this.indicatorWidth), e.backgroundColor = this.indicatorColor, e);
+  }
+}), mod5(a, "mounted", function () {
+  this.init();
+}), mod5(a, "methods", {
+  init: function () {
+    this.getComponentWidth();
+  },
+  scrollEvent: function (e) {
+    this.$emit(e);
+  },
+  getComponentWidth: function () {
+    var e = this;
+    return (async function () {
+      var n;
+      await uni.$u.sleep(30);
+      (n = e.$refs["u-scroll-list"]) && l.getComponentRect(n, function (t) {
+        e.scrollWidth = t.size.width;
+      });
+    })();
+  }
+}), a);
+export default c;
+
+</script>
+
+<style scoped>
+.u-scroll-list {
+  padding-bottom: 10;
+}
+
+.u-scroll-list__scroll-view {
+  flex-direction: row;
+}
+
+.u-scroll-list__scroll-view__content {
+  flex-direction: row;
+}
+
+.u-scroll-list__indicator {
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 15;
+}
+
+.u-scroll-list__indicator__line {
+  width: 60;
+  height: 4;
+  border-radius: 100;
+  overflow: hidden;
+}
+
+.u-scroll-list__indicator__line__bar {
+  width: 20;
+  height: 4;
+  border-radius: 100;
+}
+</style>

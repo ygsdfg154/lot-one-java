@@ -1,0 +1,269 @@
+<template>
+<view class="u-form-item">
+  <view
+    class="u-form-item__body"
+    :style="[$u.addStyle(customStyle), { flexDirection: 'left' === (labelPosition || parentData.labelPosition) ? 'row' : 'column' }]"
+    @click="clickHandler"
+  >
+    <slot name="label">
+      <view
+        v-if="required || leftIcon || label"
+        class="u-form-item__body__left"
+        :style="{ width: $u.addUnit(labelWidth || parentData.labelWidth), marginBottom: 'left' === parentData.labelPosition ? 0 : '5px' }"
+      >
+        <view class="u-form-item__body__left__content">
+          <text v-if="required" class="u-form-item__body__left__content__required" append="tree">
+            *
+          </text>
+          <view v-if="leftIcon" class="u-form-item__body__left__content__icon">
+            <u-icon :name="leftIcon" :customStyle="leftIconStyle"></u-icon>
+          </view>
+          <text
+            class="u-form-item__body__left__content__label"
+            :style="[parentData.labelStyle, { justifyContent: 'left' === parentData.labelAlign ? 'flex-start' : 'center' === parentData.labelAlign ? 'center' : 'flex-end' }]"
+            append="tree"
+          >
+            {{ label }}
+          </text>
+        </view>
+      </view>
+    </slot>
+    <view class="u-form-item__body__right">
+      <view class="u-form-item__body__right__content">
+        <view class="u-form-item__body__right__content__slot">
+          <slot></slot>
+        </view>
+        <view v-if="$slots.right" class="item__body__right__content__icon">
+          <slot name="right"></slot>
+        </view>
+      </view>
+    </view>
+  </view>
+  <slot name="error">
+    <text
+      v-if="message && 'message' === parentData.errorType"
+      class="u-form-item__body__right__message"
+      :style="{ marginLeft: $u.addUnit('top' === parentData.labelPosition ? 0 : labelWidth || parentData.labelWidth) }"
+      append="tree"
+    >
+      {{ message }}
+    </text>
+  </slot>
+  <u-line
+    v-if="borderBottom"
+    :color="message && 'border-bottom' === parentData.errorType ? $u.color.error : propsLine.color"
+    :customStyle="'margin-top: ' + (message && 'message' === parentData.errorType ? '5px' : 0)"
+  ></u-line>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uFormItem
+ * 反编译自 webpack 模块 341（nvue 编译空间）
+ */
+import mod478 from '@/.unpacked/nvue/478.js'
+
+"use strict";
+var i = {
+  name: "u-form-item",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod478],
+  data: function () {
+    return {
+      message: "",
+      parentData: {
+        labelPosition: "left",
+        labelAlign: "left",
+        labelStyle: {},
+        labelWidth: 45,
+        errorType: "message"
+      }
+    };
+  },
+  computed: {
+    propsLine: function () {
+      return uni.$u.props.line;
+    }
+  },
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    init: function () {
+      (this.updateParentData(), this.parent || uni.$u.error("u-form-item\u9700\u8981\u7ed3\u5408u-form\u7ec4\u4ef6\u4f7f\u7528"));
+    },
+    updateParentData: function () {
+      this.getParentData("u-form");
+    },
+    clearValidate: function () {
+      this.message = null;
+    },
+    resetField: function () {
+      var e = uni.$u.getProperty(this.parent.originalModel, this.prop);
+      (uni.$u.setProperty(this.parent.model, this.prop, e), this.message = null);
+    },
+    clickHandler: function () {
+      this.$emit("click");
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.u-form-item {
+  flex-direction: column;
+  font-size: 14;
+  color: #303133;
+}
+
+.u-form-item__body {
+  flex-direction: row;
+  padding-top: 10;
+  padding-right: 0;
+  padding-bottom: 10;
+  padding-left: 0;
+}
+
+.u-form-item__body__left {
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-form-item__body__left__content {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 10rpx;
+  flex: 1;
+}
+
+.u-form-item__body__left__content__icon {
+  margin-right: 8rpx;
+}
+
+.u-form-item__body__left__content__required {
+  position: absolute;
+  left: -9;
+  color: #f56c6c;
+  line-height: 20;
+  font-size: 20;
+  top: 3;
+}
+
+.u-form-item__body__left__content__label {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  color: #303133;
+  font-size: 15;
+}
+
+.u-form-item__body__right {
+  flex: 1;
+}
+
+.u-form-item__body__right__content {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.u-form-item__body__right__content__slot {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-form-item__body__right__content__icon {
+  margin-left: 10rpx;
+  color: #c0c4cc;
+  font-size: 30rpx;
+}
+
+.u-form-item__body__right__message {
+  font-size: 12;
+  line-height: 12;
+  color: #f56c6c;
+}
+/* #endif */
+/* #ifdef H5 */
+.u-form-item {
+  flex-direction: column;
+  font-size: 14;
+  color: #303133;
+}
+
+.u-form-item__body {
+  flex-direction: row;
+  padding-top: 10;
+  padding-right: 0;
+  padding-bottom: 10;
+  padding-left: 0;
+}
+
+.u-form-item__body__left {
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-form-item__body__left__content {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 1.3333vw;
+  flex: 1;
+}
+
+.u-form-item__body__left__content__icon {
+  margin-right: 1.0667vw;
+}
+
+.u-form-item__body__left__content__required {
+  position: absolute;
+  left: -9;
+  color: #f56c6c;
+  line-height: 20;
+  font-size: 20;
+  top: 3;
+}
+
+.u-form-item__body__left__content__label {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  color: #303133;
+  font-size: 15;
+}
+
+.u-form-item__body__right {
+  flex: 1;
+}
+
+.u-form-item__body__right__content {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.u-form-item__body__right__content__slot {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-form-item__body__right__content__icon {
+  margin-left: 1.3333vw;
+  color: #c0c4cc;
+  font-size: 4vw;
+}
+
+.u-form-item__body__right__message {
+  font-size: 12;
+  line-height: 12;
+  color: #f56c6c;
+}
+/* #endif */
+</style>

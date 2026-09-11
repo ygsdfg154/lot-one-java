@@ -1,0 +1,54 @@
+<template>
+<view class="u-cell-group" :class="[customClass]" :style="[$u.addStyle(customStyle)]">
+  <view v-if="title" class="u-cell-group__title">
+    <slot name="title">
+      <text class="u-cell-group__title__text" append="tree">
+        {{ title }}
+      </text>
+    </slot>
+  </view>
+  <view class="u-cell-group__wrapper">
+    <u-line v-if="border"></u-line>
+    <slot></slot>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uCellGroup
+ * 反编译自 webpack 模块 294（nvue 编译空间）
+ */
+import mod443 from '@/.unpacked/nvue/443.js'
+
+"use strict";
+var i = {
+  name: "u-cell-group",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod443]
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-cell-group {
+  flex: 1;
+}
+
+.u-cell-group__title {
+  padding-top: 16;
+  padding-right: 16;
+  padding-bottom: 8;
+  padding-left: 16;
+}
+
+.u-cell-group__title__text {
+  font-size: 15;
+  line-height: 16;
+  color: #303133;
+}
+
+.u-cell-group__wrapper {
+  position: relative;
+}
+</style>

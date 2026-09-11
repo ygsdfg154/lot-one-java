@@ -1,0 +1,214 @@
+<template>
+<view class="u-search" :style="[{ margin: margin }, $u.addStyle(customStyle)]" @click="clickHandler">
+  <view
+    class="u-search__content"
+    :style="{ backgroundColor: bgColor, borderRadius: 'round' == shape ? '100px' : '4px', borderColor: borderColor }"
+  >
+    <slot v-if="$slots.label || null !== label" name="label">
+      <text class="u-search__content__label" append="tree">
+        {{ label }}
+      </text>
+    </slot>
+    <view class="u-search__content__icon">
+      <u-icon
+        :size="searchIconSize"
+        :name="searchIcon"
+        :color="searchIconColor ? searchIconColor : color"
+        @click="clickIcon"
+      ></u-icon>
+    </view>
+    <input
+      class="u-search__content__input"
+      :style="[{ textAlign: inputAlign, color: color, backgroundColor: bgColor, height: $u.addUnit(height) }, inputStyle]"
+      confirmType="search"
+      :value="value"
+      :disabled="disabled"
+      :focus="focus"
+      :maxlength="maxlength"
+      placeholderClass="u-search__content__input--placeholder"
+      :placeholder="placeholder"
+      :placeholderStyle="'color: ' + placeholderColor"
+      type="text"
+      @blur="blur"
+      @confirm="search"
+      @input="inputChange"
+      @focus="getFocus"
+     />
+    <view
+      v-if="keyword && clearabled && focused"
+      class="u-search__content__icon u-search__content__close"
+      @click="clear"
+    >
+      <u-icon name="close" size="11" color="#ffffff" customStyle="line-height: 12px"></u-icon>
+    </view>
+  </view>
+  <text
+    class="u-search__action"
+    :class="[(showActionBtn || show) && 'u-search__action--active']"
+    :style="[actionStyle]"
+    append="tree"
+    @click="custom"
+  >
+    {{ actionText }}
+  </text>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSearch
+ * 反编译自 webpack 模块 316（nvue 编译空间）
+ */
+import mod449 from '@/.unpacked/nvue/449.js'
+
+"use strict";
+var i = {
+  name: "u-search",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod449],
+  data: function () {
+    return {
+      keyword: "",
+      showClear: false,
+      show: false,
+      focused: this.focus
+    };
+  },
+  watch: {
+    keyword: function (e) {
+      (this.$emit("input", e), this.$emit("change", e));
+    },
+    value: {
+      immediate: true,
+      handler: function (e) {
+        this.keyword = e;
+      }
+    }
+  },
+  computed: {
+    showActionBtn: function () {
+      return !this.animation && this.showAction;
+    }
+  },
+  methods: {
+    inputChange: function (e) {
+      this.keyword = e.detail.value;
+    },
+    clear: function () {
+      var e = this;
+      (this.keyword = "", this.$nextTick(function () {
+        e.$emit("clear");
+      }));
+    },
+    search: function (e) {
+      this.$emit("search", e.detail.value);
+      try {
+        uni.hideKeyboard();
+      } catch (e) {}
+    },
+    custom: function () {
+      this.$emit("custom", this.keyword);
+      try {
+        uni.hideKeyboard();
+      } catch (e) {}
+    },
+    getFocus: function () {
+      (this.focused = true, this.animation && this.showAction && (this.show = true), this.$emit("focus", this.keyword));
+    },
+    blur: function () {
+      var e = this;
+      (setTimeout(function () {
+        e.focused = false;
+      }, 100), this.show = false, this.$emit("blur", this.keyword));
+    },
+    clickHandler: function () {
+      this.disabled && this.$emit("click");
+    },
+    clickIcon: function () {
+      this.$emit("clickIcon");
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-search {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.u-search__content {
+  flex-direction: row;
+  align-items: center;
+  padding-top: 0;
+  padding-right: 10;
+  padding-bottom: 0;
+  padding-left: 10;
+  flex: 1;
+  justify-content: space-between;
+  border-width: 1;
+  border-color: rgba(0,0,0,0);
+  border-style: solid;
+  overflow: hidden;
+}
+
+.u-search__content__icon {
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-search__content__label {
+  color: #303133;
+  font-size: 14;
+  margin-top: 0;
+  margin-right: 4;
+  margin-bottom: 0;
+  margin-left: 4;
+}
+
+.u-search__content__close {
+  width: 20;
+  height: 20;
+  border-top-left-radius: 100;
+  border-top-right-radius: 100;
+  border-bottom-left-radius: 100;
+  border-bottom-right-radius: 100;
+  background-color: #C6C7CB;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.82);
+}
+
+.u-search__content__input {
+  flex: 1;
+  font-size: 14;
+  line-height: 1;
+  margin-top: 0;
+  margin-right: 5;
+  margin-bottom: 0;
+  margin-left: 5;
+  color: #303133;
+}
+
+.u-search__content__input--placeholder {
+  color: #909193;
+}
+
+.u-search__action {
+  font-size: 14;
+  color: #303133;
+  width: 0;
+  overflow: hidden;
+  transition-property: width;
+  transition-duration: 300;
+  text-align: center;
+}
+
+.u-search__action--active {
+  width: 40;
+  margin-left: 5;
+}
+</style>

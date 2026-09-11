@@ -1,0 +1,475 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view :style="{ flex: 1, height: '100vh' }">
+    <map
+      ref="map"
+      :style="{ width: '750rpx', height: '100vh', flex: 1, justifyContent: 'flex-start' }"
+      id="map"
+      :scale="scale"
+      :enableBuilding="true"
+      :enableSatellite="enableSatellite"
+      :enableTraffic="enableTraffic"
+      :longitude="longitude"
+      :latitude="latitude"
+      :markers="markers"
+      :polyline="polyline"
+    ></map>
+    <view class="map-control">
+      <image
+        v-if="enableSatellite"
+        class="map-control-item"
+        :src="cdn + '/ikon/layer-satellite@2x.png'"
+        @click="layerChane"
+       />
+      <image
+        v-if="!(enableSatellite)"
+        class="map-control-item"
+        :src="cdn + '/ikon/layer-normal@2x.png'"
+        @click="layerChane"
+       />
+      <image
+        v-if="enableTraffic"
+        class="map-control-item"
+        :src="cdn + '/ikon/traffic-on@2x.png'"
+        @click="trafficChane"
+       />
+      <image
+        v-if="!(enableTraffic)"
+        class="map-control-item"
+        :src="cdn + '/ikon/traffic-off@2x.png'"
+        @click="trafficChane"
+       />
+    </view>
+    <view v-if="reportType" class="map-info">
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text-md" append="tree">
+            {{ l('device.terminal.no') }}：
+          </text>
+          <text class="text-title text-md" append="tree">
+            {{ selectedTerminal.terminalNo }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.duration') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.timeDiff }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('report.speed') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.caculateSpeed }}km/h
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('report.mileage') }}：
+          </text>
+          <text v-if="reportInfo.mileage" class="text-title text" append="tree">
+            {{ reportInfo.mileage.toFixed(2) }}km
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.time-on') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.startTime }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.time-off') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.endTime }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <view class="flex">
+            <text class="text text-desc" append="tree">
+              {{ l('common.starting') }}：
+            </text>
+            <view :style="{ width: '550rpx' }">
+              <text class="text" append="tree">
+                {{ reportInfo.startAddress }}
+              </text>
+            </view>
+          </view>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <view class="flex">
+            <text class="text text-desc" append="tree">
+              {{ l('common.destination') }}：
+            </text>
+            <view :style="{ width: '550rpx' }">
+              <text class="text" append="tree">
+                {{ reportInfo.endAddress }}
+              </text>
+            </view>
+          </view>
+        </u-col>
+      </u-row>
+    </view>
+    <view v-else class="map-info">
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text-md" append="tree">
+            {{ l('device.terminal.no') }}：
+          </text>
+          <text class="text-title text-md" append="tree">
+            {{ selectedTerminal.terminalNo }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.residence.time') }}：
+          </text>
+          <text v-if="reportInfo.minutes" class="text-title text" append="tree">
+            {{ reportInfo.minutes.toFixed(2) + l('common.minutes') }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.time-on') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.startTime }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <text class="text-desc text" append="tree">
+            {{ l('common.time-off') }}：
+          </text>
+          <text class="text-title text" append="tree">
+            {{ reportInfo.endTime }}
+          </text>
+        </u-col>
+      </u-row>
+      <u-row>
+        <u-col class="flex" span="12">
+          <view class="flex">
+            <text class="text text-desc" append="tree">
+              {{ l('locus.address') }}：
+            </text>
+            <view :style="{ width: '550rpx' }">
+              <text class="text" append="tree">
+                {{ reportInfo.address }}
+              </text>
+            </view>
+          </view>
+        </u-col>
+      </u-row>
+    </view>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/trip-report/detail
+ * 反编译自 webpack 模块 660（nvue 编译空间）
+ * async/await 还原: 1 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../../common/config.nvue.js';
+import * as mod166 from '../../../common/utils.nvue.js';
+"use strict";
+var c, d = getApp().globalData, f = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      mapContext: null,
+      enableSatellite: false,
+      enableTraffic: false,
+      scale: 16,
+      longitude: 116.39742,
+      latitude: 39.909,
+      markers: [],
+      polyline: [],
+      points: [],
+      reportInfo: null,
+      reportType: null
+    };
+  },
+  computed: {
+    ...mod25.mapState("report", ["reportItem"]),
+    ...mod25.mapGetters(["isAuthenticated", "selectedTerminal", "sysInfo", "userId"])
+  },
+  onLoad: function (t) {
+    (this.reportInfo = this.reportItem, this.reportType = this.reportItem.reportType);
+  },
+  onUnload: function () {
+    clearInterval(c);
+  },
+  onReady: function () {
+    var t = this;
+    return (async function () {
+      (t.mapContext = uni.createMapContext("map", t), t.isAuthenticated && t.fetchData());
+    })();
+  },
+  methods: {
+    ...mod25.mapActions("device", ["GetGeocode"]),
+    l: function (t) {
+      return d.$t(t);
+    },
+    fetchData: function () {
+      var t = this;
+      return i(mod22.mark(function e() {
+        var r, o, i;
+        return mod22.wrap(function (e) {
+          for (; ; ) switch (e.prev = e.next) {
+            case 0:
+              if (t.reportType) {
+                e.next = 9;
+                break;
+              }
+              if ((t.longitude = t.reportInfo.startLon, t.latitude = t.reportInfo.startLat, t.drawStayMarkers(), t.reportInfo.address)) {
+                e.next = 9;
+                break;
+              }
+              return (e.next = 7, t.GetGeocode({
+                longitude: t.reportInfo.startLonWGS84,
+                latitude: t.reportInfo.startLatWGS84
+              }));
+            case 7:
+              (r = e.sent).succeeded && (t.reportInfo.address = r.address);
+            case 9:
+              if (!t.reportType) {
+                e.next = 24;
+                break;
+              }
+              if ((t.drawLocusMarkers(), t.pointsHandler(), t.reportInfo.startAddress)) {
+                e.next = 17;
+                break;
+              }
+              return (e.next = 15, t.GetGeocode({
+                longitude: t.reportInfo.startLonWGS84,
+                latitude: t.reportInfo.startLatWGS84
+              }));
+            case 15:
+              (o = e.sent).succeeded && (t.reportInfo.startAddress = o.address);
+            case 17:
+              if (t.reportInfo.endAddress) {
+                e.next = 22;
+                break;
+              }
+              return (e.next = 20, t.GetGeocode({
+                longitude: t.reportInfo.endLonWGS84,
+                latitude: t.reportInfo.endLatWGS84
+              }));
+            case 20:
+              (i = e.sent).succeeded && (t.reportInfo.endAddress = i.address);
+            case 22:
+              (c = setTimeout(function () {
+                // setTimeout 里的迟到回调：页面可能已经销毁，mapContext 为 null
+                mod166.safeMap(t.mapContext).includePoints({
+                  points: t.points,
+                  padding: [80, 30, 180, 30]
+                });
+              }, 500), t.drawLine());
+            case 24:
+            case "end":
+              return e.stop();
+          }
+        }, e);
+      }))();
+    },
+    drawStayMarkers: function () {
+      var t = [];
+      this.reportInfo && (t.push({
+        id: 0,
+        longitude: this.reportInfo.startLon,
+        latitude: this.reportInfo.startLat,
+        width: 35,
+        height: 35,
+        anchor: {
+          x: .5,
+          y: .5
+        },
+        iconPath: ("").concat(mod15.cdn, "/ikon/qzwl-locus-stay.png ")
+      }), this.markers = t);
+    },
+    drawLocusMarkers: function () {
+      var t = [];
+      this.reportInfo && (t.push({
+        id: 0,
+        longitude: this.reportInfo.startLon,
+        latitude: this.reportInfo.startLat,
+        width: 37,
+        height: 37,
+        iconPath: ("").concat(mod15.cdn, "/ikon/qzwl-locus-start@2x.png")
+      }), t.push({
+        id: 1,
+        longitude: this.reportInfo.endLon,
+        latitude: this.reportInfo.endLat,
+        width: 35,
+        height: 35,
+        iconPath: ("").concat(mod15.cdn, "/ikon/qzwl-locus-end@2x.png")
+      }), this.markers = t, this.markers = this.markers.concat(t));
+    },
+    drawLine: function () {
+      var t = {
+        points: this.points,
+        arrowLine: true,
+        colorList: this.points.map(function (t) {
+          return mod15.primaryColor;
+        }),
+        borderWidth: 1,
+        width: 12,
+        arrowIconPath: mod15.cdn + "/draw/qzwl-trackPath-img.png"
+      };
+      this.polyline = [t];
+    },
+    pointsHandler: function () {
+      this.points = [{
+        longitude: this.reportInfo.startLon,
+        latitude: this.reportInfo.startLat
+      }, {
+        longitude: this.reportInfo.endLon,
+        latitude: this.reportInfo.endLat
+      }];
+    },
+    layerChane: function () {
+      this.enableSatellite = !this.enableSatellite;
+    },
+    trafficChane: function () {
+      this.enableTraffic = !this.enableTraffic;
+    }
+  }
+};
+export default f;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.map-control {
+  position: absolute;
+  left: 630rpx;
+  top: 180rpx;
+}
+
+.map-control-item {
+  width: 96rpx;
+  height: 96rpx;
+  border-color: #cccccc;
+  margin-bottom: 20rpx;
+}
+
+.map-info {
+  background-color: #ffffff;
+  padding-top: 24rpx;
+  padding-right: 34rpx;
+  padding-bottom: 24rpx;
+  padding-left: 34rpx;
+  width: 700rpx;
+  left: 25rpx;
+  position: fixed;
+  bottom: 40rpx;
+  border-radius: 16rpx;
+}
+
+.player {
+  background-color: #ffffff;
+  height: 120rpx;
+  border-radius: 60rpx;
+  padding-top: 24rpx;
+  padding-right: 32rpx;
+  padding-bottom: 24rpx;
+  padding-left: 32rpx;
+  width: 700rpx;
+  left: 25rpx;
+  bottom: 30rpx;
+  position: fixed;
+}
+/* #endif */
+/* #ifdef H5 */
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.map-control {
+  position: absolute;
+  left: 84vw;
+  top: 24vw;
+}
+
+.map-control-item {
+  width: 12.8vw;
+  height: 12.8vw;
+  border-color: #cccccc;
+  margin-bottom: 2.6667vw;
+}
+
+.map-info {
+  background-color: #ffffff;
+  padding-top: 3.2vw;
+  padding-right: 4.5333vw;
+  padding-bottom: 3.2vw;
+  padding-left: 4.5333vw;
+  width: 93.3333vw;
+  left: 3.3333vw;
+  position: fixed;
+  bottom: 5.3333vw;
+  border-radius: 2.1333vw;
+}
+
+.player {
+  background-color: #ffffff;
+  height: 16vw;
+  border-radius: 8vw;
+  padding-top: 3.2vw;
+  padding-right: 4.2667vw;
+  padding-bottom: 3.2vw;
+  padding-left: 4.2667vw;
+  width: 93.3333vw;
+  left: 3.3333vw;
+  bottom: 4vw;
+  position: fixed;
+}
+/* #endif */
+</style>

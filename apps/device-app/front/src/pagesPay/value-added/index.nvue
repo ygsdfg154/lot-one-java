@@ -1,0 +1,766 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoPages()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 32rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('device.vip.service') }}
+    </text>
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; justify-content: flex-end; cursor: pointer;" @click="contactService()">
+      <u-icon :name="cdn + '/ikon/qzwl-add-kf@2x.png'" size="44rpx" color="#ffffff"></u-icon>
+    </view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="background-color: #6081C7; padding: 32rpx; display: flex; flex-direction: row; align-items: center;">
+      <u-avatar :src="src" width="80rpx" height="80rpx"></u-avatar>
+      <view style="display: flex; flex-direction: column; margin-left: 24rpx; flex: 1;">
+        <view style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+          <text style="font-size: 32rpx; font-weight: bold; color: #ffffff; margin-right: 16rpx;" append="tree">
+            {{ selectedTerminal ? (selectedTerminal.terminalName || selectedTerminal.terminalNo) : '' }}
+          </text>
+          <view style="background-color: rgba(255,255,255,0.25); border-radius: 24rpx; padding: 4rpx 16rpx; display: flex; flex-direction: row; align-items: center;">
+            <u-icon :name="cdn + '/ikon/qzwl-add-tel@2x.png'" color="#ffffff" size="24rpx"></u-icon>
+            <text style="font-size: 24rpx; color: #ffffff; margin-left: 6rpx;" append="tree">
+              {{ username }}
+            </text>
+          </view>
+        </view>
+        <text style="font-size: 24rpx; color: rgba(255,255,255,0.85); margin-top: 8rpx;" append="tree">
+          {{ l('device.terminal.no') + '：' + (selectedTerminal ? selectedTerminal.terminalNo : '') }}
+        </text>
+      </view>
+    </view>
+
+    <view style="background-color: #6081C7; display: flex; flex-direction: row; height: 80rpx;">
+      <view
+        v-for="t in typeList"
+        :key="t.id"
+        :style="{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: selectedTypeItem.id == t.id ? '#f6f6f6' : 'transparent',
+          borderTopLeftRadius: selectedTypeItem.id == t.id ? '16rpx' : '0',
+          borderTopRightRadius: selectedTypeItem.id == t.id ? '16rpx' : '0',
+          cursor: 'pointer'
+        }"
+        @click="changeType(t)"
+      >
+        <text
+          :style="{
+            fontSize: '28rpx',
+            fontWeight: selectedTypeItem.id == t.id ? 'bold' : 'normal',
+            color: selectedTypeItem.id == t.id ? '#333333' : '#ffffff'
+          }"
+          append="tree"
+        >
+          {{ t.name }}
+        </text>
+      </view>
+    </view>
+
+    <view class="main">
+      <view
+        v-if="selectedTypeItem.tabList"
+        class="flex-row justify-center items-center"
+        style="height: 86rpx"
+      >
+        <u-tabs
+          :list="selectedTypeItem.tabList"
+          lineWidth="40"
+          :current="selectedTypeItem.tabList.findIndex(function (t) { return t.id == selectedTypeItem.typeListCurrent.id; })"
+          :lineColor="primaryColor"
+          :inactiveStyle="inactiveStyle"
+          :activeStyle="tabsStyle"
+          itemStyle="height: 65rpx;"
+          @click="typeStateChange"
+        ></u-tabs>
+      </view>
+      <view v-else class="flex-row justify-center items-center" style="height: 86rpx">
+        <text class="text-md text-gray" append="tree">
+          {{ selectedTypeItem.name }}
+        </text>
+      </view>
+      <selectedCard
+        :selectedTypeItem="selectedTypeItem"
+        :vipTime="vipTime"
+        :totalText="totalText"
+        :remain="remain"
+        :minTotal="minTotal"
+        :noMoney="noMoney"
+      ></selectedCard>
+      
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 28rpx; margin-top: 20rpx; box-sizing: border-box;">
+        <text class="text-bold text-md" style="font-size: 30rpx; font-weight: bold; color: #333;" append="tree">
+          选择套餐
+        </text>
+        <u-scroll-list
+          v-if="pgkList && pgkList.length"
+          style="margin-top: 16rpx;"
+          :indicatorActiveColor="selectedTypeItem ? selectedTypeItem.color : '#6081C7'"
+        >
+          <view
+            v-for="(t, a) in pgkList"
+            :key="t.id"
+            class="package-box"
+            :class="selectedPgk && selectedPgk.id == t.id ? (selectedTypeItem ? selectedTypeItem.pgkClass : '') : ''"
+            :style="{ marginLeft: a ? '20rpx' : '' }"
+            @click="changePgk(t)"
+          >
+            <text
+              class="text"
+              style="text-align: center; font-size: 26rpx;"
+              :style="{ color: selectedPgk && selectedPgk.id == t.id ? (selectedTypeItem ? selectedTypeItem.color : '#6081C7') : '#333' }"
+              append="tree"
+            >
+              {{ t.pkgName }}
+            </text>
+            <view class="p-t-sm flex-row items-end">
+              <text
+                class="text-md"
+                :style="{ color: selectedPgk && selectedPgk.id == t.id ? (selectedTypeItem ? selectedTypeItem.color : '#6081C7') : '#333' }"
+                append="tree"
+              >
+                ¥
+              </text>
+              <text
+                class="text-xl text-bold"
+                :style="{ color: selectedPgk && selectedPgk.id == t.id ? (selectedTypeItem ? selectedTypeItem.color : '#6081C7') : '#333' }"
+                append="tree"
+              >
+                {{ t.price / 100 }}
+              </text>
+            </view>
+            <text
+              v-if="t.price != t.marketPrice"
+              class="text"
+              style="text-decoration: line-through; font-size: 22rpx;"
+              :style="{ color: selectedPgk && selectedPgk.id == t.id ? (selectedTypeItem ? selectedTypeItem.color : '#999') : '#999' }"
+              append="tree"
+            >
+              ¥{{ t.marketPrice / 100 }}
+            </text>
+          </view>
+        </u-scroll-list>
+        <view v-else style="display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 40rpx 0;">
+          <text style="font-size: 26rpx; color: #999;" append="tree">
+            该套餐未上架，请联系您的卖家
+          </text>
+        </view>
+      </view>
+
+      <PayMode
+        style="background-color: #ffffff; padding: 24rpx 28rpx; border-radius: 16rpx; margin-top: 20rpx; box-sizing: border-box;"
+        :payType="payType"
+        @changePayType="changePayType"
+      ></PayMode>
+
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 28rpx; margin-top: 20rpx; box-sizing: border-box;">
+        <text class="text-md text-bold" style="font-size: 28rpx; font-weight: bold; color: #333;" append="tree">
+          套餐内容:
+        </text>
+        <text class="text" style="font-size: 26rpx; color: #666; margin-top: 8rpx; display: block;" append="tree">
+          {{ selectedContent || '暂无说明' }}
+        </text>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx 28rpx; margin-top: 20rpx; margin-bottom: 40rpx; box-sizing: border-box;">
+        <text class="text-md text-bold" style="font-size: 28rpx; font-weight: bold; color: #333;" append="tree">
+          购买说明:
+        </text>
+        <text class="text" style="font-size: 26rpx; color: #666; margin-top: 8rpx; display: block;" append="tree">
+          1.此为虚拟商品，一经售出概不退款
+        </text>
+        <text class="text" style="font-size: 26rpx; color: #666; margin-top: 4rpx; display: block;" append="tree">
+          2.此套餐只能用于此设备，切换到其他设备需要重新购买
+        </text>
+      </view>
+
+      <CustomerService class="m-t"></CustomerService>
+    </view>
+  </scroll-view>
+
+  <view style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 32rpx; background-color: #ffffff; box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <GetBackApp></GetBackApp>
+    <u-button
+      v-if="selectedPgk"
+      :text="'确定并支付¥' + (selectedPgk ? selectedPgk.price / 100 : '')"
+      color="#6081C7"
+      @click="confirmBuy"
+    ></u-button>
+    <u-button v-else text="未选中套餐" color="#6081C7" disabled></u-button>
+  </view>
+  <Pay ref="Pay" @paySucces="paySucces"></Pay>
+</view>
+</template>-else text="未选中套餐" color="#6081C7" disabled></u-button>
+    </view>
+    <Pay ref="Pay" @paySucces="paySucces"></Pay>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesPay/value-added/index
+ * 反编译自 webpack 模块 631（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 r 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 s 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 d 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 c 在内层被重新声明，保留短名以维持遮蔽语义
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import i from '@/.unpacked/nvue/22.js'
+import r from '@/.unpacked/nvue/23.js'
+import o from '@/.unpacked/nvue/5.js'
+import * as s from 'vuex'
+import * as d from '../../common/utils.nvue.js'
+import mod15 from '../../common/config.nvue.js'
+import c from '../../components/Pay/Pay.nvue'
+import mod829 from '../../components/CustomerService/CustomerService.nvue'
+import mod832 from '../../components/GetBackApp/GetBackApp.nvue'
+import mod831 from '../../components/PayMode/PayMode.nvue'
+
+function a(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var l = (a(require("moment")), a(require("../../components/_unnamed/unknown-962.nvue")));
+var y = getApp().globalData, M = {
+  components: {
+    SelectedCard: l.default,
+    PayMode: mod831,
+    CustomerService: mod829,
+    Pay: c,
+    GetBackApp: mod832
+  },
+  data: function () {
+    var defaultItem = {
+      id: 1,
+      name: "安防服务",
+      color: "#6081C7",
+      type: 5,
+      pgkPath: "record",
+      pgkClass: "package-box-record"
+    };
+    return {
+      cdn: mod15.cdn,
+      src: mod15.cdn + "/draw/wxHeDefault.png",
+      selectedTypeItem: defaultItem,
+      titleColor: mod15.titleColor,
+      primaryColor: mod15.primaryColor,
+      tabsStyle: {
+        color: mod15.primaryColor,
+        fontSize: "32rpx"
+      },
+      inactiveStyle: {
+        color: "#A3A3A3",
+        fontSize: "32rpx"
+      },
+      vipTime: "",
+      totalText: "",
+      remain: 0,
+      minTotal: 0,
+      pgkList: [],
+      selectedPgk: null,
+      noMoney: false,
+      payType: "wxpay"
+    };
+  },
+  computed: {
+    ...s.mapGetters(["selectedTerminal", "username", "sysInfo"]),
+    marginTop: function () {
+      var statusBar = (this.sysInfo && this.sysInfo.statusBarHeight) ? this.sysInfo.statusBarHeight : 0;
+      return statusBar + 44 + "px";
+    },
+    selectedContent: function () {
+      return this.selectedPgk ? this.selectedPgk.pkgDesc : "";
+    },
+    typeList: function () {
+      var term = this.selectedTerminal || {};
+      var e = term.enableRecord !== false;
+      var t = term.enablePositionMode !== false;
+      var n = term.enableTrack !== false;
+      var a = term.enablePositionShare !== false;
+      var i = term.enableWechatAlarm !== false;
+      var r = term.enableTelAlarm !== false;
+      var o = term.enableSmsAlarm !== false;
+
+      var sList = [
+        { id: 0, name: "微信告警", tabPgkPath: "wx" },
+        { id: 1, name: "电话告警", tabPgkPath: "tel" },
+        { id: 2, name: "短信告警", tabPgkPath: "sms" }
+      ];
+
+      var d = [];
+      var lItem = {
+        id: 2,
+        name: t ? "秒定服务" : "轨迹服务",
+        color: "#1FC886",
+        type: t ? 3 : 7,
+        pgkPath: t ? "position-mode" : "track",
+        pgkClass: "package-box-position-mode"
+      };
+      var cItem = {
+        id: 3,
+        name: "告警服务",
+        color: "#FFC300",
+        pgkPath: sList[0].tabPgkPath,
+        pgkClass: "package-box-tel",
+        tabList: sList,
+        typeListCurrent: sList[0]
+      };
+
+      if (e) {
+        d.push({
+          id: 1,
+          name: "安防服务",
+          color: "#6081C7",
+          type: 5,
+          pgkPath: "record",
+          pgkClass: "package-box-record"
+        });
+      }
+      if (t || n || true) {
+        d.push(lItem);
+      }
+      if (a || true) {
+        d.push({
+          id: 4,
+          name: "分享服务",
+          color: "#f62a0b",
+          type: 8,
+          pgkPath: "position-share",
+          pgkClass: "package-box-share"
+        });
+      }
+      if (i || r || o || true) {
+        d.push(cItem);
+      }
+
+      return d.length ? d : [{
+        id: 1,
+        name: "安防服务",
+        color: "#6081C7",
+        type: 5,
+        pgkPath: "record",
+        pgkClass: "package-box-record"
+      }];
+    }
+  },
+  onLoad: function (e) {
+    var found = null;
+    if (e && e.type) {
+      found = this.typeList.find(function (t) {
+        return t.id == e.type;
+      });
+    }
+    if (!found) {
+      found = this.typeList[0];
+    }
+    this.selectedTypeItem = found;
+
+    if (e && e.alarm && this.selectedTypeItem && this.selectedTypeItem.tabList) {
+      var alarmFound = this.selectedTypeItem.tabList.find(function (t) {
+        return t.id == e.alarm;
+      });
+      if (alarmFound) {
+        this.selectedTypeItem.typeListCurrent = alarmFound;
+        this.selectedTypeItem.pgkPath = alarmFound.tabPgkPath;
+      }
+    }
+  },
+  onShow: function () {
+    this.getInfo();
+  },
+  methods: {
+    ...s.mapActions("device", ["GetDeviceInfo"]),
+    ...s.mapActions("alarm", ["GetAlarmSettings"]),
+    ...s.mapActions("packageInfo", ["GetDeviceVipTypeList", "GetPackage"]),
+    ...s.mapActions("wechat", ["GetWechatUser", "GetWxSign"]),
+    l: function (e) {
+      return y.$t(e);
+    },
+    getInfo: function () {
+      var e = this;
+      if (!e.selectedTerminal) return;
+      return r(i.mark(function t() {
+        var n, a, r, o;
+        return i.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if ((e.noMoney = false, 3 == e.selectedTypeItem.id)) {
+                t.next = 9;
+                break;
+              }
+              return (t.next = 4, e.GetDeviceVipTypeList({
+                terminalId: e.selectedTerminal.id,
+                type: e.selectedTypeItem.type
+              }));
+            case 4:
+              (n = t.sent, e.vipTime = "", n.succeeded && (n.data && (new Date(n.data.expirationTime) > new Date() ? (e.vipTime = "9999" == n.data.expirationTime.substring(0, 4) ? "\u7ec8\u8eab\u4f1a\u5458" : n.data.expirationTime, e.noMoney = true) : e.vipTime = 1 != e.selectedTypeItem.id ? "\u5f53\u524d\u65e0\u670d\u52a1\u4fe1\u606f" : ""), n.data || (e.vipTime = 1 != e.selectedTypeItem.id ? "\u5f53\u524d\u65e0\u670d\u52a1\u4fe1\u606f" : "")), t.next = 11);
+              break;
+            case 9:
+              (e.vipTime = "", e.noMoney = false);
+            case 11:
+              if (1 != e.selectedTypeItem.id && 3 != e.selectedTypeItem.id) {
+                t.next = 30;
+                break;
+              }
+              if (1 != e.selectedTypeItem.id) {
+                t.next = 20;
+                break;
+              }
+              return (t.next = 15, e.GetDeviceInfo({
+                deviceID: e.selectedTerminal.id,
+                loading: true
+              }));
+            case 15:
+              (a = t.sent, e.remain = 0, e.minTotal = 0, e.totalText = "", a.succeeded && (e.totalText = a.data.extendInfo.recordMinTotal >= 99999999 ? "\u4e0d\u9650\u91cf\u5957\u9910" : "", e.remain = a.data.extendInfo.recordMinRemain, e.minTotal = a.data.extendInfo.recordMinTotal));
+            case 20:
+              if (3 != e.selectedTypeItem.id) {
+                t.next = 28;
+                break;
+              }
+              return (t.next = 23, e.GetAlarmSettings());
+            case 23:
+              (r = t.sent, e.remain = 0, e.minTotal = 0, e.totalText = "", r.succeeded && e.selectedTypeItem.typeListCurrent && e.alarmChange(r.data));
+            case 28:
+              t.next = 33;
+              break;
+            case 30:
+              (e.remain = 0, e.minTotal = 0, e.totalText = "");
+            case 33:
+              return (t.next = 35, e.GetPackage({
+                path: e.selectedTypeItem.pgkPath,
+                deviceId: e.selectedTerminal.id
+              }));
+            case 35:
+              (o = t.sent, e.pgkList = [], e.selectedPgk = null, o.succeeded && (e.pgkList = o.data, e.selectedPgk = e.pgkList[0]));
+            case 39:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    clearData: function () {},
+    changeType: function (e) {
+      (this.selectedTypeItem = e, this.getInfo());
+    },
+    changePgk: function (e) {
+      this.selectedPgk = e;
+    },
+    typeStateChange: function (e) {
+      (this.selectedTypeItem.typeListCurrent = e, this.selectedTypeItem.pgkPath = e.tabPgkPath, this.getInfo());
+    },
+    alarmChange: function (e) {
+      (0 == this.selectedTypeItem.typeListCurrent.id && (this.totalText = e.wechatTotal >= 99999999 ? "\u4e0d\u9650\u91cf\u5957\u9910" : "", this.remain = e.wechatRemain, this.minTotal = e.wechatTotal), 1 == this.selectedTypeItem.typeListCurrent.id && (this.totalText = e.telTotal >= 99999999 ? "\u4e0d\u9650\u91cf\u5957\u9910" : "", this.remain = e.telRemain, this.minTotal = e.telTotal), 2 == this.selectedTypeItem.typeListCurrent.id && (this.totalText = e.smsTotal >= 99999999 ? "\u4e0d\u9650\u91cf\u5957\u9910" : "", this.remain = e.smsRemain, this.minTotal = e.smsTotal));
+    },
+    changePayType: function (e) {
+      this.payType = e;
+    },
+    confirmBuy: function () {
+      var e = this;
+      return r(i.mark(function t() {
+        return i.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.selectedPgk) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast("\u5f53\u524d\u6ca1\u6709\u5957\u9910\u53ef\u4ee5\u8d2d\u4e70"));
+            case 2:
+              if ("\u4e0d\u9650\u91cf\u5957\u9910" != e.totalText && "\u7ec8\u8eab\u4f1a\u5458" != e.vipTime) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast("\u60a8\u5df2\u7ecf\u8d2d\u4e70\u4e86\u4e0d\u9650\u91cf\u5957\u9910\u6216\u7ec8\u8eab\u4f1a\u5458\uff0c\u5f53\u524d\u4e0d\u9700\u8981\u518d\u6b21\u8d2d\u4e70"));
+            case 4:
+              e.$refs.Pay.createOrderPay({
+                provider: e.payType,
+                productId: e.selectedPgk.id,
+                terminalId: e.selectedTerminal.id
+              });
+            case 5:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    paySucces: function (e) {},
+    gotoPages: function () {
+      uni.navigateBack();
+    },
+    contactService: function () {
+      uni.navigateTo({
+        url: "/pagesMore/my/support"
+      });
+    }
+  }
+};
+export default M;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.header {
+  padding-top: 38rpx;
+  padding-right: 0;
+  padding-bottom: 32rpx;
+  padding-left: 30rpx;
+}
+
+.tel {
+  width: 245rpx;
+  height: 48rpx;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 8rpx;
+  padding-right: 16rpx;
+  padding-bottom: 8rpx;
+  padding-left: 16rpx;
+  margin-left: 20rpx;
+}
+
+.selectedItem {
+  background-color: #f8fbff;
+  border-top-left-radius: 16rpx;
+  border-top-right-radius: 16rpx;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.vip-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.main {
+  padding-top: 0rpx;
+  padding-right: 24rpx;
+  padding-bottom: 160rpx;
+  padding-left: 24rpx;
+}
+
+.pkg {
+  padding-top: 24rpx;
+  padding-right: 28rpx;
+  padding-bottom: 20rpx;
+  padding-left: 28rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  margin-top: 20rpx;
+}
+
+.package-box {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  height: 240rpx;
+  width: 200rpx;
+  padding-top: 10rpx;
+  padding-right: 10rpx;
+  padding-bottom: 10rpx;
+  padding-left: 10rpx;
+  border-radius: 20rpx;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #e6e6e6;
+  background-color: #ffffff;
+}
+
+.package-box-record {
+  background-color: #edf6ff;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #6081c7;
+}
+
+.package-box-position-mode {
+  background-color: #f2fef9;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #1fc886;
+}
+
+.package-box-tel {
+  background-color: #fffefa;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #ffc300;
+}
+
+.package-box-share {
+  background-color: #fffbfa;
+  border-width: 4rpx;
+  border-style: solid;
+  border-color: #f62a0b;
+}
+
+.pay-box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 60rpx;
+  padding-top: 0;
+  padding-right: 24rpx;
+  padding-bottom: 0;
+  padding-left: 24rpx;
+}
+
+.navTitleIos {
+  margin-top: 8;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.navTitleAn {
+  margin-top: 10;
+  font-size: 34rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.header {
+  padding-top: 5.0667vw;
+  padding-right: 0;
+  padding-bottom: 4.2667vw;
+  padding-left: 4vw;
+}
+
+.tel {
+  width: 32.6667vw;
+  height: 6.4vw;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 3.2vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 1.0667vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 1.0667vw;
+  padding-left: 2.1333vw;
+  margin-left: 2.6667vw;
+}
+
+.selectedItem {
+  background-color: #f8fbff;
+  border-top-left-radius: 2.1333vw;
+  border-top-right-radius: 2.1333vw;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.vip-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.main {
+  padding-top: 0vw;
+  padding-right: 3.2vw;
+  padding-bottom: 21.3333vw;
+  padding-left: 3.2vw;
+}
+
+.pkg {
+  padding-top: 3.2vw;
+  padding-right: 3.7333vw;
+  padding-bottom: 2.6667vw;
+  padding-left: 3.7333vw;
+  background-color: #ffffff;
+  border-radius: 2.1333vw;
+  margin-top: 2.6667vw;
+}
+
+.package-box {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  height: 32vw;
+  width: 26.6667vw;
+  padding-top: 1.3333vw;
+  padding-right: 1.3333vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 1.3333vw;
+  border-radius: 2.6667vw;
+  border-width: 0.5333vw;
+  border-style: solid;
+  border-color: #e6e6e6;
+  background-color: #ffffff;
+}
+
+.package-box-record {
+  background-color: #edf6ff;
+  border-width: 0.5333vw;
+  border-style: solid;
+  border-color: #6081c7;
+}
+
+.package-box-position-mode {
+  background-color: #f2fef9;
+  border-width: 0.5333vw;
+  border-style: solid;
+  border-color: #1fc886;
+}
+
+.package-box-tel {
+  background-color: #fffefa;
+  border-width: 0.5333vw;
+  border-style: solid;
+  border-color: #ffc300;
+}
+
+.package-box-share {
+  background-color: #fffbfa;
+  border-width: 0.5333vw;
+  border-style: solid;
+  border-color: #f62a0b;
+}
+
+.pay-box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8vw;
+  padding-top: 0;
+  padding-right: 3.2vw;
+  padding-bottom: 0;
+  padding-left: 3.2vw;
+}
+
+.navTitleIos {
+  margin-top: 8;
+  font-size: 5.3333vw;
+  font-weight: bold;
+}
+
+.navTitleAn {
+  margin-top: 10;
+  font-size: 4.5333vw;
+}
+/* #endif */
+</style>

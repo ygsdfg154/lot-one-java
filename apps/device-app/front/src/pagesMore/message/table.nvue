@@ -1,0 +1,143 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="p-b-xl bg-page">
+    <view class="list p-h-lg">
+      <view v-for="(e, r) in list" :key="r" class="list-item" @click="gotoMsgDetail(e.Id)">
+        <u-icon :name="cdn + '/ikon/qzwl-msg-notice@2x.png'" size="48rpx"></u-icon>
+        <view class="list-item-content">
+          <view class="list-item-header flex-row justify-between">
+            <text class="text-md text-title" append="tree">
+              {{ e.alarmTypeName }}
+            </text>
+            <text class="text-sm text-desc" append="tree">
+              {{ e.beginTime }}
+            </text>
+          </view>
+          <text class="list-item-desc text text-desc" append="tree">
+            {{ l('info.terminal.name') }}：{{ e.terminalName || e.terminalNo }}
+          </text>
+        </view>
+      </view>
+    </view>
+    <u-loadmore
+      v-if="list.length"
+      :status="status"
+      :line="true"
+      :loadmoreText="l('common.load.more')"
+      :loadingText="l('common.loading')"
+      :nomoreText="l('common.no.more')"
+    ></u-loadmore>
+    <u-empty v-if="!(list.length)" :text="l('common.no.more')" :icon="cdn + '/draw/qzwl-empty.png'"></u-empty>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/message/table
+ * 反编译自 webpack 模块 600（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 n 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import n from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod15 from '../../common/config.nvue.js'
+
+"use strict";
+var p = getApp().globalData, d = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      list: [],
+      status: "loadmore",
+      page: 1,
+      alarmType: 0,
+      current: 0
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["userType", "selectedTerminal"])
+  },
+  onLoad: function (t) {
+    (this.alarmType = t.alarmType, this.current = t.current, this.fetchData(this.alarmType, this.page));
+  },
+  onPullDownRefresh: function () {
+    (this.status = "loadmore", this.list = [], this.fetchData(this.alarmType, 1));
+  },
+  onReachBottom: function () {
+    "loading" != this.status && (this.page = this.page + 1, this.fetchData(this.alarmType, this.page));
+  },
+  methods: {
+    ...mod25.mapActions("alarmLog", ["GetAlermOrg"]),
+    l: function (t) {
+      return p.$t(t);
+    },
+    fetchData: function (t, e) {
+      var o = this;
+      return n(mod22.mark(function r() {
+        var n;
+        return mod22.wrap(function (r) {
+          for (; ; ) switch (r.prev = r.next) {
+            case 0:
+              if ("nomore" != o.status) {
+                r.next = 2;
+                break;
+              }
+              return r.abrupt("return");
+            case 2:
+              return (o.status = "loading", r.next = 5, o.GetAlermOrg({
+                limit: 20,
+                page: e,
+                alarmType: t,
+                type: o.current
+              }));
+            case 5:
+              (n = r.sent, o.status = "nomore", uni.stopPullDownRefresh(), n.succeeded && n.data.list.length ? (o.status = 20 === n.data.list.length ? "loadmore" : "nomore", o.list = o.list.concat(n.data.list)) : o.status = "nomore");
+            case 9:
+            case "end":
+              return r.stop();
+          }
+        }, r);
+      }))();
+    },
+    gotoMsgDetail: function (t) {}
+  }
+};
+export default d;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.notice {
+  width: 88rpx;
+  height: 88rpx;
+  background-color: #fff4f4;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 44rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.notice {
+  width: 11.7333vw;
+  height: 11.7333vw;
+  background-color: #fff4f4;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5.8667vw;
+}
+/* #endif */
+</style>

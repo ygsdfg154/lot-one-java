@@ -1,0 +1,427 @@
+<template>
+<view style="padding: 36rpx 32rpx 48rpx 32rpx; background-color: #ffffff;">
+  <view style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 32rpx;" @click="hideKeyboard">
+    <text style="font-size: 34rpx; font-weight: bold; color: #333333;" append="tree">
+      {{ directive }}设置
+    </text>
+  </view>
+
+  <view v-if="0 == popupType || 3 == popupType" style="margin-bottom: 32rpx;">
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #F7F8FA; border-radius: 12rpx; padding: 20rpx 24rpx; margin-bottom: 24rpx;">
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <text style="font-size: 28rpx; color: #666666;" append="tree">
+          当前状态：
+        </text>
+        <text style="font-size: 28rpx; font-weight: bold; color: #333333;" append="tree">
+          {{ currentStateText }}
+        </text>
+      </view>
+      <view style="display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="debounceGetRadioValue">
+        <u-icon :name="cdn + '/ikon/qzwl-refresh.png'" size="32rpx"></u-icon>
+        <text style="font-size: 26rpx; color: #6081C7; margin-left: 8rpx;" append="tree">
+          刷新
+        </text>
+      </view>
+    </view>
+
+    <view v-if="3 != popupType" style="display: flex; flex-direction: row; align-items: center;">
+      <view
+        v-for="t in radioList"
+        :key="t.name"
+        style="display: flex; flex-direction: row; align-items: center; margin-right: 48rpx; cursor: pointer;"
+        @click="radioValue = t.name"
+      >
+        <view v-if="radioValue == t.name" class="selectedRadio">
+          <view class="selectedRadio-son"></view>
+        </view>
+        <view v-else class="notRadio"></view>
+        <text style="font-size: 28rpx; color: #333333; margin-left: 12rpx;" append="tree">
+          {{ t.lable }}
+        </text>
+      </view>
+    </view>
+
+    <view v-if="3 == popupType" style="display: flex; flex-direction: column;">
+      <view
+        v-for="t in radioList"
+        :key="t.name"
+        style="display: flex; flex-direction: row; align-items: center; margin-bottom: 16rpx; cursor: pointer;"
+        @click="radioValue = t.name"
+      >
+        <view v-if="radioValue == t.name" class="selectedRadio">
+          <view class="selectedRadio-son"></view>
+        </view>
+        <view v-else class="notRadio"></view>
+        <text style="font-size: 28rpx; color: #333333; margin-left: 12rpx;" append="tree">
+          {{ t.lable }}
+        </text>
+      </view>
+      <view v-if="!radioValue" style="margin-top: 16rpx;">
+        <u--input
+          placeholder="请输入限速值(km/h)"
+          border="surround"
+          type="number"
+          v-model="speed"
+        ></u--input>
+      </view>
+    </view>
+  </view>
+
+  <view v-if="1 == popupType" style="margin-bottom: 32rpx;">
+    <text style="font-size: 28rpx; color: #333333; margin-bottom: 12rpx; display: block;" append="tree">
+      自定义指令
+    </text>
+    <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 12rpx 20rpx;">
+      <u--input
+        :placeholder="l('remote-setup.please-custom-directive')"
+        border="none"
+        v-model="custom"
+        clearable
+      ></u--input>
+    </view>
+  </view>
+
+  <view v-if="2 == popupType" style="margin-bottom: 32rpx;">
+    <view style="margin-bottom: 16rpx;">
+      <text style="font-size: 26rpx; color: #666666; margin-bottom: 8rpx; display: block;" append="tree">
+        号码 1
+      </text>
+      <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 10rpx 20rpx;">
+        <u--input
+          type="number"
+          :placeholder="l('common.please.tel')"
+          border="none"
+          v-model="whiteTelList[0]"
+          clearable
+        ></u--input>
+      </view>
+    </view>
+
+    <view style="margin-bottom: 16rpx;">
+      <text style="font-size: 26rpx; color: #666666; margin-bottom: 8rpx; display: block;" append="tree">
+        号码 2
+      </text>
+      <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 10rpx 20rpx;">
+        <u--input
+          type="number"
+          :placeholder="l('common.please.tel')"
+          border="none"
+          v-model="whiteTelList[1]"
+          clearable
+        ></u--input>
+      </view>
+    </view>
+
+    <view style="margin-bottom: 16rpx;">
+      <text style="font-size: 26rpx; color: #666666; margin-bottom: 8rpx; display: block;" append="tree">
+        号码 3
+      </text>
+      <view style="background-color: #F7F8FA; border-radius: 12rpx; padding: 10rpx 20rpx;">
+        <u--input
+          type="number"
+          :placeholder="l('common.please.tel')"
+          border="none"
+          v-model="whiteTelList[2]"
+          clearable
+        ></u--input>
+      </view>
+    </view>
+
+    <view v-if="familyPendingSync" style="margin-top: 16rpx; background-color: #FFF9F9; border-radius: 12rpx; padding: 16rpx 20rpx; border: 1rpx solid #FFEBEB;">
+      <text style="font-size: 24rpx; color: #F56C6C; line-height: 34rpx; display: block;" append="tree">
+        号码已保存在平台，等待同步到设备后才会在设备侧生效
+      </text>
+    </view>
+  </view>
+
+  <view v-if="describe" style="background-color: #F7F8FA; border-radius: 12rpx; padding: 24rpx; margin-bottom: 32rpx;">
+    <text style="font-size: 26rpx; font-weight: bold; color: #E6A23C; margin-bottom: 8rpx; display: block;" append="tree">
+      指令说明：
+    </text>
+    <text style="font-size: 24rpx; color: #666666; line-height: 36rpx; display: block;" append="tree">
+      {{ describe }}
+    </text>
+  </view>
+
+  <view>
+    <u-button
+      color="#6081C7"
+      shape="circle"
+      size="large"
+      :text="l('common.instruct')"
+      type="primary"
+      @click="sendDirective"
+    ></u-button>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: directivePopup —— 远程设置/开关/告警开关/亲情号的统一弹窗
+ *
+ * 重写自反编译产物（webpack 模块 370）。原版为每个入口写一对方法（getGarrisonState/
+ * setGarrison、getBuffer/setBuffer、getOnOffParam/setTerminalOnOff…共 11 个 store 动作），
+ * 而契约里这些入口只分三类（开关 / 告警开关 / 亲情号，见 adapters/remoteset.js），
+ * 所以收成一读一写：`GetDirectiveState` + `SetDirectiveState`。
+ *
+ * 两处行为按契约纠正：
+ *   - 开关状态是**三态**（9.3.1 switchStatus 可为 unknown：无遥测快照也无下发记录）。
+ *     原版 `!!n.data` 把 unknown 当成"关闭"，用户看到假状态后点一下反而把设备关了；
+ *     现在显示"待同步"，并且不预选任何一档。
+ *   - 亲情号（9.5）只做到"存储 + 回显"（pendingSync 恒 true），保存后提示"待设备同步"，
+ *     不能提示"设置成功"——否则用户以为陌生来电已经被设备拦掉了。
+ */
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod15 from '../../common/config.nvue.js';
+import { kindOf, ALARM_WITH_VALUE } from '../../adapters/remoteset.js';
+
+/** 亲情号弹窗里放几个输入框（契约上限 6 个，超出的在保存时原样保留）。 */
+const FAMILY_INPUTS = 3;
+
+var _ = getApp().globalData;
+
+export default {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      radioValue: 1,
+      selectedRadioValue: 1,
+      // 三态里的第三态：既没快照也没下发记录。不能当成"关闭"渲染
+      stateUnknown: false,
+      // 该设备命令树里没有这条指令（能力位本该已经把入口藏掉，兜一层）
+      unavailable: false,
+      speed: '',
+      speedMax: 200,
+      custom: '',
+      whiteTelList: [],
+      // 弹窗只显示前 FAMILY_INPUTS 个，多出来的保存时带回去，不静默丢号码
+      familyExtra: [],
+      familyPendingSync: false,
+    };
+  },
+  props: ['popupType', 'directive', 'describe', 'param'],
+  computed: {
+    ...mod25.mapGetters(['selectedTerminal']),
+    radioList: function () {
+      var labels = {
+        OffOn: { open: '开机', close: '关机' },
+        Buffer: { open: '断开油电', close: '恢复油电' },
+        Other: {
+          open: ''.concat(this.l('common.open')).concat(this.directive),
+          close: ''.concat(this.l('common.close')).concat(this.directive),
+        },
+      };
+      var key = Object.keys(labels).includes(this.param) ? this.param : 'Other';
+      return [
+        { name: 0, lable: labels[key].open, disabled: false },
+        { name: 1, lable: labels[key].close, disabled: false },
+      ];
+    },
+    /** 当前状态文案。三态：待同步 / 开 / 关（断油断电用"断开/未断开"的说法）。 */
+    currentStateText: function () {
+      if (this.unavailable) return '该设备不支持';
+      if (this.stateUnknown) return '待同步';
+      var on = !this.selectedRadioValue;
+      if (this.param === 'Buffer') return on ? '断开' : '未断开';
+      return on ? '开启' : '关闭';
+    },
+  },
+  mounted: function () {
+    this.getRadioValue();
+  },
+  methods: {
+    ...mod25.mapActions('remoteSet', ['GetDirectiveState', 'SetDirectiveState', 'SendCommand']),
+    l: function (e) {
+      return _.$t(e);
+    },
+    hideKeyboard: function () {
+      uni.hideKeyboard();
+    },
+    debounceGetRadioValue: function () {
+      uni.$u.debounce(this.getRadioValue, 500);
+      return mod166.qzwlToast(_.$t('common.refurbish.success'), 'none');
+    },
+    /** 读当前状态。自定义指令没有状态可读（入口已隐藏，这里直接跳过）。 */
+    getRadioValue: function () {
+      var self = this;
+      if (!this.selectedTerminal || kindOf(this.param) === 'unsupported') return;
+      return (async function () {
+        var res = await self.GetDirectiveState({
+          deviceId: self.selectedTerminal.id,
+          param: self.param,
+        });
+        if (!res || !res.succeeded || !res.data) return;
+        var d = res.data;
+        if (kindOf(self.param) === 'family') {
+          var phones = (d.items || []).map(function (it) {
+            return it.phone;
+          });
+          self.whiteTelList = phones.slice(0, FAMILY_INPUTS);
+          self.familyExtra = (d.items || []).slice(FAMILY_INPUTS);
+          self.familyPendingSync = !!d.pendingSync;
+          return;
+        }
+        self.unavailable = !!d.unavailable;
+        self.stateUnknown = !!d.unknown;
+        // unknown 时不预选任何一档：预选成"关"会让用户以为设备已经是关的
+        if (!d.unknown) {
+          self.selectedRadioValue = self.radioValue = d.on ? 0 : 1;
+        }
+        if (ALARM_WITH_VALUE[self.param]) {
+          self.speed = d.value || '';
+          self.speedMax = (ALARM_WITH_VALUE[self.param] || {}).max || 200;
+        }
+      })();
+    },
+    /** 下发。开关类要看返回的 ret：设备离线时 code 仍是 0，不能报"成功"。 */
+    sendDirective: function () {
+      var self = this;
+      var kind = kindOf(this.param);
+      if (kind === 'unsupported') {
+        return mod166.qzwlToast('该设备不支持此操作', 'none');
+      }
+      if (kind === 'family') return this.submitFamily();
+      if (kind === 'custom') return this.submitCustom();
+      if (this.unavailable) return mod166.qzwlToast('该设备不支持此操作', 'none');
+
+      var on = !this.radioValue;
+      if (ALARM_WITH_VALUE[this.param] && on) {
+        if (!this.speed || Number(this.speed) <= 0 || Number(this.speed) > this.speedMax) {
+          return mod166.qzwlToast(_.$t('common.set.speed'), 'none');
+        }
+      }
+      return (async function () {
+        var res = await self.SetDirectiveState({
+          deviceId: self.selectedTerminal.id,
+          param: self.param,
+          on: on,
+          value: self.speed,
+        });
+        if (!res || !res.succeeded) return;
+        // 10.1 的 ret：0 成功 / 10 设备离线 / 12 设备不支持（code 都是 0）
+        if (res.ret === 10) return mod166.qzwlToast('设备离线，指令将在上线后下发', 'none');
+        if (res.ret === 12) return mod166.qzwlToast('设备不支持该指令', 'none');
+        self.selectedRadioValue = self.radioValue;
+        self.stateUnknown = false;
+        return mod166.qzwlToast(res.msg || '指令下发成功，状态稍后更新', 'none');
+      })();
+    },
+    /**
+     * 自定义文本指令：registry 的 CUSTOM_CMD，`params.content` ≤512 字符。
+     * 能力位 customCmd 为假时入口本就不显示，这里只做长度与空值校验。
+     */
+    submitCustom: function () {
+      var self = this;
+      var content = (this.custom || '').trim();
+      if (!content) return mod166.qzwlToast(this.l('remote-setup.please-custom-directive'), 'none');
+      if (content.length > 512) return mod166.qzwlToast('自定义指令最长 512 个字符', 'none');
+      uni.hideKeyboard();
+      return (async function () {
+        var res = await self.SendCommand({
+          deviceId: self.selectedTerminal.id,
+          cmdCode: 'CUSTOM_CMD',
+          params: { content: content },
+        });
+        if (!res || !res.succeeded) return;
+        var ret = res.data && res.data.ret;
+        if (ret === 10) return mod166.qzwlToast('设备离线，指令将在上线后下发', 'none');
+        if (ret === 12) return mod166.qzwlToast('设备不支持该指令', 'none');
+        return mod166.qzwlToast(self.l('common.custom.directive'), 'none');
+      })();
+    },
+    /** 9.5 亲情号：整体覆盖，最多 6 个；校验手机号与重复。 */
+    submitFamily: function () {
+      var self = this;
+      var phones = (this.whiteTelList || []).filter(function (v) {
+        return !!v;
+      });
+      if (!phones.every(function (v) {
+        return uni.$u.test.mobile(v);
+      })) {
+        return uni.showToast({ title: this.l('common.please.valid.mobile.tel'), icon: 'none' });
+      }
+      if (Array.from(new Set(phones)).length < phones.length) {
+        return mod166.qzwlToast(this.l('common.please.equal.tel'), 'none');
+      }
+      var items = phones.map(function (phone) {
+        return { phone: phone };
+      }).concat(this.familyExtra);
+      return (async function () {
+        var res = await self.SetDirectiveState({
+          deviceId: self.selectedTerminal.id,
+          param: 'white',
+          items: items,
+        });
+        if (!res || !res.succeeded) return;
+        // pendingSync 恒 true：号码只存在平台侧，没有下发指令码（契约 9.5 注）
+        return mod166.qzwlToast('已保存，待设备同步', 'none');
+      })();
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.selectedRadio {
+  width: 32rpx;
+  height: 32rpx;
+  background-color: #ffffff;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 32rpx;
+  justify-content: center;
+  align-items: center;
+}
+
+.selectedRadio-son {
+  width: 16rpx;
+  height: 16rpx;
+  background-color: #6081c7;
+  border-radius: 16rpx;
+}
+
+.notRadio {
+  width: 32rpx;
+  height: 32rpx;
+  background-color: #ffffff;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 32rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.selectedRadio {
+  width: 4.2667vw;
+  height: 4.2667vw;
+  background-color: #ffffff;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 4.2667vw;
+  justify-content: center;
+  align-items: center;
+}
+
+.selectedRadio-son {
+  width: 2.1333vw;
+  height: 2.1333vw;
+  background-color: #6081c7;
+  border-radius: 2.1333vw;
+}
+
+.notRadio {
+  width: 4.2667vw;
+  height: 4.2667vw;
+  background-color: #ffffff;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 4.2667vw;
+}
+/* #endif */
+</style>

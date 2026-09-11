@@ -1,0 +1,28 @@
+// webpack 模块 6c1d  [svc]
+// 出现于: app-service.js
+const __r = require('./__runtime.js').wrap();
+(function (e, t, n) {
+  "use strict";
+  (Object.defineProperty(t, "__esModule", {
+    value: !0
+  }), t.default = void 0);
+  t.default = {
+    popup: {
+      show: !1,
+      overlay: !0,
+      mode: "bottom",
+      duration: 300,
+      closeable: !1,
+      overlayStyle: function () {},
+      closeOnClickOverlay: !0,
+      zIndex: 10075,
+      safeAreaInsetBottom: !0,
+      safeAreaInsetTop: !1,
+      closeIconPos: "top-right",
+      round: 0,
+      zoom: !0,
+      bgColor: "",
+      overlayOpacity: .5
+    }
+  };
+})(module, exports, __r);

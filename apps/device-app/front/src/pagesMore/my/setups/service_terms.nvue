@@ -1,0 +1,137 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #ffffff; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      服务协议
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #ffffff; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 40rpx 36rpx 100rpx 36rpx; background-color: #ffffff;">
+      <text style="font-size: 40rpx; font-weight: bold; color: #1E293B; text-align: center; display: block; margin-bottom: 32rpx;" append="tree">
+        铭智物联 用户服务协议
+      </text>
+
+      <view style="background-color: #F8FAFC; border-radius: 16rpx; padding: 28rpx 32rpx; margin-bottom: 40rpx; border-left: 8rpx solid #6081C7;">
+        <text style="font-size: 26rpx; color: #334155; line-height: 42rpx; display: block;" append="tree">
+          【东莞市铭智电子有限公司】（以下简称“东莞市铭智”）在此特别提醒用户认真阅读、充分理解本《软件许可及服务协议》（下称“本协议”）。用户应认真阅读、充分理解本协议中各条款，特别涉及免除或者限制东莞市铭智责任、争议解决和法律适用的条款。免除或者限制责任的条款将以粗体标识，您需要重点阅读。请您审慎阅读并选择接受或不接受本协议（未成年人应在法定监护人陪同下阅读）。您的下载、安装、使用本软件以及账号获取和登录等行为将视为对本协议的接受，并同意接受本协议各项条款的约束。
+        </text>
+      </view>
+
+      <!-- 一、总则 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          一、总则
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          1.1. 本协议是您（以下也称“用户”）与东莞市铭智及其运营合作单位（以下简称“合作单位”）之间关于用户下载、安装、使用东莞市铭智提供的“铭智物联”（下称“本软件”）以及使用东莞市铭智相关服务所订立的协议。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          1.2. 本软件及服务是东莞市铭智提供的安装在包括但不限于移动智能终端设备上的软件和服务，为使用该智能终端的用户提供绑定、操作智能产品等服务等。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          1.3. 本软件及服务的所有权和运营权均归东莞市铭智所有。
+        </text>
+      </view>
+
+      <!-- 二、授权范围 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          二、授权范围
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          2.1. 东莞市铭智就本软件给予用户一项个人的、不可转让、不可转授权以及非独占性的许可。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          2.2. 用户可以为非商业目的在单一台移动终端设备上安装、使用、显示、运行本软件。但用户不得为商业运营目的安装、使用、运行本软件。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          2.3. 用户可以为使用本软件及服务的目的复制本软件的一个副本，仅用作备份。备份副本必须包含原软件中含有的所有著作权信息。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          2.4. 除本《协议》明示授权外，东莞市铭智未授权给用户其他权利，若用户使用其他权利时须另外取得东莞市铭智的书面同意。
+        </text>
+      </view>
+
+      <!-- 三、使用规范 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          三、使用规范
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          3.1. 用户在遵守法律及本《协议》的前提下可依本《协议》使用本软件及服务，用户不得实施如下行为：
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 8rpx; display: block;" append="tree">
+          · 删除本软件及其他副本上一切关于版权的信息，以及修改、删除或避开本软件为保护知识产权而设置的技术措施；
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 8rpx; display: block;" append="tree">
+          · 对本软件进行反向工程，如反汇编、反编译或者其他试图获得本软件的源代码；
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 8rpx; display: block;" append="tree">
+          · 通过修改或伪造软件运行中的指令、数据，增加、删减、变动软件的功能或运行效果；
+        </text>
+        <text style="font-size: 26rpx; color: #64748B; line-height: 40rpx; margin-left: 20rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          · 使用本软件进行任何危害网络安全的行为。
+        </text>
+      </view>
+
+      <!-- 四、服务风险及免责声明 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          四、服务风险及免责声明
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          4.1. 用户理解并同意，本软件及服务同大多数互联网软件一样，受包括但不限于用户原因、网络服务质量、社会环境等因素的差异影响，可能受到各种安全问题的侵扰。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          4.2. 东莞市铭智特别提请用户注意，东莞市铭智为了保障公司业务发展和调整的自主权，东莞市铭智公司随时中断或终止服务而不需事先通知用户。
+        </text>
+      </view>
+
+      <!-- 五、知识产权声明 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          五、知识产权声明
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          5.1. 东莞市铭智是本软件的知识产权权利人。本软件的一切著作权、商标权、专利权、商业秘密等知识产权，以及与本软件相关的所有信息内容均受中华人民共和国法律法规和相应的国际条约保护。
+        </text>
+      </view>
+
+      <!-- 六、协议变更与争议解决 -->
+      <view style="margin-bottom: 36rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #0F172A; margin-bottom: 16rpx; display: block;" append="tree">
+          六、协议变更与争议解决
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; margin-bottom: 12rpx; display: block;" append="tree">
+          6.1. 本协议签订地为中华人民共和国广东省东莞市。
+        </text>
+        <text style="font-size: 28rpx; color: #475569; line-height: 44rpx; display: block;" append="tree">
+          6.2. 本协议的成立、生效、履行、解释及纠纷解决，适用中华人民共和国大陆地区法律。若用户和东莞市铭智之间发生任何纠纷或争议，首先应友好协商解决；协商不成的，用户同意将纠纷或争议提交东莞市铭智所在地有管辖权的人民法院管辖。
+        </text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {
+    gotoBack() {
+      uni.navigateBack();
+    }
+  }
+};
+</script>

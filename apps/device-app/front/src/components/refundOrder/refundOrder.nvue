@@ -1,0 +1,157 @@
+<template>
+<view>
+  <u-popup
+    :round="16"
+    mode="center"
+    :show="true"
+    :closeable="true"
+    :closeOnClickOverlay="true"
+    @close="close"
+  >
+    <view style="width: 620rpx; padding: 36rpx 32rpx; background-color: #ffffff; border-radius: 32rpx; box-sizing: border-box;">
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 28rpx;">
+        <text style="font-size: 32rpx; font-weight: bold; color: #1E293B;" append="tree">
+          退款原因
+        </text>
+      </view>
+
+      <view style="margin-bottom: 16rpx;">
+        <u--input
+          customStyle="background-color: #F8FAFC; border-radius: 12rpx; padding: 16rpx 20rpx;"
+          border="none"
+          placeholder="请输入您的联系电话"
+          v-model="contactTel"
+        ></u--input>
+      </view>
+      
+      <view style="margin-bottom: 16rpx;">
+        <u--input
+          customStyle="background-color: #F8FAFC; border-radius: 12rpx; padding: 16rpx 20rpx;"
+          border="none"
+          placeholder="请输入您的姓名"
+          :required="true"
+          v-model="contactName"
+        ></u--input>
+      </view>
+
+      <view style="margin-bottom: 20rpx;">
+        <u--textarea
+          customStyle="background-color: #F8FAFC; border-radius: 12rpx; padding: 16rpx 20rpx; height: 180rpx;"
+          border="none"
+          :autoHeight="false"
+          :count="true"
+          placeholder="请输入退款原因"
+          v-model="refundReason"
+        ></u--textarea>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; margin-bottom: 28rpx; padding: 0 4rpx;">
+        <text style="font-size: 26rpx; color: #64748B; margin-right: 12rpx;" append="tree">
+          允许电话联系：
+        </text>
+        <u-radio-group v-model="allowCall" activeColor="#6081C7">
+          <u-radio label="是" :name="true"></u-radio>
+          <u-radio style="margin-left: 24rpx;" label="否" :name="false"></u-radio>
+        </u-radio-group>
+      </view>
+
+      <view style="margin-top: 8rpx;">
+        <u-button
+          style="height: 84rpx; background-color: #6081C7; border-color: #6081C7;"
+          type="primary"
+          shape="circle"
+          text="确定"
+          @click="sendOrderRefund"
+        ></u-button>
+      </view>
+    </view>
+  </u-popup>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: refundOrder
+ * 反编译自 webpack 模块 618（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var _ = {
+  name: "refundOrder",
+  props: ["orderId", "requestFee"],
+  data: function () {
+    return {
+      refundReason: "",
+      contactName: "",
+      contactTel: "",
+      allowCall: true,
+      hasRequest: false
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["lastUsername", "nickname"])
+  },
+  mounted: function () {
+    this.contactTel = this.lastUsername;
+  },
+  methods: {
+    ...mod25.mapActions("order", ["SendRefund"]),
+    sendOrderRefund: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        var n;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if ((n = {
+                orderId: e.orderId,
+                requestFee: e.requestFee,
+                refundReason: e.refundReason,
+                contactName: e.contactName,
+                contactTel: e.contactTel,
+                allowCall: e.allowCall
+              }).contactName) {
+                t.next = 5;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast("\u8bf7\u586b\u5199\u8054\u7cfb\u4eba\u59d3\u540d"));
+            case 5:
+              if (n.contactTel) {
+                t.next = 9;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast("\u8bf7\u586b\u5199\u8054\u7cfb\u4eba\u7535\u8bdd"));
+            case 9:
+              if (n.refundReason) {
+                t.next = 11;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast("\u8bf7\u586b\u5199\u9000\u6b3e\u539f\u56e0"));
+            case 11:
+              return (t.next = 13, e.SendRefund(n));
+            case 13:
+              t.sent.succeeded && (mod166.qzwlToast("\u9000\u6b3e\u7533\u8bf7\u63d0\u4ea4\u6210\u529f"), e.hasRequest = true, e.close());
+            case 15:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    close: function () {
+      (uni.hideKeyboard(), this.refundReason = "", this.contactName = "", this.$emit("refundOrder", {
+        dialog: false,
+        hasRequest: this.hasRequest
+      }));
+    }
+  }
+};
+export default _;
+
+</script>

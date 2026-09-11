@@ -1,0 +1,122 @@
+<template>
+<view>
+  <view class="m-b-lg">
+    <text class="text-md text-bold" append="tree">
+      {{ l('common.pay.mode') }}
+    </text>
+  </view>
+  <view
+    v-for="(t, a) in payMode"
+    :key="a"
+    class="flex-row items-center justify-between b-bottom p-v-lg"
+    :class="1 != a ? 'b-top' : ''"
+    @click="changePay(t.type)"
+  >
+    <view class="flex-row items-center">
+      <u-icon :name="cdn + '/draw/' + t.icon" size="48rpx"></u-icon>
+      <text class="text-md p-l-sm" append="tree">
+        {{ t.name }}
+      </text>
+    </view>
+    <u-icon v-if="payType == t.type" name="checkmark-circle-fill" color="#6081C7" size="40rpx"></u-icon>
+    <view v-else class="pay-icon"></view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: PayMode
+ * 反编译自 webpack 模块 397（nvue 编译空间）
+ * 辅助函数 o 仍被引用，保留原定义
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import mod15 from '../../common/config.nvue.js'
+import * as mod25 from 'vuex'
+
+function o(e, t) {
+  var n = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var a = Object.getOwnPropertySymbols(e);
+    (t && (a = a.filter(function (t) {
+      return Object.getOwnPropertyDescriptor(e, t).enumerable;
+    })), n.push.apply(n, a));
+  }
+  return n;
+}
+
+"use strict";
+var d = getApp().globalData, u = {
+  props: {
+    payType: {
+      type: String,
+      default: "wxpay"
+    }
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      mode: [{
+        type: "wxpay",
+        name: d.$t("common.wx.pay"),
+        icon: "qzwl-pay-wx@2x.png"
+      }, {
+        type: "alipay",
+        name: d.$t("common.alipay.pay"),
+        icon: "qzwl-pay-alipay@2x.png"
+      }],
+      payMode: []
+    };
+  },
+  computed: (function (e) {
+    for (var t = 1; t < arguments.length; t++) {
+      var n = null != arguments[t] ? arguments[t] : {};
+      t % 2 ? o(Object(n), true).forEach(function (t) {
+        mod5(e, t, n[t]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(n)) : o(Object(n)).forEach(function (t) {
+        Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(n, t));
+      });
+    }
+    return e;
+  })({}, mod25.mapGetters(["providerList"])),
+  mounted: function () {
+    var e = this;
+    (this.payMode = this.mode.filter(function (t) {
+      return e.providerList.includes(t.type);
+    }), this.$emit("changePayType", this.providerList[0]));
+  },
+  methods: {
+    l: function (e) {
+      return d.$t(e);
+    },
+    changePay: function (e) {
+      this.$emit("changePayType", e);
+    }
+  }
+};
+export default u;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.pay-icon {
+  width: 38rpx;
+  height: 38rpx;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 20rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.pay-icon {
+  width: 5.0667vw;
+  height: 5.0667vw;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 2.6667vw;
+}
+/* #endif */
+</style>

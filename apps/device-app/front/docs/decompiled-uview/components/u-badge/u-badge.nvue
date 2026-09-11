@@ -1,0 +1,126 @@
+<template>
+<text
+  v-if="show && (0 !== Number(value) || showZero || isDot)"
+  class="u-badge"
+  :class="[isDot ? 'u-badge--dot' : 'u-badge--not-dot', inverted && 'u-badge--inverted', 'horn' === shape && 'u-badge--horn', 'u-badge--' + type + (inverted ? '--inverted' : '')]"
+  :style="[$u.addStyle(customStyle), badgeStyle]"
+  append="tree"
+>
+  {{ isDot ? '' : showValue }}
+</text>
+</template>
+
+<script>
+/*
+ * 组件: uBadge
+ * 反编译自 webpack 模块 325（nvue 编译空间）
+ */
+import mod456 from '@/.unpacked/nvue/456.js'
+
+"use strict";
+var i = {
+  name: "u-badge",
+  mixins: [uni.$u.mpMixin, mod456, uni.$u.mixin],
+  computed: {
+    boxStyle: function () {
+      return {};
+    },
+    badgeStyle: function () {
+      var e = {};
+      if ((this.color && (e.color = this.color), this.bgColor && !this.inverted && (e.backgroundColor = this.bgColor), this.absolute && (e.position = "absolute", this.offset.length))) {
+        var t = this.offset[0], n = this.offset[1] || t;
+        (e.top = uni.$u.addUnit(t), e.right = uni.$u.addUnit(n));
+      }
+      return e;
+    },
+    showValue: function () {
+      switch (this.numberType) {
+        case "overflow":
+          return Number(this.value) > Number(this.max) ? this.max + "+" : this.value;
+        case "ellipsis":
+          return Number(this.value) > Number(this.max) ? "..." : this.value;
+        case "limit":
+          return Number(this.value) > 999 ? Number(this.value) >= 9999 ? Math.floor(this.value / 1e4 * 100) / 100 + "w" : Math.floor(this.value / 1e3 * 100) / 100 + "k" : this.value;
+        default:
+          return Number(this.value);
+      }
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-badge {
+  border-top-right-radius: 100;
+  border-top-left-radius: 100;
+  border-bottom-left-radius: 100;
+  border-bottom-right-radius: 100;
+  flex-direction: row;
+  line-height: 11;
+  text-align: center;
+  font-size: 11;
+  color: #FFFFFF;
+}
+
+.u-badge--dot {
+  height: 8;
+  width: 8;
+}
+
+.u-badge--inverted {
+  font-size: 13;
+}
+
+.u-badge--not-dot {
+  padding-top: 2;
+  padding-right: 5;
+  padding-bottom: 2;
+  padding-left: 5;
+}
+
+.u-badge--horn {
+  border-bottom-left-radius: 0;
+}
+
+.u-badge--primary {
+  background-color: #6081C7;
+}
+
+.u-badge--primary--inverted {
+  color: #6081C7;
+}
+
+.u-badge--error {
+  background-color: #f56c6c;
+}
+
+.u-badge--error--inverted {
+  color: #f56c6c;
+}
+
+.u-badge--success {
+  background-color: #5ac725;
+}
+
+.u-badge--success--inverted {
+  color: #5ac725;
+}
+
+.u-badge--info {
+  background-color: #909399;
+}
+
+.u-badge--info--inverted {
+  color: #909399;
+}
+
+.u-badge--warning {
+  background-color: #f9ae3d;
+}
+
+.u-badge--warning--inverted {
+  color: #f9ae3d;
+}
+</style>

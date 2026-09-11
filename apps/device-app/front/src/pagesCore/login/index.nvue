@@ -1,0 +1,464 @@
+<template>
+<scroll-view
+  style="flex-direction: column; flex: 1; background-color: #ffffff;"
+  :scrollY="true"
+  :showScrollbar="false"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view style="min-height: 100vh; background-color: #ffffff; display: flex; flex-direction: column; position: relative; padding-bottom: 60rpx;">
+    <!-- 顶部渐变背景 Header -->
+    <view style="height: 360rpx; background-image: linear-gradient(to bottom, #b5ceff, #ffffff);"></view>
+
+    <!-- Logo 与 应用名称 -->
+    <view style="position: absolute; top: 100rpx; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+      <image style="width: 160rpx; height: 160rpx; border-radius: 30rpx;" :src="cdn + '/draw/qzwl-logo.png'" />
+      <text style="margin-top: 16rpx; font-size: 44rpx; font-weight: bold; color: #000000; text-align: center;" append="tree">
+        {{ l('app.name') }}
+      </text>
+    </view>
+
+    <!-- 登录表单内容区域 -->
+    <view style="margin-top: 60rpx; padding-left: 48rpx; padding-right: 48rpx; display: flex; flex-direction: column;">
+      <!--
+        身份切换：契约有两种登录（1.4 手机号+密码 / 1.7 设备号+设备密码），
+        原版页面只做了账号登录，设备登录的接口一直没有入口。
+        设备身份只能看这一台设备（契约 0.4），所以两者不是同一个表单换个字段名——
+        登录成功后的可见范围不同。
+      -->
+      <view style="flex-direction: row; justify-content: center; margin-bottom: 32rpx;">
+        <view
+          style="padding: 12rpx 32rpx;"
+          @click="switchLoginType('account')"
+        >
+          <text
+            :style="{ fontSize: '30rpx', color: loginType === 'account' ? primaryColor : '#999' }"
+            append="tree"
+          >
+            账号登录
+          </text>
+        </view>
+        <text style="font-size: 30rpx; color: #ddd; padding: 12rpx 8rpx;" append="tree">|</text>
+        <view
+          style="padding: 12rpx 32rpx;"
+          @click="switchLoginType('device')"
+        >
+          <text
+            :style="{ fontSize: '30rpx', color: loginType === 'device' ? primaryColor : '#999' }"
+            append="tree"
+          >
+            设备登录
+          </text>
+        </view>
+      </view>
+      <!-- 账号输入框 -->
+      <view style="height: 96rpx;">
+        <u--input
+          style="border: 2rpx solid #c6d5f6; height: 96rpx;"
+          shape="circle"
+          :placeholder="loginType === 'device' ? '请输入设备号' : l('common.account')"
+          v-model="username"
+        >
+          <u-icon
+            :style="{ marginRight: '12rpx' }"
+            slot="prefix"
+            :name="cdn + '/ikon/qzwl-username.png'"
+            size="48rpx"
+            :stop="true"
+          ></u-icon>
+        </u--input>
+      </view>
+
+      <!-- 密码输入框 -->
+      <view style="height: 96rpx; margin-top: 32rpx;">
+        <u--input
+          style="border: 2rpx solid #c6d5f6; height: 96rpx;"
+          :password="pwdState"
+          shape="circle"
+          :placeholder="loginType === 'device' ? '请输入设备密码' : l('common.password')"
+          v-model="password"
+        >
+          <u-icon
+            :style="{ marginRight: '12rpx' }"
+            slot="prefix"
+            :name="cdn + '/ikon/qzwl-password.png'"
+            size="48rpx"
+            :stop="true"
+          ></u-icon>
+        </u--input>
+      </view>
+
+      <!-- 记住密码 与 忘记密码 -->
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 32rpx;">
+        <view style="display: flex; flex-direction: row; align-items: center;" @click="setRemPassword(!remPassword)">
+          <u-icon v-if="remPassword" :name="cdn + '/ikon/qzwl-sleed.png'" size="36rpx"></u-icon>
+          <u-icon v-else :name="cdn + '/ikon/qzwl-no-sle.png'" size="36rpx"></u-icon>
+          <text style="font-size: 28rpx; color: #333333; margin-left: 12rpx;" append="tree">
+            记住密码
+          </text>
+        </view>
+        <text style="font-size: 28rpx; color: #6081c7;" append="tree" @click="gotoForgotPass">
+          {{ l('common.forget.password') }}
+        </text>
+      </view>
+
+      <!-- 用户协议与隐私政策勾选 -->
+      <view style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 48rpx;">
+        <u-icon
+          v-if="agreeSigninAgreement"
+          :name="cdn + '/ikon/qzwl-sleed.png'"
+          size="32rpx"
+          :stop="true"
+          @click="setAgreeSigninAgreement(!agreeSigninAgreement)"
+        ></u-icon>
+        <u-icon
+          v-else
+          :name="cdn + '/ikon/qzwl-no-sle.png'"
+          size="32rpx"
+          :stop="true"
+          @click="setAgreeSigninAgreement(!agreeSigninAgreement)"
+        ></u-icon>
+        <text style="font-size: 24rpx; color: #333333; margin-left: 12rpx;" append="tree">
+          {{ l('common.agree.text2') }}
+        </text>
+        <text
+          style="font-size: 24rpx; color: #6081c7;"
+          append="tree"
+          @click="gotoPage('/pagesMore/my/setups/service_terms')"
+        >
+          {{ l('common.agreement') }}
+        </text>
+        <text style="font-size: 24rpx; color: #333333;" append="tree">
+          {{ l('common.and') }}
+        </text>
+        <text
+          style="font-size: 24rpx; color: #6081c7;"
+          append="tree"
+          @click="gotoPage('/pagesMore/my/setups/privacy_notice')"
+        >
+          {{ l('common.privacy') }}
+        </text>
+      </view>
+
+      <!-- 登录按钮 -->
+      <view style="margin-top: 32rpx;">
+        <u-button
+          type="primary"
+          shape="circle"
+          size="large"
+          :text="l('index.signin')"
+          @click="signin"
+        ></u-button>
+      </view>
+
+      <!-- 还没有账号？立即注册 -->
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-top: 32rpx;">
+        <text style="font-size: 28rpx; color: #333333;" append="tree">
+          还没有账号？
+        </text>
+        <text style="font-size: 28rpx; color: #6081c7; font-weight: bold;" append="tree" @click="gotoSignup">
+          立即注册
+        </text>
+      </view>
+
+      <!-- 第三方登录渠道 (微信在各端显示，苹果仅在 iOS 显示) -->
+      <view v-if="!isAuditMode" style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-top: 60rpx;">
+        <u-icon
+          v-if="showWx"
+          :name="cdn + '/draw/qzwl-login-wechat.png'"
+          size="96rpx"
+          style="margin-left: 32rpx; margin-right: 32rpx;"
+          @click="loninWx"
+        ></u-icon>
+        <u-icon
+          v-if="showApple"
+          :name="cdn + '/draw/qzwl-login-apple.png'"
+          size="96rpx"
+          style="margin-left: 32rpx; margin-right: 32rpx;"
+          @click="loninApple"
+        ></u-icon>
+      </view>
+    </view>
+
+    <!-- 隐私协议确认 底部抽屉弹窗 -->
+    <u-popup
+      mode="bottom"
+      :show="agreePopupShow"
+      round="16"
+      :closeable="true"
+      @close="agreeClose"
+    >
+      <view style="padding: 32rpx; background-color: #ffffff; border-top-left-radius: 32rpx; border-top-right-radius: 32rpx; display: flex; flex-direction: column;">
+        <view style="padding-bottom: 24rpx; border-bottom: 1px solid #eeeeee;">
+          <text style="font-size: 34rpx; font-weight: bold; color: #333333;" append="tree">
+            {{ l('index.Agreement-Privacy') }}
+          </text>
+        </view>
+        <view style="margin-top: 24rpx;">
+          <text style="font-size: 28rpx; color: #666666; line-height: 44rpx;" append="tree">
+            {{ l('index.Agreement-Privacy-msg') }}
+          </text>
+        </view>
+        <view style="margin-top: 32rpx; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center;">
+          <text style="font-size: 28rpx; color: #333333;" append="tree">
+            {{ l('index.read-agree') }}
+          </text>
+          <text
+            style="font-size: 28rpx; color: #6081c7;"
+            append="tree"
+            @click="gotoPage('/pagesMore/my/setups/service_terms')"
+          >
+            {{ l('common.agreement') }}
+          </text>
+          <text style="font-size: 28rpx; color: #333333;" append="tree">
+            {{ l('common.and') }}
+          </text>
+          <text
+            style="font-size: 28rpx; color: #6081c7;"
+            append="tree"
+            @click="gotoPage('/pagesMore/my/setups/privacy_notice')"
+          >
+            《{{ l('mine.setup.privacy.notice') }}》
+          </text>
+        </view>
+        <view style="margin-top: 48rpx; margin-bottom: 16rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+          <view style="width: 320rpx;">
+            <u-button :text="l('common.no-agree')" @click="agreeClose"></u-button>
+          </view>
+          <view style="width: 320rpx;">
+            <u-button type="primary" :text="l('common.agree')" @click="agreeConfirm"></u-button>
+          </view>
+        </view>
+      </view>
+    </u-popup>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/login/index
+ * 反编译自 webpack 模块 742（nvue 编译空间）
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import o from '@/.unpacked/nvue/5.js';
+import * as s from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var c = getApp().globalData, m = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      username: "",
+      password: "",
+      agreePopupShow: false,
+      handleType: "",
+      deviceType: 1,
+      pwdState: false,
+      backState: false,
+      // 登录身份：account = 手机号+密码（契约 1.4）、device = 设备号+设备密码（1.7）
+      loginType: "account",
+      primaryColor: mod15.primaryColor
+    };
+  },
+  computed: {
+    ...s.mapGetters(["lastUsername", "lastPassword", "agreeSigninAgreement", "sysInfo", "remPassword", "isAuditMode"]),
+    isIOS: function () {
+      return this.sysInfo && (this.sysInfo.platform === 'ios' || (typeof window !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent)));
+    },
+    showApple: function () {
+      return this.isIOS;
+    },
+    showWx: function () {
+      return true;
+    }
+  },
+  onLoad: function (e) {
+    var t = this;
+    return (async function () {
+      e && (t.backState = e.back);
+      "ios" == t.sysInfo.platform ? plus.runtime.isApplicationExist({
+        pname: "com.tencent.mm",
+        action: "weixin://"
+      }) ? t.deviceType = 3 : t.deviceType = 2 : t.deviceType = 1;
+      t.username = t.lastUsername || mod15.defaultAccount;
+      t.remPassword && (t.password = t.lastPassword || mod15.defaultPassword);
+      await c.$sleep(10);
+      t.pwdState = true;
+    })();
+  },
+  methods: {
+    ...s.mapActions("account", ["SignIn", "SignInDevice", "SignInWx", "SignInApple"]),
+    ...s.mapMutations("account", ["setRemPassword"]),
+    ...s.mapMutations("app", ["setAgreeSigninAgreement"]),
+    /** 切换登录身份，顺手清掉密码：两种身份的密码不是一回事，留着容易误提交。 */
+    switchLoginType: function (type) {
+      if (this.loginType === type) return;
+      this.loginType = type;
+      this.password = "";
+    },
+    l: function (e) {
+      return c.$t(e);
+    },
+    signin: function () {
+      var e = this;
+      return i(mod22.mark(function t() {
+        var n, a, i;
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if ((uni.hideKeyboard(), e.agreeSigninAgreement)) {
+                t.next = 5;
+                break;
+              }
+              return (e.handleType = "signin", e.agreePopupShow = true, t.abrupt("return"));
+            case 5:
+              if (e.username) {
+                t.next = 7;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.account"), "none"));
+            case 7:
+              if (e.password) {
+                t.next = 9;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.pwd"), "none"));
+            case 9:
+              if (e.username.trim()) {
+                t.next = 11;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.account"), "none"));
+            case 11:
+              if (uni.$u.test.rangeLength(e.username, [1, 20])) {
+                t.next = 13;
+                break;
+              }
+              return t.abrupt("return", uni.$u.toast("\u8bf7\u8f93\u5165\u6b63\u786e\u8d26\u53f7"));
+            case 13:
+              if (uni.$u.test.rangeLength(e.password, [6, 20])) {
+                t.next = 15;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(c.$t("common.please.pwd.num"), "none"));
+            case 15:
+              // 按身份分派：设备登录走 1.7（identityType=device，只能看这一台设备）
+              return (t.next = 17, e.loginType === "device" ? e.SignInDevice({
+                deviceId: e.username.trim(),
+                password: e.password.trim()
+              }) : e.SignIn({
+                username: e.username.trim(),
+                password: e.password.trim()
+              }));
+            case 17:
+              (9005 === (n = t.sent).code && uni.reLaunch({
+                url: ("/pagesCore/login/bind-tel?terminalNo=").concat(e.username, "&password=").concat(e.password)
+              }), n.succeeded && ("" != (a = uni.getStorageSync("currentPage")) && null != a && null != a && "pagesCore/login/index" != a.path || (a.path = "pages/home/home"), i = ("/").concat(a.path), "{}" != JSON.stringify(a.query) && (i += ("?query=").concat(encodeURIComponent(JSON.stringify(a.query)))), uni.reLaunch({
+                url: i
+              })));
+            case 20:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    loninWx: function () {
+      var t, n = this;
+      if (plus.runtime.isApplicationExist({
+        pname: "com.tencent.mm",
+        action: "weixin://"
+      })) return this.agreeSigninAgreement ? void uni.login({
+        provider: "weixin",
+        onlyAuthorize: true,
+        success: (t = async function (a) {
+          var i, o, s;
+          e("log", a.code, "loginRes.code", " at pagesCore/login/index.nvue:344");
+          (9101 === (i = await n.SignInWx({
+            code: a.code,
+            type: 1
+          })).code && uni.navigateTo({
+            url: "/pagesCore/login/bind-tel-more?type=weixin"
+          }), i.succeeded && ("" != (o = uni.getStorageSync("currentPage")) && null != o && null != o && "pagesCore/login/index" != o.path || (o.path = "pages/home/home"), s = ("/").concat(o.path), "{}" != JSON.stringify(o.query) && (s += ("?query=").concat(encodeURIComponent(JSON.stringify(o.query)))), uni.reLaunch({
+            url: s
+          })), e("log", i.data, "resLogin", " at pagesCore/login/index.nvue:376"));
+        }, function (e) {
+          return t.apply(this, arguments);
+        }),
+        fail: function (e) {
+          mod166.qzwlToast("\u767b\u5f55\u5931\u8d25", "none");
+        },
+        complete: function (e) {}
+      }) : (this.handleType = "loninWx", void (this.agreePopupShow = true));
+      mod166.qzwlToast("\u8bf7\u5148\u5b89\u88c5\u5fae\u4fe1");
+    },
+    loninApple: function () {
+      var t = this;
+      if (!this.agreeSigninAgreement) return (this.handleType = "loninApple", void (this.agreePopupShow = true));
+      uni.login({
+        provider: "apple",
+        success: function (n) {
+          var a;
+          (e("log", n, "loginRes", " at pagesCore/login/index.nvue:397"), uni.getUserInfo({
+            provider: "apple",
+            success: (a = async function (a) {
+              var i, o, s;
+              (i = await t.SignInApple({
+                openId: a.userInfo.openId,
+                authorizationCode: a.userInfo.authorizationCode,
+                identityToken: a.userInfo.identityToken
+              }), e("log", i, "resLogin", " at pagesCore/login/index.nvue:409"), 9102 === i.code && uni.navigateTo({
+                url: "/pagesCore/login/bind-tel-more?type=apple"
+              }), i.succeeded && ("" != (o = uni.getStorageSync("currentPage")) && null != o && null != o && "pagesCore/login/index" != o.path || (o.path = "pages/home/home"), s = ("/").concat(o.path), "{}" != JSON.stringify(o.query) && (s += ("?query=").concat(encodeURIComponent(JSON.stringify(o.query)))), uni.reLaunch({
+                url: s
+              })));
+            }, function (e) {
+              return a.apply(this, arguments);
+            })
+          }));
+        },
+        fails: function (e) {
+          mod166.qzwlToast("\u767b\u5f55\u5931\u8d25", "none");
+        }
+      });
+    },
+    agreeChange: function (t) {
+      (e("log", !t[0], " at pagesCore/login/index.nvue:445"), t[0] || this.setAgreeSigninAgreement(false), t[0] && this.setAgreeSigninAgreement(true));
+    },
+    agreeClose: function () {
+      (this.agreePopupShow = false, this.setAgreeSigninAgreement(false));
+    },
+    agreeConfirm: function () {
+      return (this.agreePopupShow = false, this.setAgreeSigninAgreement(true), "signin" === this.handleType ? this.signin() : "signup" === this.handleType ? this.gotoSignup() : "findPass" === this.handleType ? this.gotoForgotPass() : "loninWx" === this.handleType ? this.loninWx() : "loninApple" === this.handleType ? this.loninApple() : undefined);
+    },
+    gotoSignup: function () {
+      if (!this.agreeSigninAgreement) return (this.handleType = "signup", void (this.agreePopupShow = true));
+      uni.navigateTo({
+        url: "/pagesCore/login/register"
+      });
+    },
+    gotoForgotPass: function () {
+      if (!this.agreeSigninAgreement) return (this.handleType = "findPass", void (this.agreePopupShow = true));
+      uni.navigateTo({
+        url: ("/pagesCore/login/find-pas?phone=").concat(this.username)
+      });
+    },
+    gotoPage: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    },
+    gotoPageLeft: function () {
+      uni.navigateBack();
+    }
+  }
+};
+export default m;
+</script>
+
+<style scoped>
+</style>

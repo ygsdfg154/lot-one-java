@@ -1,0 +1,49 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: lot-one-query-api
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/lot
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 3000ms
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: query-api-ws-group
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+
+tdengine:
+  url: jdbc:TAOS-RS://localhost:6041/lot
+  username: root
+  password: taosdata
+  driver-class-name: com.taosdata.jdbc.rs.RestfulDriver
+  initial-size: 2
+  max-active: 10
+  min-idle: 2
+
+query:
+  track:
+    # 轨迹查询最大返回点数
+    max-points: 5000
+    # 抽稀最小距离（米），小于此距离的点被抽稀
+    simplify-min-distance: 10
+  cache:
+    # 实时位置缓存时间（秒）
+    realtime-cache-seconds: 5
+
+logging:
+  level:
+    com.lotone: debug

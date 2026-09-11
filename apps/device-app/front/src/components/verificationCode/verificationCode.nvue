@@ -1,0 +1,226 @@
+<template>
+<view>
+  <u-popup
+    round="16"
+    :show="showPopup"
+    mode="center"
+    :closeOnClickOverlay="true"
+    @close="closeImgCaptchaShow"
+    customStyle="width: 620rpx;"
+  >
+    <view class="captcha-popup-content">
+      <text class="popup-title">图形验证码</text>
+
+      <view class="input-captcha-row">
+        <input
+          class="captcha-input"
+          placeholder="请输入图形验证码"
+          v-model="captchaCode"
+          maxlength="6"
+        />
+        <image
+          v-if="formattedBase64"
+          class="captcha-img"
+          :src="formattedBase64"
+          mode="aspectFit"
+          @click="getImgCode"
+        />
+        <view v-else class="captcha-loading" @click="getImgCode">
+          <text class="loading-text">刷新验证码</text>
+        </view>
+      </view>
+
+      <view class="btn-box">
+        <u-button
+          customStyle="height: 80rpx; width: 100%; font-size: 30rpx; border-radius: 40rpx;"
+          type="primary"
+          text="确定"
+          @click="confirmImgCode"
+        ></u-button>
+      </view>
+    </view>
+  </u-popup>
+</view>
+</template>
+
+<script>
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+function a(m) {
+  return m && m.__esModule ? m : { default: m };
+}
+"use strict";
+var d = (a(require("../../common/config.nvue.js")), require("../../common/utils.nvue.js"));
+var _ = getApp().globalData, c = {
+  props: ["phoneNumber"],
+  data: function () {
+    return {
+      captchaId: "",
+      captchaCode: "",
+      base64: "",
+      showPopup: false
+    };
+  },
+  computed: {
+    formattedBase64: function () {
+      if (!this.base64) return '';
+      if (this.base64.startsWith('data:image')) return this.base64;
+      return 'data:image/png;base64,' + this.base64;
+    }
+  },
+  mounted: function () {
+    this.getImgCode();
+  },
+  methods: {
+    ...mod25.mapActions("account", ["GetSendImgCode", "SendSmsCode"]),
+    getImgCode: function () {
+      var e = this;
+      return (async function () {
+        var n = await e.GetSendImgCode();
+        if (n && n.succeeded && n.data) {
+          if (n.data.captchaEnabled === false) {
+            // Graphic captcha is disabled, auto-send SMS directly
+            var smsRes = await e.SendSmsCode({
+              phoneNumber: e.phoneNumber,
+              captchaId: "",
+              captchaCode: ""
+            });
+            if (smsRes.succeeded) {
+              e.$emit("smsCodeChange");
+            } else {
+              e.$emit("imgCaptchaChange", false);
+            }
+            return;
+          }
+          e.captchaId = n.data.uuid || n.data.captchaId || "";
+          e.base64 = n.data.img || n.data.base64 || "";
+          e.showPopup = true;
+        } else {
+          e.$emit("imgCaptchaChange", false);
+        }
+      })();
+    },
+    closeImgCaptchaShow: function () {
+      uni.hideKeyboard();
+      this.captchaId = "";
+      this.captchaCode = "";
+      this.base64 = "";
+      this.showPopup = false;
+      this.$emit("imgCaptchaChange", false);
+    },
+    confirmImgCode: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.captchaCode) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", d.qzwlToast("请输入图形验证码", "none"));
+            case 2:
+              return (t.next = 4, e.SendSmsCode({
+                phoneNumber: e.phoneNumber,
+                captchaId: e.captchaId,
+                captchaCode: e.captchaCode
+              }));
+            case 4:
+              if (!t.sent.succeeded) {
+                t.next = 13;
+                break;
+              }
+              uni.hideKeyboard();
+              e.captchaId = "";
+              e.captchaCode = "";
+              e.base64 = "";
+              e.$emit("smsCodeChange");
+              t.next = 16;
+              break;
+            case 13:
+              return (t.next = 15, _.$sleep ? _.$sleep(500) : new Promise(r => setTimeout(r, 500)));
+            case 15:
+              e.getImgCode();
+            case 16:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    }
+  }
+};
+export default c;
+</script>
+
+<style scoped>
+.captcha-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20px;
+}
+
+.input-captcha-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.captcha-input {
+  flex: 1;
+  height: 44px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #333333;
+  box-sizing: border-box;
+  margin-right: 12px;
+}
+
+.captcha-img {
+  width: 110px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #f2f3f5;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.captcha-loading {
+  width: 110px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #f2f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.loading-text {
+  font-size: 12px;
+  color: #6081c7;
+}
+
+.btn-box {
+  width: 100%;
+}
+</style>

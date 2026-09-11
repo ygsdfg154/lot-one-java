@@ -1,0 +1,315 @@
+<template>
+<view style="display: block;">
+  <text style="font-size: 28rpx; color: #999999; font-weight: 500; margin-bottom: 8rpx; display: block;" append="tree">
+    {{ l('device.locate.mode') }}
+  </text>
+  <view class="mode">
+    <view
+      v-for="(t, a) in currentRunningModelist"
+      :key="a"
+      style="background-color: #f3f9ff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 24rpx; box-sizing: border-box; cursor: pointer;"
+      @click="$emit('changeRunningMode', t.value)"
+    >
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 16rpx;">
+        <text
+          class="text-md"
+          :style="{ color: currentRunningMode == t.value ? '#6081C7' : '#333333' }"
+          style="font-size: 30rpx; font-weight: bold;"
+          append="tree"
+        >
+          {{ t.name }} {{ (t.mask && !locationVip) ? '(' + t.mask + ')' : '' }}
+        </text>
+
+        <view v-if="currentRunningMode == t.value" style="width: 40rpx; height: 40rpx; border-radius: 20rpx; background-color: #6081C7; display: flex; flex-direction: row; align-items: center; justify-content: space-between; justify-content: center;">
+          <text style="color: #ffffff; font-size: 24rpx; font-weight: bold; line-height: 24rpx;" append="tree">✓</text>
+        </view>
+        <view v-else style="width: 40rpx; height: 40rpx; border-radius: 20rpx; border: 2rpx solid #CCCCCC; box-sizing: border-box;"></view>
+      </view>
+
+      <view style="background-color: #ffffff; border-radius: 12rpx; padding: 20rpx 24rpx; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
+        <text style="font-size: 26rpx; color: #666666; line-height: 36rpx;" append="tree">
+          {{ t.text || '暂无说明' }}
+        </text>
+        
+        <view v-if="!(t.timeShow)">
+          <view v-if="currentRunningMode == t.value && weekDailyAlarmsMode" class="time">
+            <text class="time-title" append="tree">
+              {{ l('locate-mode.selective-positioning-time') }}
+            </text>
+            <view class="time-input" @click="$emit('openPickerShow', ['timePickerShow'])">
+              <text class="time-input-text" append="tree">
+                {{ currentTimePickerInfo[0] }}
+              </text>
+              <u-icon class="time-input-icon" name="arrow-down" color="#676f7b"></u-icon>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: xMode
+ * 反编译自 webpack 模块 694（nvue 编译空间）
+ */
+import mod15 from '../../common/config.nvue.js'
+
+"use strict";
+var i = getApp().globalData, o = {
+  data: function () {
+    return {
+      cdn: mod15.cdn
+    };
+  },
+  props: ["weekDailyAlarmsMode", "currentRunningModelist", "currentRunningMode", "currentTimePickerInfo", "locationVip"],
+  methods: {
+    l: function (e) {
+      return i.$t(e);
+    }
+  }
+};
+export default o;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.mode-item {
+  background-color: #f3f9ff;
+  border-radius: 24rpx;
+  padding-top: 32rpx;
+  padding-right: 16rpx;
+  padding-bottom: 16rpx;
+  padding-left: 16rpx;
+  margin-top: 24rpx;
+}
+
+.mode-item-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 16rpx;
+}
+
+.mode-item-text {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding-top: 28rpx;
+  padding-right: 16rpx;
+  padding-bottom: 30rpx;
+  padding-left: 16rpx;
+}
+
+.time {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.time-title {
+  font-size: 28rpx;
+  color: #999999;
+  margin-right: 16rpx;
+}
+
+.time-input {
+  padding-top: 10rpx;
+  padding-right: 20rpx;
+  padding-bottom: 10rpx;
+  padding-left: 20rpx;
+  border-radius: 8rpx;
+  background-color: #f2faff;
+  font-size: 28rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-input-text {
+  color: #333333;
+  margin-right: 16rpx;
+  font-size: 28rpx;
+}
+
+.alarmClock {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.alarmClock-item {
+  margin-top: 16rpx;
+  margin-right: 16rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.alarmClock-item-title {
+  font-size: 28rpx;
+  color: #999999;
+  margin-right: 10rpx;
+}
+
+.alarmClock-item-input {
+  border-radius: 8rpx;
+  background-color: #f2faff;
+  font-size: 28rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alarmClock-item-input-icon {
+  padding-top: 10rpx;
+  padding-right: 16rpx;
+  padding-bottom: 10rpx;
+  padding-left: 10rpx;
+}
+
+.alarmClock-item-input1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 10rpx;
+  padding-right: 0rpx;
+  padding-bottom: 10rpx;
+  padding-left: 10rpx;
+}
+
+.alarmClock-item-input1-text {
+  color: #333333;
+  font-size: 28rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.mode-item {
+  background-color: #f3f9ff;
+  border-radius: 3.2vw;
+  padding-top: 4.2667vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 2.1333vw;
+  padding-left: 2.1333vw;
+  margin-top: 3.2vw;
+}
+
+.mode-item-icon {
+  width: 4.2667vw;
+  height: 4.2667vw;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #cccccc;
+  border-radius: 2.1333vw;
+}
+
+.mode-item-text {
+  background-color: #ffffff;
+  border-radius: 2.1333vw;
+  padding-top: 3.7333vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 4vw;
+  padding-left: 2.1333vw;
+}
+
+.time {
+  margin-top: 2.1333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.time-title {
+  font-size: 3.7333vw;
+  color: #999999;
+  margin-right: 2.1333vw;
+}
+
+.time-input {
+  padding-top: 1.3333vw;
+  padding-right: 2.6667vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 2.6667vw;
+  border-radius: 1.0667vw;
+  background-color: #f2faff;
+  font-size: 3.7333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-input-text {
+  color: #333333;
+  margin-right: 2.1333vw;
+  font-size: 3.7333vw;
+}
+
+.alarmClock {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.alarmClock-item {
+  margin-top: 2.1333vw;
+  margin-right: 2.1333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.alarmClock-item-title {
+  font-size: 3.7333vw;
+  color: #999999;
+  margin-right: 1.3333vw;
+}
+
+.alarmClock-item-input {
+  border-radius: 1.0667vw;
+  background-color: #f2faff;
+  font-size: 3.7333vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alarmClock-item-input-icon {
+  padding-top: 1.3333vw;
+  padding-right: 2.1333vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 1.3333vw;
+}
+
+.alarmClock-item-input1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 1.3333vw;
+  padding-right: 0vw;
+  padding-bottom: 1.3333vw;
+  padding-left: 1.3333vw;
+}
+
+.alarmClock-item-input1-text {
+  color: #333333;
+  font-size: 3.7333vw;
+}
+/* #endif */
+</style>

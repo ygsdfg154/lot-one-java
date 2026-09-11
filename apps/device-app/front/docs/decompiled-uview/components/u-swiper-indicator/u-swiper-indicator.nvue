@@ -1,0 +1,91 @@
+<template>
+<view class="u-swiper-indicator">
+  <view
+    v-if="'line' === indicatorMode"
+    class="u-swiper-indicator__wrapper"
+    :class="['u-swiper-indicator__wrapper--' + indicatorMode]"
+    :style="{ width: $u.addUnit(lineWidth * length), backgroundColor: indicatorInactiveColor }"
+  >
+    <view class="u-swiper-indicator__wrapper--line__bar" :style="[lineStyle]"></view>
+  </view>
+  <view v-if="'dot' === indicatorMode" class="u-swiper-indicator__wrapper">
+    <view
+      v-for="(t, r) in length"
+      :key="r"
+      class="u-swiper-indicator__wrapper__dot"
+      :class="[r === current && 'u-swiper-indicator__wrapper__dot--active']"
+      :style="[dotStyle(r)]"
+    ></view>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSwiperIndicator
+ * 反编译自 webpack 模块 574（nvue 编译空间）
+ */
+import mod939 from '@/.unpacked/nvue/939.js'
+
+"use strict";
+var i = {
+  name: "u-swiper-indicator",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod939],
+  data: function () {
+    return {
+      lineWidth: 22
+    };
+  },
+  computed: {
+    lineStyle: function () {
+      var e = {};
+      return (e.width = uni.$u.addUnit(this.lineWidth), e.transform = ("translateX(").concat(uni.$u.addUnit(this.current * this.lineWidth), ")"), e.backgroundColor = this.indicatorActiveColor, e);
+    },
+    dotStyle: function () {
+      var e = this;
+      return function (t) {
+        var n = {};
+        return (n.backgroundColor = t === e.current ? e.indicatorActiveColor : e.indicatorInactiveColor, n);
+      };
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-swiper-indicator__wrapper {
+  flex-direction: row;
+}
+
+.u-swiper-indicator__wrapper--line {
+  border-radius: 100;
+  height: 4;
+}
+
+.u-swiper-indicator__wrapper--line__bar {
+  width: 22;
+  height: 4;
+  border-radius: 100;
+  background-color: #FFFFFF;
+  transition-property: transform;
+  transition-duration: 300;
+  transition-timing-function: ease;
+  transition-delay: 0;
+}
+
+.u-swiper-indicator__wrapper__dot {
+  width: 5;
+  height: 5;
+  border-radius: 100;
+  margin-top: 0;
+  margin-right: 4;
+  margin-bottom: 0;
+  margin-left: 4;
+}
+
+.u-swiper-indicator__wrapper__dot--active {
+  width: 12;
+}
+</style>

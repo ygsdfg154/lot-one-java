@@ -1,0 +1,139 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('mine.pay.orders') || '充值订单' }}
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 24rpx 28rpx 140rpx 28rpx; background-color: #f6f6f6;">
+      <view v-if="orderList && orderList.length">
+        <view
+          v-for="(e, r) in orderList"
+          :key="r"
+          style="background-color: #ffffff; border-radius: 20rpx; padding: 24rpx 28rpx; margin-bottom: 24rpx; cursor: pointer; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.03);"
+          @click="goDetail(e)"
+        >
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-bottom: 16rpx; border-bottom: 1rpx solid #F1F5F9; margin-bottom: 16rpx;">
+            <text style="font-size: 26rpx; color: #64748B;" append="tree">
+              {{ l('mine.pay.order') || '订单号' }}：{{ e.orderNo }}
+            </text>
+            <text style="font-size: 26rpx; font-weight: bold;" :style="{ color: getStatusColor(e.orderStatus) }" append="tree">
+              {{ e.orderStatus }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-bottom: 16rpx; border-bottom: 1rpx solid #F1F5F9; margin-bottom: 16rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #1E293B;" append="tree">
+              {{ e.description || '套餐充值' }}
+            </text>
+            <text style="font-size: 34rpx; font-weight: bold; color: #EF4444;" append="tree">
+              ¥{{ (e.totalFee / 100).toFixed(2) }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+            <text v-if="e.payTime" style="font-size: 24rpx; color: #94A3B8;" append="tree">
+              {{ l('mine-pay.pay-time') || '支付时间' }}：{{ e.payTime }}
+            </text>
+            <text v-else style="font-size: 24rpx; color: #94A3B8;" append="tree">
+              {{ l('mine-pay.create-time') || '创建时间' }}：{{ e.createTime }}
+            </text>
+            <u-icon name="arrow-right" size="26rpx" color="#CBD5E1"></u-icon>
+          </view>
+        </view>
+      </view>
+
+      <view v-if="orderList && orderList.length" style="margin-top: 24rpx;" @click="contactService">
+        <u-loadmore :serviceShow="true" :line="true" :status="status" nomoreText="对订单有任何疑问，请联系客服"></u-loadmore>
+      </view>
+
+      <view v-if="!orderList || !orderList.length" style="padding: 120rpx 0;">
+        <u-empty
+          :text="l('mine.pay.no-order')"
+          :icon="cdn + '/draw/qzwl-empty.png'"
+        ></u-empty>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesPay/list/indent
+ * 反编译自 webpack 模块 625（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var p = getApp().globalData, d = {
+  components: {},
+  data: function () {
+    return {
+      cdn: mod15.cdn
+    };
+  },
+  onLoad: function () {
+    (this.setListNeedRefresh(true), this.fetchData());
+  },
+  onPullDownRefresh: function () {
+    (this.setListNeedRefresh(true), this.fetchData());
+  },
+  onReachBottom: function () {
+    "loading" != this.status && this.fetchData();
+  },
+  computed: {
+    ...mod25.mapState("order", ["orderList", "page", "status", "listNeedRefresh"])
+  },
+  methods: {
+    ...mod25.mapActions("order", ["GetTopupOrderPage"]),
+    ...mod25.mapMutations("order", ["setListNeedRefresh"]),
+    l: function (t) {
+      return p.$t(t);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    getStatusColor: function (s) {
+      if (!s) return '#6081C7';
+      var str = String(s);
+      if (str.indexOf('待') !== -1 || str.indexOf('未') !== -1 || str.indexOf('处理') !== -1) return '#FF9900';
+      if (str.indexOf('已支付') !== -1 || str.indexOf('成功') !== -1 || str.indexOf('完成') !== -1) return '#6081C7';
+      if (str.indexOf('取消') !== -1 || str.indexOf('关闭') !== -1 || str.indexOf('失败') !== -1) return '#94A3B8';
+      return '#6081C7';
+    },
+    fetchData: function () {
+      var t = this;
+      return (async function () {
+        (await t.GetTopupOrderPage(), uni.stopPullDownRefresh());
+      })();
+    },
+    goDetail: function (t) {
+      uni.navigateTo({
+        url: "/pagesPay/list/specifics?id=" + t.id
+      });
+    },
+    contactService: function () {
+      "nomore" == this.status && uni.navigateTo({
+        url: "/pagesMore/my/support"
+      });
+    }
+  }
+};
+export default d;
+
+</script>

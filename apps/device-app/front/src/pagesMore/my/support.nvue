@@ -1,0 +1,33 @@
+<template>
+<view style="width: 100%; height: 100vh; overflow: hidden;">
+  <web-view
+    style="width: 100%; height: 100vh;"
+    :webviewStyles="{ progress: { color: progressColor } }"
+    :src="dataUrl"
+  ></web-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/my/support
+ * 反编译自 webpack 模块 598（nvue 编译空间）
+ */
+import mod15 from '../../common/config.nvue.js'
+
+"use strict";
+var n = {
+  data: function () {
+    return {
+      progressColor: mod15.primaryColor,
+      dataUrl: mod15.kf.url
+    };
+  },
+  onHide: function () {
+    uni.navigateBack();
+  },
+  methods: {}
+};
+export default n;
+
+</script>

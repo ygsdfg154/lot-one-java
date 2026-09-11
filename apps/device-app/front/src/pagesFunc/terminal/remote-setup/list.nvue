@@ -1,0 +1,147 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoBack()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      操作记录
+    </text>
+    <view style="width: 80rpx;"></view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="padding: 24rpx 32rpx 60rpx 32rpx; background-color: #f6f6f6;">
+      <view v-if="handleList && handleList.length">
+        <view
+          v-for="(e, r) in handleList"
+          :key="e.Id || r"
+          style="background-color: #ffffff; border-radius: 16rpx; padding: 28rpx 24rpx; margin-bottom: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);"
+        >
+          <view style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 16rpx; border-bottom: 1rpx solid #f0f0f0; padding-bottom: 16rpx;">
+            <text style="font-size: 30rpx; font-weight: bold; color: #333333;" append="tree">
+              {{ e.paramName || '指令操作' }}
+            </text>
+            <text style="font-size: 24rpx; color: #888888;" append="tree">
+              {{ selectedTerminal ? selectedTerminal.terminalNo : '' }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: center; margin-bottom: 12rpx;">
+            <text style="font-size: 26rpx; color: #888888; width: 150rpx;" append="tree">
+              发送状态：
+            </text>
+            <text
+              style="font-size: 26rpx; font-weight: bold;"
+              :style="{ color: e.commandState == 0 || e.result === 'success' ? '#67C23A' : (e.commandState == 8 || e.result === 'fail' ? '#F56C6C' : '#E6A23C') }"
+              append="tree"
+            >
+              {{ e.resultText || command[e.commandState] || '处理中' }}
+            </text>
+          </view>
+
+          <view style="display: flex; flex-direction: row; align-items: center; margin-bottom: 12rpx;">
+            <text style="font-size: 26rpx; color: #888888; width: 150rpx;" append="tree">
+              发送时间：
+            </text>
+            <text style="font-size: 26rpx; color: #333333;" append="tree">
+              {{ e.sendTime || e.sentAt || e.createTime || '-' }}
+            </text>
+          </view>
+
+          <view v-if="e.resultContent && e.resultContent.trim().length > 2" style="display: flex; flex-direction: row; align-items: flex-start; margin-top: 12rpx; background-color: #F7F8FA; border-radius: 8rpx; padding: 12rpx 16rpx;">
+            <text style="font-size: 24rpx; color: #888888; width: 150rpx; flex-shrink: 0;" append="tree">
+              指令内容：
+            </text>
+            <text style="font-size: 24rpx; color: #555555; flex: 1; word-break: break-all; line-height: 34rpx;" append="tree">
+              {{ e.resultContent }}
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <view v-else style="padding: 100rpx 0;">
+        <u-empty
+          :text="l('common.no.more')"
+          :icon="cdn + '/draw/qzwl-empty.png'"
+        ></u-empty>
+      </view>
+
+      <u-loadmore v-if="handleList && handleList.length" :status="status" :line="true"></u-loadmore>
+    </view>
+  </scroll-view>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/remote-setup/list
+ * 反编译自 webpack 模块 677（nvue 编译空间）
+ * async/await 还原: 1 个已转换
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../../common/config.nvue.js';
+"use strict";
+var p = getApp().globalData, d = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      command: {
+        0: p.$t("remote.set-succeed"),
+        1: p.$t("remote.set-not-connected"),
+        2: p.$t("remote.set-error"),
+        3: p.$t("remote.set-timeout"),
+        5: p.$t("remote.set-nonsupport"),
+        6: p.$t("remote.set-protocol-error"),
+        8: p.$t("remote.set-fail"),
+        10: p.$t("remote.set-no-answer"),
+        11: p.$t("remote.set-param-error"),
+        12: p.$t("remote.set-delayed-delivery"),
+        13: p.$t("remote.set-unsent")
+      }
+    };
+  },
+  computed: {
+    ...mod25.mapState("remoteSet", ["handleList", "page", "status", "listNeedRefresh"]),
+    ...mod25.mapGetters(["selectedTerminal"]),
+    ...mod25.mapState("timingRefresh", ["remoteListRefresh"])
+  },
+  onLoad: function () {
+    this.remoteListRefresh && (this.setListNeedRefresh(true), this.fetchData(), this.setRemoteListRefresh(false), p.$remote(3e5));
+  },
+  onReachBottom: function () {
+    this.fetchData();
+  },
+  onPullDownRefresh: function () {
+    (this.setListNeedRefresh(true), this.fetchData());
+  },
+  methods: {
+    ...mod25.mapActions("remoteSet", ["GetCommandRecord"]),
+    ...mod25.mapMutations("remoteSet", ["setListNeedRefresh"]),
+    ...mod25.mapMutations("timingRefresh", ["setRemoteListRefresh"]),
+    l: function (t) {
+      return p.$t(t);
+    },
+    gotoBack: function () {
+      uni.navigateBack();
+    },
+    fetchData: function () {
+      var t = this;
+      return (async function () {
+        (await t.GetCommandRecord({
+          terminalId: t.selectedTerminal.id
+        }), uni.stopPullDownRefresh());
+      })();
+    }
+  }
+};
+export default d;
+
+</script>

@@ -1,0 +1,49 @@
+<template>
+<text
+  class="u-link"
+  :style="[$data.linkStyle, $data.$u.addStyle($data.customStyle)]"
+  append="tree"
+  @click="$data.openLink"
+>
+  {{ $data.text }}
+</text>
+</template>
+
+<script>
+/*
+ * 组件: uLink
+ * 反编译自 webpack 模块 262（nvue 编译空间）
+ */
+import mod358 from '@/.unpacked/nvue/358.js'
+
+"use strict";
+var i = {
+  name: "u-link",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod358],
+  computed: {
+    linkStyle: function () {
+      return {
+        color: this.color,
+        fontSize: uni.$u.addUnit(this.fontSize),
+        lineHeight: uni.$u.addUnit(uni.$u.getPx(this.fontSize) + 2),
+        textDecoration: this.underLine ? "underline" : "none"
+      };
+    }
+  },
+  methods: {
+    openLink: function () {
+      (plus.runtime.openURL(this.href), this.$emit("click"));
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-link {
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 1;
+}
+</style>

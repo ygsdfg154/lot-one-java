@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: lot-one-device
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: lot-one-dev
+      config:
+        server-addr: localhost:8848
+        namespace: lot-one-dev
+        file-extension: yml
+        refresh-enabled: true
+  profiles:
+    active: dev

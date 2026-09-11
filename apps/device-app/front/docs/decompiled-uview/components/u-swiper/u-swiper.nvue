@@ -1,0 +1,242 @@
+<template>
+<view
+  class="u-swiper"
+  :style="{ backgroundColor: bgColor, height: $u.addUnit(height), borderRadius: $u.addUnit(radius) }"
+>
+  <view v-if="loading" class="u-swiper__loading">
+    <u-loading-icon mode="circle"></u-loading-icon>
+  </view>
+  <swiper
+    v-else
+    class="u-swiper__wrapper"
+    :style="{ height: $u.addUnit(height) }"
+    :circular="circular"
+    :interval="interval"
+    :duration="duration"
+    :autoplay="autoplay"
+    :current="current"
+    :currentItemId="currentItemId"
+    :previousMargin="$u.addUnit(previousMargin)"
+    :nextMargin="$u.addUnit(nextMargin)"
+    :acceleration="acceleration"
+    :displayMultipleItems="displayMultipleItems"
+    :easingFunction="easingFunction"
+    @change="change"
+  >
+    <swiper-item v-for="(t, r) in list" :key="r" class="u-swiper__wrapper__item">
+      <view class="u-swiper__wrapper__item__wrapper" :style="[itemStyle(r)]">
+        <image
+          v-if="'image' === getItemType(t)"
+          class="u-swiper__wrapper__item__wrapper__image"
+          :style="{ height: $u.addUnit(height), borderRadius: $u.addUnit(radius) }"
+          :src="getSource(t)"
+          :mode="imgMode"
+          @click="clickHandler(r)"
+         />
+        <video
+          v-if="'video' === getItemType(t)"
+          class="u-swiper__wrapper__item__wrapper__video"
+          :style="{ height: $u.addUnit(height) }"
+          :id="'video-' + r"
+          :enableProgressGesture="false"
+          :src="getSource(t)"
+          :poster="getPoster(t)"
+          :title="showTitle && $u.test.object(t) && t.title ? t.title : ''"
+          :controls="true"
+          @click="clickHandler(r)"
+        ></video>
+        <text
+          v-if="showTitle && $u.test.object(t) && t.title && $u.test.image(getSource(t))"
+          class="u-swiper__wrapper__item__wrapper__title u-line-1"
+          append="tree"
+        >
+          {{ t.title }}
+        </text>
+      </view>
+    </swiper-item>
+  </swiper>
+  <view class="u-swiper__indicator" :style="[$u.addStyle(indicatorStyle)]">
+    <slot name="indicator">
+      <u-swiper-indicator
+        v-if="!(loading || !indicator || showTitle)"
+        :indicatorActiveColor="indicatorActiveColor"
+        :indicatorInactiveColor="indicatorInactiveColor"
+        :length="list.length"
+        :current="currentIndex"
+        :indicatorMode="indicatorMode"
+      ></u-swiper-indicator>
+    </slot>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSwiper
+ * 反编译自 webpack 模块 577（nvue 编译空间）
+ */
+import mod1 from '@/.unpacked/nvue/1.js'
+import mod940 from '@/.unpacked/nvue/940.js'
+
+"use strict";
+var o = {
+  name: "u-swiper",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod940],
+  data: function () {
+    return {
+      currentIndex: 0
+    };
+  },
+  watch: {
+    current: function (e, t) {
+      e !== t && (this.currentIndex = e);
+    }
+  },
+  computed: {
+    itemStyle: function () {
+      return function (e) {
+        return {};
+      };
+    }
+  },
+  methods: {
+    getItemType: function (e) {
+      return "string" == typeof e ? uni.$u.test.video(this.getSource(e)) ? "video" : "image" : "object" === mod1(e) && this.keyName ? e.type ? "image" === e.type ? "image" : "video" === e.type ? "video" : "image" : uni.$u.test.video(this.getSource(e)) ? "video" : "image" : undefined;
+    },
+    getSource: function (e) {
+      return "string" == typeof e ? e : "object" === mod1(e) && this.keyName ? e[this.keyName] : (uni.$u.error("\u8bf7\u6309\u683c\u5f0f\u4f20\u9012\u5217\u8868\u53c2\u6570"), "");
+    },
+    change: function (e) {
+      var t = e.detail.current;
+      (this.pauseVideo(this.currentIndex), this.currentIndex = t, this.$emit("change", e.detail));
+    },
+    pauseVideo: function (e) {
+      var t = this.getSource(this.list[e]);
+      uni.$u.test.video(t) && uni.createVideoContext(("video-").concat(e), this).pause();
+    },
+    getPoster: function (e) {
+      return "object" === mod1(e) && e.poster ? e.poster : "";
+    },
+    clickHandler: function (e) {
+      this.$emit("click", e);
+    }
+  }
+};
+export default o;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.u-swiper {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.u-swiper__wrapper {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper {
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+  transition-property: transform;
+  transition-duration: 300;
+  transition-timing-function: ease;
+  transition-delay: 0;
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__image {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__video {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__title {
+  position: absolute;
+  background-color: rgba(0,0,0,0.3);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 28rpx;
+  padding-top: 12rpx;
+  padding-right: 24rpx;
+  padding-bottom: 12rpx;
+  padding-left: 24rpx;
+  color: #FFFFFF;
+  flex: 1;
+}
+
+.u-swiper__indicator {
+  position: absolute;
+  bottom: 10;
+}
+/* #endif */
+/* #ifdef H5 */
+.u-swiper {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.u-swiper__wrapper {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper {
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+  transition-property: transform;
+  transition-duration: 300;
+  transition-timing-function: ease;
+  transition-delay: 0;
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__image {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__video {
+  flex: 1;
+}
+
+.u-swiper__wrapper__item__wrapper__title {
+  position: absolute;
+  background-color: rgba(0,0,0,0.3);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 3.7333vw;
+  padding-top: 1.6vw;
+  padding-right: 3.2vw;
+  padding-bottom: 1.6vw;
+  padding-left: 3.2vw;
+  color: #FFFFFF;
+  flex: 1;
+}
+
+.u-swiper__indicator {
+  position: absolute;
+  bottom: 10;
+}
+/* #endif */
+</style>

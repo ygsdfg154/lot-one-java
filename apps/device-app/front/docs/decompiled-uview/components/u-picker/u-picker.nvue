@@ -1,0 +1,193 @@
+<template>
+<u-popup :show="show" @close="closeHandler">
+  <view class="u-picker">
+    <u-toolbar
+      v-if="showToolbar"
+      :cancelColor="cancelColor"
+      :confirmColor="confirmColor"
+      :cancelText="cancelText"
+      :confirmText="confirmText"
+      :title="title"
+      @cancel="cancel"
+      @confirm="confirm"
+    ></u-toolbar>
+    <picker-view
+      class="u-picker__view"
+      :style="{ height: '' + $u.addUnit(visibleItemCount * itemHeight) }"
+      :indicatorStyle="'height: ' + $u.addUnit(itemHeight)"
+      :value="innerIndex"
+      :immediateChange="immediateChange"
+      @change="changeHandler"
+    >
+      <picker-view-column v-for="(t, a) in innerColumns" :key="a" class="u-picker__view__column">
+        <text
+          v-for="(r, i) in t"
+          v-if="$u.test.array(t)"
+          :key="i"
+          class="u-picker__view__column__item u-line-1"
+          :style="{ height: $u.addUnit(itemHeight), lineHeight: $u.addUnit(itemHeight), fontWeight: i === innerIndex[a] ? 'bold' : 'normal' }"
+          append="tree"
+        >
+          {{ getItemText(r) }}
+        </text>
+      </picker-view-column>
+    </picker-view>
+    <view v-if="loading" class="u-picker--loading">
+      <u-loading-icon mode="circle"></u-loading-icon>
+    </view>
+  </view>
+</u-popup>
+</template>
+
+<script>
+/*
+ * 组件: uPicker
+ * 反编译自 webpack 模块 239（nvue 编译空间）
+ * async/await 还原: 2 个已转换
+ * 变量 r 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import r from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import o from '@/.unpacked/nvue/312.js';
+"use strict";
+var s = {
+  name: "u-picker",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, o],
+  data: function () {
+    return {
+      lastIndex: [],
+      innerIndex: [],
+      innerColumns: [],
+      columnIndex: 0
+    };
+  },
+  watch: {
+    defaultIndex: {
+      immediate: true,
+      handler: function (e) {
+        this.setIndexs(e, true);
+      }
+    },
+    columns: {
+      immediate: true,
+      handler: function (e) {
+        this.setColumns(e);
+      }
+    }
+  },
+  methods: {
+    getItemText: function (e) {
+      return uni.$u.test.object(e) ? e[this.keyName] : e;
+    },
+    closeHandler: function () {
+      this.closeOnClickOverlay && this.$emit("close");
+    },
+    cancel: function () {
+      this.$emit("cancel");
+    },
+    confirm: function () {
+      var e = this;
+      this.$emit("confirm", {
+        indexs: this.innerIndex,
+        value: this.innerColumns.map(function (t, n) {
+          return t[e.innerIndex[n]];
+        }),
+        values: this.innerColumns
+      });
+    },
+    changeHandler: function (e) {
+      for (var t = e.detail.value, n = 0, a = 0, r = 0; r < t.length; r++) {
+        var i = t[r];
+        if (i !== (this.lastIndex[r] || 0)) {
+          (a = r, n = i);
+          break;
+        }
+      }
+      this.columnIndex = a;
+      var o = this.innerColumns;
+      (this.setLastIndex(t), this.setIndexs(t), this.$emit("change", {
+        picker: this,
+        value: this.innerColumns.map(function (e, n) {
+          return e[t[n]];
+        }),
+        index: n,
+        indexs: t,
+        values: o,
+        columnIndex: a
+      }));
+    },
+    setIndexs: function (e, t) {
+      (this.innerIndex = uni.$u.deepClone(e), t && this.setLastIndex(e));
+    },
+    setLastIndex: function (e) {
+      this.lastIndex = uni.$u.deepClone(e);
+    },
+    setColumnValues: function (e, t) {
+      this.innerColumns.splice(e, 1, t);
+      for (var n = uni.$u.deepClone(this.innerIndex), a = 0; a < this.innerColumns.length; a++) a > this.columnIndex && (n[a] = 0);
+      this.setIndexs(n);
+    },
+    getColumnValues: function (e) {
+      return ((async function () {
+        await uni.$u.sleep();
+      })(), this.innerColumns[e]);
+    },
+    setColumns: function (e) {
+      (this.innerColumns = uni.$u.deepClone(e), 0 === this.innerIndex.length && (this.innerIndex = new Array(e.length).fill(0)));
+    },
+    getIndexs: function () {
+      return this.innerIndex;
+    },
+    getValues: function () {
+      var e = this;
+      return ((async function () {
+        await uni.$u.sleep();
+      })(), this.innerColumns.map(function (t, n) {
+        return t[e.innerIndex[n]];
+      }));
+    }
+  }
+};
+export default s;
+
+</script>
+
+<style scoped>
+.u-picker {
+  position: relative;
+}
+
+.u-picker__view__column {
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
+}
+
+.u-picker__view__column__item {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 16;
+  text-align: center;
+  color: #303133;
+}
+
+.u-picker__view__column__item--disabled {
+  opacity: 0.35;
+}
+
+.u-picker--loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255,255,255,0.87);
+  z-index: 1000;
+}
+</style>

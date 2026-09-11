@@ -1,0 +1,363 @@
+<template>
+<view>
+  <view>
+    <view class="p-h-xl p-b-sm flex-row justify-center bg-white">
+      <u-tabs
+        :list="deviceStateTab"
+        lineWidth="40"
+        :current="deviceCurrent"
+        :lineColor="primaryColor"
+        :inactiveStyle="inactiveStyle"
+        :activeStyle="tabsStyle"
+        itemStyle="width: 180rpx; height: 80rpx"
+        @click="deviceStateChange"
+      ></u-tabs>
+    </view>
+  </view>
+  <view class="ter-list">
+    <view
+      v-for="(t, a) in terminals"
+      :key="a"
+      class="ter-list-item bg-white"
+      :class="t.terminalNo == terminalKey ? 'b-list-primary' : ''"
+      @click="selectTerminal(t)"
+    >
+      <view style="margin-left: 20rpx; width: 80rpx; height: 80rpx; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+        <u-icon
+          :name="cdn + '/ikon/device/list-' + setIconCode(t.iconType, deviceIcons) + '-' + t.deviceState + '.png'"
+          size="80rpx"
+          width="80rpx"
+          height="80rpx"
+        ></u-icon>
+      </view>
+      <view class="ter-list-item-content">
+        <view class="flex-row justify-between items-center">
+          <view class="ter-list-item-header">
+            <text class="text-md text-title text-bold" append="tree">
+              {{ t.terminalName || t.terminalNo }}
+            </text>
+            <u-badge class="m-l-mini" :type="badgeState(t.status)" :value="l(t.status)"></u-badge>
+          </view>
+        </view>
+        <view class="flex-row justify-between items-center m-t-xs">
+          <view class="flex-col">
+            <text class="text-sm text-desc" append="tree">
+              {{ l('device.terminal.no') + '：' + t.terminalNo }}
+            </text>
+            <text class="text-sm text-desc m-t-minix" append="tree">
+              {{ l('device.terminal.model') + '：' + (t.terminalTypeDisplayName || '-') }}
+            </text>
+          </view>
+          <view v-if="3 != userType" class="flex-col justify-center p-sm" @click.stop="showMore(t)">
+            <u-icon name="more-dot-fill" size="40rpx" :stop="true" @click.stop="showMore(t)"></u-icon>
+          </view>
+        </view>
+      </view>
+      <view v-if="t.terminalNo == terminalKey" class="flex-row bg-primary selectedText">
+        <text class="text text-white" append="tree">
+          当前选中
+        </text>
+      </view>
+    </view>
+  </view>
+  <view style="padding: 32rpx 0 60rpx 0;">
+    <u-loadmore
+      v-if="terminals.length"
+      :status="terminalLoadStatus"
+      :line="true"
+      :loadmoreText="l('common.load.more')"
+      :loadingText="l('common.loading')"
+      :nomoreText="l('common.no.more')"
+    ></u-loadmore>
+    <u-empty
+      v-if="!(terminals.length)"
+      :text="l('common.no.more')"
+      :icon="cdn + '/draw/qzwl-empty.png'"
+    ></u-empty>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: TerminalList
+ * 反编译自 webpack 模块 672（nvue 编译空间）
+ * async/await 还原: 2 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 变量 o 在内层被重新声明，保留短名以维持遮蔽语义
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import i from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import o from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import mod15 from '../../common/config.nvue.js';
+import * as mod166 from '../../common/utils.nvue.js';
+"use strict";
+var _ = getApp().globalData, m = {
+  data: function () {
+    return {
+      primaryColor: mod15.primaryColor,
+      cdn: mod15.cdn,
+      deviceCurrent: 0,
+      limit: 100,
+      terminalLoadStatus: "loadmore",
+      terminalState: "",
+      tabsStyle: {
+        color: mod15.primaryColor
+      },
+      inactiveStyle: {
+        color: "#A3A3A3"
+      },
+      deviceStateTab: [{
+        id: 0,
+        name: _.$t("common.device.status.all")
+      }, {
+        id: 1,
+        name: _.$t("common.device.status.online")
+      }, {
+        id: 2,
+        name: _.$t("common.device.status.offline")
+      }, {
+        id: 3,
+        name: _.$t("common.device.status.unused")
+      }]
+    };
+  },
+  computed: {
+    ...mod25.mapState("device", ["terminalsPage"]),
+    ...mod25.mapGetters(["terminals", "userType", "sysInfo", "selectedTerminal", "appConfig"]),
+    ...mod25.mapState("device", ["deviceIcons"]),
+    terminalKey: function () {
+      if (this.selectedTerminal) return this.selectedTerminal.terminalNo;
+    }
+  },
+  props: ["searchValue"],
+  mounted: function () {
+    this.init();
+  },
+  methods: {
+    ...mod25.mapMutations("device", ["setSelectedDevice", "setTerminalsPage", "clearSelectedDevice"]),
+    ...mod25.mapMutations("terminal", ["clearUseDeviceInfo"]),
+    ...mod25.mapActions("device", ["UnBindTerminal", "GetDeviceStatistics"]),
+    ...mod25.mapActions("terminal", ["GetTerminalList", "GetTerminalInfo"]),
+    l: function (e) {
+      return _.$t(e);
+    },
+    init: function () {
+      (this.terminalLoadStatus = "loadmore", this.setTerminalsPage(1), this.refresh(this.terminalsPage, this.limit, true), this.terminalLoadStatus = this.terminals.length < 100 ? "nomore" : "loadmore", this.deviceStateNum());
+    },
+    pullDownRefresh: function () {
+      (this.terminalLoadStatus = "loadmore", this.setTerminalsPage(1), this.refresh(this.terminalsPage, this.limit, true), this.deviceStateNum(), uni.stopPullDownRefresh());
+    },
+    reachBottom: function () {
+      "nomore" != this.terminalLoadStatus && "loading" != this.terminalLoadStatus && (this.setTerminalsPage(this.terminalsPage + 1), this.refresh(this.terminalsPage, this.limit));
+    },
+    terminalBindRefresh: function () {
+      (this.terminalLoadStatus = "loadmore", this.setTerminalsPage(1), this.deviceStateNum(), this.refresh(this.terminalsPage, this.limit, true));
+    },
+    badgeState: function (e) {
+      return mod166.badgeState(e);
+    },
+    setIconCode: function (e, t) {
+      return mod166.getTerminalIconCode(e, t).code;
+    },
+    selectTerminal: function (e) {
+      var t = this.terminals.find(function (t) {
+        return t.terminalNo == e.terminalNo;
+      });
+      if (null == t) return mod166.qzwlToast(_.$t("device.not.online"), "none");
+      (this.clearSelectedDevice(), this.setSelectedDevice(t), uni.navigateBack());
+    },
+    showMore: function (e) {
+      var t, n = this;
+      uni.showActionSheet({
+        itemList: [("").concat(_.$t("common.unbind.device"))],
+        itemColor: mod15.erorColor,
+        success: (t = mod23(i.mark(function t(a) {
+          return i.wrap(function (t) {
+            for (; ; ) switch (t.prev = t.next) {
+              case 0:
+                return (t.next = 2, n.UnBindTerminal({
+                  id: e.id
+                }));
+              case 2:
+                if (!t.sent.succeeded) {
+                  t.next = 9;
+                  break;
+                }
+                return (t.next = 6, n.deviceStateNum());
+              case 6:
+                return (t.next = 8, _.$sleep(100));
+              case 8:
+                mod166.qzwlToast(_.$t("common.unbind-success"), "none");
+              case 9:
+              case "end":
+                return t.stop();
+            }
+          }, t);
+        })), function (e) {
+          return t.apply(this, arguments);
+        })
+      });
+    },
+    deviceStateChange: function (e) {
+      (this.terminalState = ["", 1, 2, 0][e.id], this.deviceCurrent = e.id, this.terminalLoadStatus = "loadmore", this.setTerminalsPage(1), this.refresh(this.terminalsPage, this.limit, true));
+    },
+    searchTerminals: function () {
+      (this.terminalLoadStatus = "loadmore", this.setTerminalsPage(1), this.refresh(this.terminalsPage, this.limit, true));
+    },
+    deviceStateNum: function () {
+      var e = this;
+      return (async function () {
+        var n;
+        (n = await e.GetDeviceStatistics()).succeeded && (e.deviceStateTab = [{
+          id: 0,
+          name: _.$t("common.device.status.all") + ("(").concat(n.data.totalCount, ")")
+        }, {
+          id: 1,
+          name: _.$t("common.device.status.online") + ("(").concat(n.data.onlineCount, ")")
+        }, {
+          id: 2,
+          name: _.$t("common.device.status.offline") + ("(").concat(n.data.offlineCount, ")")
+        }, {
+          id: 3,
+          name: _.$t("common.device.status.unused") + ("(").concat(n.data.unusedCount, ")")
+        }]);
+      })();
+    },
+    refresh: function (e, t, n) {
+      var a = this;
+      return (async function () {
+        var o;
+        a.terminalLoadStatus = "loading";
+        (o = await a.GetTerminalList({
+          page: e,
+          limit: t,
+          concat: n,
+          terminalState: a.terminalState,
+          searchKey: a.searchValue
+        }), uni.stopPullDownRefresh(), o.succeeded ? o.data.list.length ? a.terminalLoadStatus = 100 === o.data.list.length ? "loadmore" : "nomore" : a.terminalLoadStatus = "nomore" : (a.setTerminalsPage(1 == a.terminalsPage ? 1 : a.terminalsPage - 1), a.terminalLoadStatus = "nomore"));
+      })();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.ter-list-item {
+  position: relative;
+  margin-top: 16rpx;
+  margin-right: 32rpx;
+  margin-bottom: 16rpx;
+  margin-left: 32rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 16rpx;
+}
+
+.ter-list-item-content {
+  margin-top: 20rpx;
+  margin-right: 16rpx;
+  margin-bottom: 20rpx;
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1;
+}
+
+.ter-list-item-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.ter-list-item-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  line-height: 48rpx;
+  color: #333333;
+}
+
+.ter-list-item-desc {
+  margin-top: 12rpx;
+}
+
+.selectedText {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0rpx;
+  right: 0rpx;
+  width: 144rpx;
+  height: 48rpx;
+  background-color: #6081c7;
+  border-top-left-radius: 0;
+  border-top-right-radius: 14rpx;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 24rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.ter-list-item {
+  position: relative;
+  margin-top: 2.1333vw;
+  margin-right: 4.2667vw;
+  margin-bottom: 2.1333vw;
+  margin-left: 4.2667vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 2.1333vw;
+}
+
+.ter-list-item-content {
+  margin-top: 2.6667vw;
+  margin-right: 2.1333vw;
+  margin-bottom: 2.6667vw;
+  margin-left: 2.1333vw;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1;
+}
+
+.ter-list-item-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.ter-list-item-title {
+  font-size: 4.2667vw;
+  font-weight: bold;
+  line-height: 6.4vw;
+  color: #333333;
+}
+
+.ter-list-item-desc {
+  margin-top: 1.6vw;
+}
+
+.selectedText {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0vw;
+  right: 0vw;
+  width: 19.2vw;
+  height: 6.4vw;
+  background-color: #6081c7;
+  border-top-left-radius: 0;
+  border-top-right-radius: 1.8667vw;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 3.2vw;
+}
+/* #endif */
+</style>

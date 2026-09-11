@@ -1,0 +1,199 @@
+<template>
+<view
+  class="u-cell"
+  :class="[customClass]"
+  :style="[$u.addStyle(customStyle)]"
+  :hoverClass="disabled || !clickable && !isLink ? '' : 'u-cell--clickable'"
+  :hoverStayTime="250"
+  @click="clickHandler"
+>
+  <view
+    class="u-cell__body"
+    :class="[center && 'u-cell--center', 'large' === size && 'u-cell__body--large']"
+  >
+    <view class="u-cell__body__content">
+      <view v-if="$slots.icon || icon" class="u-cell__left-icon-wrap">
+        <slot v-if="$slots.icon" name="icon"></slot>
+        <u-icon v-else :name="icon" :customStyle="iconStyle" :size="'large' === size ? 22 : 18"></u-icon>
+      </view>
+      <view class="u-cell__title">
+        <slot name="title">
+          <text
+            v-if="title"
+            class="u-cell__title-text"
+            :class="[disabled && 'u-cell--disabled', 'large' === size && 'u-cell__title-text--large']"
+            :style="[titleTextStyle]"
+            append="tree"
+          >
+            {{ title }}
+          </text>
+        </slot>
+        <slot name="label">
+          <text
+            v-if="label"
+            class="u-cell__label"
+            :class="[disabled && 'u-cell--disabled', 'large' === size && 'u-cell__label--large']"
+            append="tree"
+          >
+            {{ label }}
+          </text>
+        </slot>
+      </view>
+    </view>
+    <slot name="value">
+      <text
+        v-if="!($u.test.empty(value))"
+        class="u-cell__value"
+        :class="[disabled && 'u-cell--disabled', 'large' === size && 'u-cell__value--large']"
+        append="tree"
+      >
+        {{ value }}
+      </text>
+    </slot>
+    <view
+      v-if="$slots['right-icon'] || isLink"
+      class="u-cell__right-icon-wrap"
+      :class="['u-cell__right-icon-wrap--' + arrowDirection]"
+    >
+      <slot v-if="$slots['right-icon']" name="right-icon"></slot>
+      <u-icon
+        v-else
+        :name="rightIcon"
+        :customStyle="rightIconStyle"
+        :color="disabled ? '#c8c9cc' : 'info'"
+        :size="'large' === size ? 18 : 16"
+      ></u-icon>
+    </view>
+  </view>
+  <u-line v-if="border"></u-line>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uCell
+ * 反编译自 webpack 模块 297（nvue 编译空间）
+ */
+import mod445 from '@/.unpacked/nvue/445.js'
+
+"use strict";
+var i = {
+  name: "u-cell",
+  data: function () {
+    return {};
+  },
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod445],
+  computed: {
+    titleTextStyle: function () {
+      return uni.$u.addStyle(this.titleStyle);
+    }
+  },
+  methods: {
+    clickHandler: function (e) {
+      this.disabled || (this.$emit("click", {
+        name: this.name
+      }), this.openPage(), this.stop && this.preventEvent(e));
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-cell__body {
+  flex-direction: row;
+  padding-top: 10;
+  padding-right: 15;
+  padding-bottom: 10;
+  padding-left: 15;
+  font-size: 15;
+  color: #303133;
+  align-items: center;
+}
+
+.u-cell__body__content {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.u-cell__body--large {
+  padding-top: 13;
+  padding-bottom: 13;
+}
+
+.u-cell__left-icon-wrap {
+  flex-direction: row;
+  align-items: center;
+  font-size: 16;
+  margin-right: 4;
+}
+
+.u-cell__right-icon-wrap {
+  flex-direction: row;
+  align-items: center;
+  font-size: 16;
+  margin-left: 4;
+  transition-property: transform;
+  transition-duration: 300;
+  transition-timing-function: ease;
+  transition-delay: 0;
+}
+
+.u-cell__right-icon-wrap--up {
+  transform: rotate(-90deg);
+}
+
+.u-cell__right-icon-wrap--down {
+  transform: rotate(90deg);
+}
+
+.u-cell__title {
+  flex: 1;
+}
+
+.u-cell__title-text {
+  font-size: 15;
+  line-height: 22;
+  color: #303133;
+}
+
+.u-cell__title-text--large {
+  font-size: 16;
+}
+
+.u-cell__label {
+  margin-top: 5;
+  font-size: 12;
+  color: #909193;
+  line-height: 18;
+}
+
+.u-cell__label--large {
+  font-size: 14;
+}
+
+.u-cell__value {
+  text-align: right;
+  font-size: 14;
+  line-height: 24;
+  color: #606266;
+}
+
+.u-cell__value--large {
+  font-size: 15;
+}
+
+.u-cell--clickable {
+  background-color: #f3f4f6;
+}
+
+.u-cell--disabled {
+  color: #c8c9cc;
+}
+
+.u-cell--center {
+  align-items: center;
+}
+</style>

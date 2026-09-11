@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: lot-one-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: lot-one-dev
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        # 管理后台：前端 /api/xxx → Vite代理去掉/api → /xxx → 网关 /admin/xxx → 去掉/admin → admin-service /xxx
+        - id: admin-route
+          uri: lb://lot-one-admin
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=1
+        # 设备App：前端 /v1/xxx → Vite代理不rewrite → 网关 /device/v1/xxx → 去掉/device → device-service /v1/xxx
+        - id: device-route
+          uri: lb://lot-one-device
+          predicates:
+            - Path=/device/**
+          filters:
+            - StripPrefix=1
+        # 查询API：轨迹查询、统计分析
+        - id: query-route
+          uri: lb://lot-one-query-api
+          predicates:
+            - Path=/query/**
+          filters:
+            - StripPrefix=1
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+    com.lotone: debug

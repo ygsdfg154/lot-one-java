@@ -1,0 +1,321 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding: 24rpx 32rpx 60rpx 32rpx; background-color: #f6f6f6;">
+    <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 24rpx;">
+      <view style="flex: 1; margin-right: 20rpx;">
+        <u--input
+          style="height: 72rpx"
+          :placeholder="l('traffic-card.please-iccid')"
+          border="surround"
+          v-model="iccid"
+        ></u--input>
+      </view>
+      <view style="width: 140rpx; height: 72rpx;">
+        <u-button
+          color="#6081C7"
+          :text="l('common.query')"
+          type="primary"
+          :disabled="!iccid.trim()"
+          @click="getSimInfo"
+        ></u-button>
+      </view>
+    </view>
+
+    <view v-if="cardInfo" style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 24rpx;">
+      <text style="font-size: 30rpx; font-weight: bold; color: #333333; margin-bottom: 16rpx; display: block;" append="tree">
+        {{ l('traffic-card.info') }}
+      </text>
+      <view v-if="n(cardInfo.dataUsed)" style="display: flex; flex-direction: column; margin-bottom: 20rpx;">
+        <u-line-progress
+          :percentage="setProgress(cardInfo.dataUsed, cardInfo.dataTotal)"
+          activeColor="#6081C7"
+          inactiveColor="#f5f5f5"
+        ></u-line-progress>
+        <view style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 12rpx;">
+          <text style="font-size: 24rpx; color: #6081C7;" append="tree">
+            剩余{{ (cardInfo.dataTotal - cardInfo.dataUsed).toFixed(2) }}M
+          </text>
+          <text style="font-size: 24rpx; color: #888888;" append="tree">
+            已用{{ cardInfo.dataUsed + 'M/' + cardInfo.dataTotal }}M
+          </text>
+        </view>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          ICCID：{{ selectedIccid || '-' }}
+        </text>
+        <view v-if="selectedIccid" class="but" @click="copy(selectedIccid)">
+          <text style="font-size: 22rpx; color: #6081C7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+
+      <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.sn') }}：{{ cardInfo.cardNo || '-' }}
+        </text>
+        <view v-if="cardInfo.cardNo" class="but" @click="copy(cardInfo.cardNo)">
+          <text style="font-size: 22rpx; color: #6081C7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+
+      <view v-if="cardInfo.status" style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.SIM-card-state') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ cardInfo.status || '-' }}
+        </text>
+      </view>
+
+      <view v-if="n(cardInfo.dataUsed)" style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.used.traffic') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ n(cardInfo.dataUsed) ? cardInfo.dataUsed : '-' }}MB
+        </text>
+      </view>
+
+      <view v-if="cardInfo.smsUsed" style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.used.SMS') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ cardInfo.smsUsed || '-' }}{{ l('common.bar') }}
+        </text>
+      </view>
+
+      <view v-if="cardInfo.smsTotal" style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.total.SMS') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ cardInfo.smsTotal || '-' }}{{ l('common.bar') }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f9f9f9;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.activation.time') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ cardInfo.activatedTime || '-' }}
+        </text>
+      </view>
+
+      <view style="display: flex; flex-direction: row; justify-content: space-between; padding: 16rpx 0;">
+        <text style="font-size: 26rpx; color: #888888;" append="tree">
+          {{ l('traffic-card.service.expiration.time') }}：
+        </text>
+        <text style="font-size: 26rpx; color: #333333;" append="tree">
+          {{ cardInfo.expirationTime || '-' }}
+        </text>
+      </view>
+    </view>
+
+    <view style="background-color: #ffffff; border-radius: 16rpx; padding: 24rpx; box-sizing: border-box;">
+      <text style="font-size: 26rpx; color: #F56C6C; font-weight: bold; margin-bottom: 12rpx; display: block;" append="tree">
+        温馨提示：
+      </text>
+      <template v-if="!isAuditMode">
+        <text style="font-size: 24rpx; color: #888888; line-height: 38rpx; display: block;" append="tree">
+          1. {{ l('pay.content') }}
+        </text>
+        <text style="font-size: 24rpx; color: #888888; line-height: 38rpx; display: block;" append="tree">
+          2. 请仔细核对充值号码，充值成功后无法退款
+        </text>
+        <text style="font-size: 24rpx; color: #888888; line-height: 38rpx; display: block;" append="tree">
+          3. 流量卡充值可能会延迟到账，若长时间未到账，请联系客服处理
+        </text>
+        <text style="font-size: 24rpx; color: #888888; line-height: 38rpx; display: block;" append="tree">
+          4. 超出套餐流量和短信会停用，流量数据会有一定延迟，仅供参考
+        </text>
+      </template>
+      <template v-else>
+        <text style="font-size: 24rpx; color: #888888; line-height: 38rpx; display: block;" append="tree">
+          超出套餐流量和短信会停用，流量数据会有一定延迟，仅供参考
+        </text>
+      </template>
+    </view>
+  </view>
+
+  <view v-if="payShow" style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 32rpx; background-color: #ffffff; box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.08); z-index: 100; box-sizing: border-box;">
+    <u-button color="#6081C7" type="primary" :text="l('device.pay')" :disabled="disabled" @click="gotoPay"></u-button>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/device-card
+ * 反编译自 webpack 模块 652（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import mod15 from '../../common/config.nvue.js'
+import * as mod166 from '../../common/utils.nvue.js'
+
+function a(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var d = (a(require("moment")), require("vuex"));
+var c = getApp().globalData, m = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      iccid: "",
+      selectedIccid: "",
+      providerCode: "",
+      cardInfo: null
+    };
+  },
+  computed: {
+    ...d.mapGetters(["selectedTerminal", "userId", "userType", "isAuditMode", "sysInfo", "access_token", "isAuditMode"]),
+    disabled: function () {
+      return !this.cardInfo || !this.iccid.trim();
+    },
+    payShow: function () {
+      return !!this.providerCode && !this.isAuditMode;
+    }
+  },
+  onLoad: function (e) {
+    this.iccid = (e && e.iccid) || (this.selectedTerminal && this.selectedTerminal.iccid) || "";
+  },
+  onShow: function () {
+    this.iccid && this.getSimInfo();
+  },
+  onHide: function () {
+    this.clearSimInfo();
+  },
+  methods: {
+    ...d.mapActions("packageInfo", ["GetSimInfo"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    n: function (e) {
+      return c.$isNull(e);
+    },
+    gotoPay: function () {
+      mod166.qzGotoWx({
+        id: this.selectedTerminal.id,
+        url: ("/pagesPay/card/index?iccid=").concat(this.iccid),
+        access_token: this.access_token
+      });
+    },
+    getSimInfo: function () {
+      var t = this;
+      return mod23(mod22.mark(function n() {
+        var a;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if (!new RegExp("[\\u4E00-\\u9FFF]+", "g").test(t.iccid)) {
+                n.next = 5;
+                break;
+              }
+              return (mod166.qzwlToast(c.$t("common.please.chinese"), "none"), t.cardInfo = null, n.abrupt("return"));
+            case 5:
+              if ((t.iccid = t.iccid.trim(), 20 === t.iccid.length)) {
+                n.next = 10;
+                break;
+              }
+              return (mod166.qzwlToast(c.$t("common.please.valid.ICCID"), "none"), t.cardInfo = null, n.abrupt("return"));
+            case 10:
+              return (n.next = 12, t.GetSimInfo({
+                iccid: t.iccid ? t.iccid.trim() : t.iccid
+              }));
+            case 12:
+              (a = n.sent, e("log", "result.data", a.data, " at pagesFunc/terminal/device-card.nvue:227"), a.succeeded && (t.cardInfo = a.data, t.selectedIccid = a.data.iccid, t.providerCode = a.data.providerCode));
+            case 15:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    copy: function (e) {
+      uni.setClipboardData({
+        data: e,
+        showToast: false,
+        success: function () {
+          mod166.qzwlToast("\u5185\u5bb9\u5df2\u590d\u5236");
+        }
+      });
+    },
+    clearSimInfo: function () {
+      (this.selectedIccid = "", this.cardInfo = null);
+    },
+    setProgress: function (e, t) {
+      var n = (e / t * 100).toFixed(2);
+      return n || 0;
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.cardInfoCss {
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding-top: 32rpx;
+  padding-right: 22rpx;
+  padding-bottom: 28rpx;
+  padding-left: 28rpx;
+}
+
+.but {
+  width: 88rpx;
+  height: 40rpx;
+  background-color: #ffffff;
+  border-width: 1;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/* #endif */
+/* #ifdef H5 */
+.cardInfoCss {
+  background-color: #ffffff;
+  border-radius: 3.2vw;
+  padding-top: 4.2667vw;
+  padding-right: 2.9333vw;
+  padding-bottom: 3.7333vw;
+  padding-left: 3.7333vw;
+}
+
+.but {
+  width: 11.7333vw;
+  height: 5.3333vw;
+  background-color: #ffffff;
+  border-width: 1;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 1.0667vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/* #endif */
+</style>

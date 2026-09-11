@@ -1,0 +1,350 @@
+<template>
+<view>
+  <u-popup
+    :show="shareLocationShow"
+    round="15"
+    mode="bottom"
+    :closeOnClickOverlay="true"
+    @close="shareLocationShow = false"
+  >
+    <view class="share">
+      <text class="share-title" append="tree">
+        {{ l('common.share.locate') }}
+      </text>
+      <view class="share-input" @click="selectTime = true">
+        <text class="share-input-text" append="tree">
+          {{ shareTime }}
+        </text>
+        <u-icon class="share-input-icon" name="arrow-down"></u-icon>
+      </view>
+    </view>
+    <view class="bottom-bar">
+      <u-button type="primary" :text="l('common.share.but')" @click="confirmShare"></u-button>
+    </view>
+  </u-popup>
+  <u-popup
+    :show="isToShare"
+    round="15"
+    mode="bottom"
+    :closeOnClickOverlay="true"
+    @close="isToShare = false"
+  >
+    <view class="toShare">
+      <view class="flex-row justify-center">
+        <text class="toShareTitle" append="tree">
+          {{ l('audio.share-record') }}
+        </text>
+      </view>
+      <view class="toShareMain">
+        <view class="toShareWx" @click="shareWx">
+          <u-icon :name="cdn + '/draw/qzwl-login-wechat.png'" size="96rpx"></u-icon>
+          <text class="text-sm m-t-sm" append="tree">
+            {{ l('common.wx') }}
+          </text>
+        </view>
+        <view class="toShareCopy" @click="shareCopy">
+          <u-icon :name="cdn + '/draw/qzwl-share-cp.png'" size="96rpx"></u-icon>
+          <text class="text-sm m-t-sm" append="tree">
+            {{ l('common.copy.link') }}
+          </text>
+        </view>
+      </view>
+    </view>
+  </u-popup>
+  <u-picker
+    :show="selectTime"
+    :columns="columns"
+    :closeOnClickOverlay="true"
+    :defaultIndex="defaultIndex"
+    keyName="label"
+    :cancelText="l('common.cancel')"
+    :confirmText="l('common.confirm')"
+    @cancel="selectTime = false"
+    @close="selectTime = false"
+    @confirm="confirmTime"
+  ></u-picker>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: qzwlShare
+ * 反编译自 webpack 模块 373（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod15 from '../../common/config.nvue.js'
+import * as mod166 from '../../common/utils.nvue.js'
+
+"use strict";
+var e = require("@/.unpacked/nvue/17.js").default;
+var _ = getApp().globalData, m = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      shareLocationShow: false,
+      selectTime: false,
+      shareTime: _.$t("common.0.5-day"),
+      isToShare: false,
+      defaultIndex: [0],
+      selectedTime: 720,
+      code: "",
+      wxBrowser: false
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "userId"]),
+    columns: function () {
+      return [[{
+        label: this.l("common.0.5-day"),
+        time: 720
+      }, {
+        label: this.l("common.1-day"),
+        time: 1440
+      }, {
+        label: this.l("common.3-day"),
+        time: 4320
+      }, {
+        label: this.l("common.7-day"),
+        time: 10080
+      }]];
+    }
+  },
+  methods: {
+    ...mod25.mapActions("device", ["AddSharePosition"]),
+    l: function (e) {
+      return _.$t(e);
+    },
+    confirmShare: function () {
+      var t = this;
+      return mod23(mod22.mark(function n() {
+        var a;
+        return mod22.wrap(function (n) {
+          for (; ; ) switch (n.prev = n.next) {
+            case 0:
+              if (t.selectedTerminal.lon || t.selectedTerminal.lat) {
+                n.next = 2;
+                break;
+              }
+              return n.abrupt("return", mod166.qzwlToast("\u5f53\u524d\u8bbe\u5907\u65e0\u5b9a\u4f4d\u4fe1\u606f", "none"));
+            case 2:
+              return (n.next = 4, t.AddSharePosition({
+                deviceId: t.selectedTerminal.id,
+                userId: t.userId,
+                duration: t.selectedTime
+              }));
+            case 4:
+              (a = n.sent, e("log", a.data.code, "result", " at components/qzwlShare.nvue:124"), a.succeeded && a.data.code && (t.code = a.data.code, t.defaultIndex = [0], t.shareTime = _.$t("common.0.5-day"), t.selectedTime = 720, t.isToShare = true));
+            case 7:
+            case "end":
+              return n.stop();
+          }
+        }, n);
+      }))();
+    },
+    shareWx: function () {
+      var t = ("").concat(mod15.sharePositionUrl, "?code=").concat(this.code);
+      (e("log", t, "url", " at components/qzwlShare.nvue:163"), uni.share({
+        provider: "weixin",
+        type: 3,
+        title: _.$t("common.share.locate"),
+        scene: "WXSceneSession",
+        mediaUrl: t,
+        imageUrl: this.cdn + "/draw/qzwl-logo-108.png"
+      }), this.isToShare = false);
+    },
+    shareCopy: function () {
+      var e = ("").concat(mod15.sharePositionUrl, "?code=").concat(this.code);
+      (uni.setClipboardData({
+        data: e,
+        showToast: false,
+        success: function () {
+          mod166.qzwlToast(_.$t("common.copy.success"), "none");
+        }
+      }), this.isToShare = false);
+    },
+    confirmTime: function (e) {
+      (this.selectTime = false, this.shareTime = e.value[0].label, this.selectedTime = e.value[0].time);
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.share {
+  padding-top: 50rpx;
+  padding-right: 50rpx;
+  padding-bottom: 30rpx;
+  padding-left: 50rpx;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.share-title {
+  font-size: 34rpx;
+  margin-top: 18rpx;
+}
+
+.share-input {
+  padding-top: 20rpx;
+  padding-right: 20rpx;
+  padding-bottom: 20rpx;
+  padding-left: 20rpx;
+  width: 400rpx;
+  height: 90rpx;
+  border-width: 1;
+  border-style: solid;
+  border-color: #eeeeee;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 10rpx;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.share-input-text {
+  font-size: 32rpx;
+  color: #6d6d6d;
+}
+
+.share-input-icon {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.toShare {
+  padding-top: 32rpx;
+  padding-right: 50rpx;
+  padding-bottom: 0;
+  padding-left: 56rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.toShareTitle {
+  font-size: 34rpx;
+}
+
+.toShareMain {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32rpx;
+  margin-right: 66rpx;
+  margin-bottom: 44rpx;
+  margin-left: 56rpx;
+}
+
+.toShareWx {
+  margin-right: 64rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 28rpx;
+}
+
+.toShareCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 28rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.share {
+  padding-top: 6.6667vw;
+  padding-right: 6.6667vw;
+  padding-bottom: 4vw;
+  padding-left: 6.6667vw;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.share-title {
+  font-size: 4.5333vw;
+  margin-top: 2.4vw;
+}
+
+.share-input {
+  padding-top: 2.6667vw;
+  padding-right: 2.6667vw;
+  padding-bottom: 2.6667vw;
+  padding-left: 2.6667vw;
+  width: 53.3333vw;
+  height: 12vw;
+  border-width: 1;
+  border-style: solid;
+  border-color: #eeeeee;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 1.3333vw;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.share-input-text {
+  font-size: 4.2667vw;
+  color: #6d6d6d;
+}
+
+.share-input-icon {
+  width: 4vw;
+  height: 4vw;
+}
+
+.toShare {
+  padding-top: 4.2667vw;
+  padding-right: 6.6667vw;
+  padding-bottom: 0;
+  padding-left: 7.4667vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.toShareTitle {
+  font-size: 4.5333vw;
+}
+
+.toShareMain {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4.2667vw;
+  margin-right: 8.8vw;
+  margin-bottom: 5.8667vw;
+  margin-left: 7.4667vw;
+}
+
+.toShareWx {
+  margin-right: 8.5333vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.7333vw;
+}
+
+.toShareCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.7333vw;
+}
+/* #endif */
+</style>

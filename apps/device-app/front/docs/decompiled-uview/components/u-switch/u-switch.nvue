@@ -1,0 +1,132 @@
+<template>
+<view
+  class="u-switch"
+  :class="[disabled && 'u-switch--disabled']"
+  :style="[switchStyle, $u.addStyle(customStyle)]"
+  @click="clickHandler"
+>
+  <view class="u-switch__bg" :style="[bgStyle]"></view>
+  <view
+    ref="u-switch__node"
+    class="u-switch__node"
+    :class="[value && 'u-switch__node--on']"
+    :style="[nodeStyle]"
+  >
+    <u-loading-icon
+      :show="loading"
+      mode="circle"
+      timingFunction="linear"
+      :color="value ? activeColor : '#AAABAD'"
+      :size=".6 * size"
+    ></u-loading-icon>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uSwitch
+ * 反编译自 webpack 模块 280（nvue 编译空间）
+ */
+import mod365 from '@/.unpacked/nvue/365.js'
+
+"use strict";
+var i = {
+  name: "u-switch",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod365],
+  watch: {
+    value: {
+      immediate: true,
+      handler: function (e) {
+        e !== this.inactiveValue && e !== this.activeValue && uni.$u.error("v-model\u7ed1\u5b9a\u7684\u503c\u5fc5\u987b\u4e3ainactiveValue\u3001activeValue\u4e8c\u8005\u4e4b\u4e00");
+      }
+    }
+  },
+  data: function () {
+    return {
+      bgColor: "#ffffff"
+    };
+  },
+  computed: {
+    isActive: function () {
+      return this.value === this.activeValue;
+    },
+    switchStyle: function () {
+      var e = {};
+      return (e.width = uni.$u.addUnit(2 * this.size + 2), e.height = uni.$u.addUnit(Number(this.size) + 2), this.customInactiveColor && (e.borderColor = "rgba(0, 0, 0, 0)"), e.backgroundColor = this.isActive ? this.activeColor : this.inactiveColor, e);
+    },
+    nodeStyle: function () {
+      var e = {};
+      (e.width = uni.$u.addUnit(this.size - this.space), e.height = uni.$u.addUnit(this.size - this.space));
+      var t = this.isActive ? uni.$u.addUnit(this.space) : uni.$u.addUnit(this.size);
+      return (e.transform = ("translateX(-").concat(t, ")"), e);
+    },
+    bgStyle: function () {
+      var e = {};
+      return (e.width = uni.$u.addUnit(2 * Number(this.size) - this.size / 2), e.height = uni.$u.addUnit(this.size), e.backgroundColor = this.inactiveColor, e.transform = ("scale(").concat(this.isActive ? 0 : 1, ")"), e);
+    },
+    customInactiveColor: function () {
+      return "#fff" !== this.inactiveColor && "#ffffff" !== this.inactiveColor;
+    }
+  },
+  methods: {
+    clickHandler: function () {
+      var e = this;
+      if (!this.disabled && !this.loading) {
+        var t = this.isActive ? this.inactiveValue : this.activeValue;
+        (this.asyncChange || this.$emit("input", t), this.$nextTick(function () {
+          e.$emit("change", t);
+        }));
+      }
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-switch {
+  flex-direction: row;
+  position: relative;
+  background-color: #ffffff;
+  border-width: 1;
+  border-radius: 100;
+  transition-property: backgroundColor;
+  transition-duration: 400;
+  transition-timing-function: ease;
+  transition-delay: 0;
+  border-color: rgba(0,0,0,0.12);
+  border-style: solid;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+}
+
+.u-switch__node {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100;
+  background-color: #ffffff;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.25);
+  transition-property: transform;
+  transition-duration: 400;
+  transition-timing-function: cubic-bezier(0.3,1.05,0.4,1.05);
+}
+
+.u-switch__bg {
+  position: absolute;
+  border-radius: 100;
+  background-color: #FFFFFF;
+  transition-property: transform;
+  transition-duration: 400;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  transition-timing-function: ease;
+}
+
+.u-switch--disabled {
+  opacity: 0.6;
+}
+</style>

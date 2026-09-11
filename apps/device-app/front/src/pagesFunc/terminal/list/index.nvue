@@ -1,0 +1,149 @@
+<template>
+<view style="display: flex; flex-direction: column; height: 100vh; background-color: #f6f6f6; box-sizing: border-box; position: relative;">
+  <view style="background-color: #6081C7; height: 88rpx; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 32rpx; flex-shrink: 0; z-index: 100;">
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; cursor: pointer;" @click="gotoPages()">
+      <u-icon name="arrow-left" color="#ffffff" size="38rpx"></u-icon>
+    </view>
+    <text style="font-size: 34rpx; font-weight: bold; color: #ffffff;" append="tree">
+      {{ l('device.list') }}
+    </text>
+    <view style="width: 80rpx; display: flex; flex-direction: row; align-items: center; justify-content: flex-end; cursor: pointer;" @click="gotoRight()">
+      <u-icon v-if="2 == userType" name="plus" size="44rpx" color="#ffffff"></u-icon>
+    </view>
+  </view>
+
+  <scroll-view
+    style="flex: 1; flex-direction: column; background-color: #f6f6f6; min-height: 0;"
+    :scrollY="true"
+    :showScrollbar="true"
+  >
+    <view style="background-color: #ffffff; padding: 20rpx 32rpx;">
+      <u-search
+        :placeholder="l('device.list.searchKey')"
+        shape="round"
+        :showAction="false"
+        @search="searchHandler"
+        @clear="searchValue = ''"
+        v-model="searchValue"
+      ></u-search>
+    </view>
+
+    <TerminalList ref="TerminalList" :searchValue="searchValue"></TerminalList>
+  </scroll-view>
+
+  <Bind :isBind="isBind" @isBindChange="isBindChange" @bindRefresh="bindRefresh"></Bind>
+</view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/terminal/list/index
+ * 反编译自 webpack 模块 668（nvue 编译空间）
+ * 内层仍在调用 a()，已就地重建 interopRequireDefault
+ */
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod15 from '../../../common/config.nvue.js'
+import mod975 from '../../../components/TerminalList/TerminalList.nvue'
+
+function a(m) { return m && m.__esModule ? m : { default: m }; }
+
+"use strict";
+var s = (require("../../../common/utils.nvue.js"), a(require("../../../components/_unnamed/unknown-974.nvue")));
+var c = getApp().globalData, _ = {
+  components: {
+    Bind: s.default,
+    TerminalList: mod975
+  },
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      titleColor: mod15.titleColor,
+      primaryColor: mod15.primaryColor,
+      searchValue: "",
+      isBind: false
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["userType", "sysInfo", "refreshTerminalPage"]),
+    marginTop: function () {
+      return this.sysInfo.statusBarHeight + 44 + "px";
+    }
+  },
+  onLoad: function (e) {
+    e.bind && (this.isBind = !!e.bind);
+  },
+  onShow: function () {
+    var e = this;
+    this.refreshTerminalPage && (this.setRefreshTerminalPage(false), this.$nextTick(function () {
+      e.$refs.TerminalList.pullDownRefresh();
+    }));
+  },
+  onPullDownRefresh: function () {
+    this.$refs.TerminalList.pullDownRefresh();
+  },
+  onReachBottom: function () {
+    this.$refs.TerminalList.reachBottom();
+  },
+  methods: {
+    ...mod25.mapMutations("account", ["setRefreshTerminalPage"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    searchHandler: function (e) {
+      (this.searchValue = e, this.$refs.TerminalList.searchTerminals());
+    },
+    gotoRight: function () {
+      2 == this.userType && this.isBindChange(true);
+    },
+    gotoPages: function (e) {
+      e ? uni.navigateTo({
+        url: e
+      }) : uni.navigateBack();
+    },
+    isBindChange: function (e) {
+      this.isBind = e;
+    },
+    bindRefresh: function () {
+      this.$refs.TerminalList.terminalBindRefresh();
+    }
+  }
+};
+export default _;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.tabHeg {
+  margin-bottom: 20rpx;
+}
+
+.navTitleIos {
+  margin-top: 8;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.navTitleAn {
+  margin-top: 10;
+  font-size: 34rpx;
+}
+/* #endif */
+/* #ifdef H5 */
+.tabHeg {
+  margin-bottom: 2.6667vw;
+}
+
+.navTitleIos {
+  margin-top: 8;
+  font-size: 5.3333vw;
+  font-weight: bold;
+}
+
+.navTitleAn {
+  margin-top: 10;
+  font-size: 4.5333vw;
+}
+/* #endif */
+</style>

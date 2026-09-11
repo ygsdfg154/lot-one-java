@@ -1,0 +1,211 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="bg-page">
+    <u-cell-group :border="false">
+      <u-cell class="bg-white m-b" :border="false" size="large" title="开发者模式">
+        <u-switch slot="value" @change="changeDevMode" v-model="isDevMode"></u-switch>
+      </u-cell>
+      <u-cell class="bg-white m-b" :border="false" size="large" title="商店审核状态" :value="audit"></u-cell>
+      <u-cell class="bg-white m-b" :border="false" size="large" title="当前版本" :value="appVersion"></u-cell>
+      <u-cell class="bg-white m-b" :border="false" size="large" title="升级中心的版本" :value="version"></u-cell>
+      <u-cell
+        v-if="devRecord"
+        class="bg-white m-b"
+        :border="false"
+        size="large"
+        title="声音安防页面顶部时间"
+        :value="devRecord"
+      ></u-cell>
+      <u-cell
+        v-if="devDate"
+        class="bg-white m-b"
+        :border="false"
+        size="large"
+        title="moment库获取的时间"
+        :value="devDate"
+      ></u-cell>
+      <u-cell
+        v-if="devMaxDate"
+        class="bg-white m-b"
+        :border="false"
+        size="large"
+        title="顶部组件maxdate时间也是moment库获取"
+        :value="devMaxDate"
+      ></u-cell>
+    </u-cell-group>
+    <u-cell-group :border="false">
+      <u-cell
+        class="bg-white m-b"
+        title="pushClient"
+        :isLink="true"
+        url="/pagesMore/my/developers/push-msgs"
+      ></u-cell>
+      <u-cell
+        v-if="environment"
+        class="bg-white m-b"
+        :border="false"
+        size="large"
+        title="当前环境"
+        :value="environment.value"
+      ></u-cell>
+      <u-cell
+        v-if="environment"
+        class="bg-white m-b"
+        :value="environment.label"
+        title="切换环境"
+        :isLink="true"
+        @click="showEnvironment = true"
+      ></u-cell>
+      <view class="bg-white m-b">
+        <u--textarea
+          :value="pushClientId"
+          border="none"
+          :adjustPosition="true"
+          :autoHeight="true"
+          :disabled="true"
+          @click="copyPushClient"
+        ></u--textarea>
+      </view>
+    </u-cell-group>
+    <u-picker
+      :show="showEnvironment"
+      :columns="columnsEnvironment"
+      :closeOnClickOverlay="true"
+      keyName="label"
+      @close="showEnvironment = false"
+      @cancel="showEnvironment = false"
+      @confirm="cutEnvironment"
+    ></u-picker>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesMore/my/developers/developers
+ * 反编译自 webpack 模块 596（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 1 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import mod15 from '../../../common/config.nvue.js'
+import '../../../common/utils.nvue.js'
+
+"use strict";
+getApp().globalData;
+var _ = {
+  data: function () {
+    return {
+      tapCount: 0,
+      audit: "",
+      showEnvironment: false,
+      columnsEnvironment: [[{
+        label: "\u6b63\u5f0f\u73af\u5883",
+        id: 6,
+        value: "http://h5.akbee.com/v1"
+      }, {
+        label: "\u6d4b\u8bd5\u73af\u5883",
+        id: 1,
+        value: "http://106.55.255.7:9103/api"
+      }, {
+        label: "\u9884\u53d1\u5e03\u73af\u5883",
+        id: 1,
+        value: "https://api.stage.zhitugps.com/api"
+      }]],
+      environmentStorage: uni.getStorageSync("environmentStorage") || ""
+    };
+  },
+  computed: {
+    ...mod25.mapGetters(["isDevMode", "pushClientId", "isAuditMode"]),
+    ...mod25.mapState("sys", ["appVersion", "version"]),
+    ...mod25.mapState("app", ["devRecord", "devDate", "devMaxDate"]),
+    environment: function () {
+      var e = this;
+      return this.columnsEnvironment[0].find(function (t) {
+        return t.value == (e.environmentStorage.value || mod15.serviceRoot);
+      });
+    }
+  },
+  onLoad: function () {
+    (this.devMode = this.isDevMode, this.audit = this.isAuditMode ? "\u5ba1\u6838\u4e2d" : "\u672a\u5ba1\u6838");
+  },
+  methods: {
+    ...mod25.mapActions("account", ["SignOut"]),
+    ...mod25.mapMutations("dev", ["setDevelopMode"]),
+    changeDevMode: function (e) {
+      (this.setDevelopMode(e), e || uni.navigateBack());
+    },
+    tapVersion: function () {
+      this.isDevMode ? uni.showToast({
+        title: "\u60a8\u5df2\u5904\u4e8e\u5f00\u53d1\u8005\u6a21\u5f0f",
+        icon: "none"
+      }) : (this.tapCount += 1, 7 == this.tapCount && (this.tapCount = 0, this.setDevelopMode(true), uni.showToast({
+        title: "\u542f\u7528\u5f00\u53d1\u8005\u6a21\u5f0f",
+        icon: "none"
+      })));
+    },
+    navigateToPage: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    },
+    copyPushClient: function () {
+      (uni.setClipboardData({
+        data: this.pushClientId
+      }), uni.showToast({
+        title: "\u5185\u5bb9\u5df2\u590d\u5236"
+      }));
+    },
+    cutEnvironment: function (e) {
+      var t, n = this;
+      (this.environment.value != e.value[0].value && uni.showModal({
+        showCancel: true,
+        title: ("\u662f\u5426\u5207\u6362\u4e3a").concat(e.value[0].label),
+        content: ("\u8be5\u73af\u5883\u4e0b\u8bf7\u6c42\u7684\u57df\u540d\u662f").concat(e.value[0].value),
+        confirmText: "\u5207\u6362",
+        cancelText: "\u53d6\u6d88",
+        success: (t = mod23(mod22.mark(function t(a) {
+          return mod22.wrap(function (t) {
+            for (; ; ) switch (t.prev = t.next) {
+              case 0:
+                if (!a.confirm) {
+                  t.next = 8;
+                  break;
+                }
+                if ((uni.setStorageSync("environmentStorage", e.value[0]), !uni.getStorageSync("environmentStorage"))) {
+                  t.next = 8;
+                  break;
+                }
+                return (uni.showToast({
+                  title: ("\u6b63\u5728\u4e3a\u60a8\u5207\u6362").concat(e.value[0].label, "\u7248\u672c"),
+                  icon: "none"
+                }), t.next = 7, n.SignOut());
+              case 7:
+                setTimeout(function () {
+                  (uni.reLaunch({
+                    url: "/pagesCore/login/index"
+                  }), plus.runtime.restart(), uni.hideToast());
+                }, 1e3);
+              case 8:
+              case "end":
+                return t.stop();
+            }
+          }, t);
+        })), function (e) {
+          return t.apply(this, arguments);
+        })
+      }), this.showEnvironment = false);
+    }
+  }
+};
+export default _;
+
+</script>

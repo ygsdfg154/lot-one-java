@@ -1,0 +1,112 @@
+<template>
+<view class="u-notice" @click="clickHandler">
+  <slot name="icon">
+    <view v-if="icon" class="u-notice__left-icon">
+      <u-icon :name="icon" :color="color" size="19"></u-icon>
+    </view>
+  </slot>
+  <swiper
+    class="u-notice__swiper"
+    :disableTouch="disableTouch"
+    :vertical="!step"
+    :circular="true"
+    :interval="duration"
+    :autoplay="true"
+    @change="noticeChange"
+  >
+    <swiper-item v-for="(t, r) in text" :key="r" class="u-notice__swiper__item">
+      <text class="u-notice__swiper__item__text u-line-1" :style="[textStyle]" append="tree">
+        {{ t }}
+      </text>
+    </swiper-item>
+  </swiper>
+  <view v-if="['link', 'closable'].includes(mode)" class="u-notice__right-icon">
+    <u-icon v-if="'link' === mode" name="arrow-right" :size="17" :color="color"></u-icon>
+    <u-icon v-if="'closable' === mode" name="close" :size="16" :color="color" @click="close"></u-icon>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uColumnNotice
+ * 反编译自 webpack 模块 554（nvue 编译空间）
+ */
+import mod929 from '@/.unpacked/nvue/929.js'
+
+"use strict";
+var i = {
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod929],
+  watch: {
+    text: {
+      immediate: true,
+      handler: function (e, t) {
+        uni.$u.test.array(e) || uni.$u.error("noticebar\u7ec4\u4ef6direction\u4e3acolumn\u65f6\uff0c\u8981\u6c42text\u53c2\u6570\u4e3a\u6570\u7ec4\u5f62\u5f0f");
+      }
+    }
+  },
+  computed: {
+    textStyle: function () {
+      var e = {};
+      return (e.color = this.color, e.fontSize = uni.$u.addUnit(this.fontSize), e);
+    },
+    vertical: function () {
+      return "horizontal" != this.mode;
+    }
+  },
+  data: function () {
+    return {
+      index: 0
+    };
+  },
+  methods: {
+    noticeChange: function (e) {
+      this.index = e.detail.current;
+    },
+    clickHandler: function () {
+      this.$emit("click", this.index);
+    },
+    close: function () {
+      this.$emit("close");
+    }
+  }
+};
+export default i;
+
+</script>
+
+<style scoped>
+.u-notice {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-notice__left-icon {
+  align-items: center;
+  margin-right: 5;
+}
+
+.u-notice__right-icon {
+  margin-left: 5;
+  align-items: center;
+}
+
+.u-notice__swiper {
+  height: 16;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.u-notice__swiper__item {
+  flex-direction: row;
+  align-items: center;
+  overflow: hidden;
+}
+
+.u-notice__swiper__item__text {
+  font-size: 14;
+  color: #f9ae3d;
+}
+</style>

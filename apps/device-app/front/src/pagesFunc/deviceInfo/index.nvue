@@ -1,0 +1,362 @@
+<template>
+<scroll-view
+  style="flex-direction: column; background-color: #f6f6f6; min-height: 100vh;"
+  :scrollY="true"
+  :showScrollbar="true"
+>
+  <view style="padding-bottom: 60rpx; background-color: #ffffff;">
+    <view
+      style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0; cursor: pointer;"
+      @click="gotoPages('/pagesFunc/deviceInfo/set-icon?iconType=' + terminalIconInfo.iconType)"
+    >
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('info.terminal.icon') }}
+      </text>
+      <view style="display: flex; flex-direction: row; align-items: center;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 16rpx;" append="tree">
+          {{ terminalIconInfo.iconName }}
+        </text>
+        <u-icon :name="terminalIcon" size="64rpx"></u-icon>
+        <u-icon name="arrow-right" color="#ccc" size="32rpx" style="margin-left: 12rpx;"></u-icon>
+      </view>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('info.terminal.name') }}
+      </text>
+      <view style="display: flex; flex-direction: row; align-items: center; flex: 1; justify-content: flex-end;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 20rpx; text-align: right;" append="tree">
+          {{ deviceName || '-' }}
+        </text>
+        <view class="but" @click="terminalNameShow = true">
+          <text class="text-sm text-primary" style="font-size: 24rpx; color: #6081c7;" append="tree">
+            {{ l('common.edit') }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('device.terminal.no') }}
+      </text>
+      <view style="display: flex; flex-direction: row; align-items: center; flex: 1; justify-content: flex-end;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 20rpx; text-align: right;" append="tree">
+          {{ selectedTerminal ? selectedTerminal.terminalNo : '-' }}
+        </text>
+        <view v-if="selectedTerminal && selectedTerminal.terminalNo" class="but" @click="copy(selectedTerminal.terminalNo)">
+          <text class="text-sm text-primary" style="font-size: 24rpx; color: #6081c7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('device.terminal.model') }}
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ selectedTerminal ? selectedTerminal.terminalTypeDisplayName : '-' }}
+      </text>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('info.terminal.state') }}
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ selectedTerminal ? l(selectedTerminal.status) : '-' }}
+      </text>
+    </view>
+
+    <view v-if="selectedTerminal && 'JS-Q1' != selectedTerminal.terminalTypeDisplayName" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('self-test.power-state') }}
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ l(bStateHangle(selectedTerminal.batteryState, selectedTerminal.terminalTypeDisplayName)) }}
+      </text>
+    </view>
+
+    <view v-if="wireless" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        ACC
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ selectedTerminal ? l(selectedTerminal.acc) : '-' }}
+      </text>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('device.location-time') }}
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ (selectedTerminal && selectedTerminal.lon && selectedTerminal.lat) ? selectedTerminal.locateTime : l('common.no.locate') }}
+      </text>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('common.sim.card') }}
+      </text>
+      <view style="display: flex; flex-direction: row; align-items: center; flex: 1; justify-content: flex-end;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 20rpx; text-align: right;" append="tree">
+          {{ (selectedTerminal && selectedTerminal.msisdn) ? selectedTerminal.msisdn : '-' }}
+        </text>
+        <view v-if="selectedTerminal && selectedTerminal.msisdn" class="but" @click="copy(selectedTerminal.msisdn)">
+          <text class="text-sm text-primary" style="font-size: 24rpx; color: #6081c7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('common.ICCID') }}
+      </text>
+      <view style="display: flex; flex-direction: row; align-items: center; flex: 1; justify-content: flex-end;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 20rpx; text-align: right;" append="tree">
+          {{ (selectedTerminal && selectedTerminal.iccid) ? selectedTerminal.iccid : '-' }}
+        </text>
+        <view v-if="selectedTerminal && selectedTerminal.iccid" class="but" @click="copy(selectedTerminal.iccid)">
+          <text class="text-sm text-primary" style="font-size: 24rpx; color: #6081c7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('device.locate') }}
+      </text>
+      <text style="font-size: 28rpx; color: #666; text-align: right; flex: 1; word-break: break-all;" append="tree">
+        {{ (selectedTerminal && selectedTerminal.lon && selectedTerminal.lat) ? genAddress : l('common.no.locate') }}
+      </text>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        {{ l('info.terminalit.nautica') }}
+      </text>
+      <view v-if="selectedTerminal && selectedTerminal.lon && selectedTerminal.lat" style="display: flex; flex-direction: row; align-items: center; flex: 1; justify-content: flex-end;">
+        <text style="font-size: 28rpx; color: #666; margin-right: 20rpx; text-align: right;" append="tree">
+          {{ selectedTerminal.lonWGS84 + ',' + selectedTerminal.latWGS84 }}
+        </text>
+        <view class="but" @click="copy(selectedTerminal.lonWGS84 + ',' + selectedTerminal.latWGS84)">
+          <text class="text-sm text-primary" style="font-size: 24rpx; color: #6081c7;" append="tree">
+            {{ l('common.copy') }}
+          </text>
+        </view>
+      </view>
+      <text v-else style="font-size: 28rpx; color: #666; text-align: right;" append="tree">
+        {{ l('common.no.locate') }}
+      </text>
+    </view>
+
+    <view style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24rpx 32rpx; border-bottom: 1rpx solid #f0f0f0;">
+      <text style="font-size: 28rpx; color: #333; font-weight: 500; width: 180rpx; flex-shrink: 0;" append="tree">
+        LBS
+      </text>
+      <u-switch :activeColor="primaryColor" size="20" @change="lbsStateChange" v-model="lbsStatus"></u-switch>
+    </view>
+  </view>
+
+  <u-popup
+    round="15"
+    :show="terminalNameShow"
+    mode="bottom"
+    :closeOnClickOverlay="true"
+    @close="terminalNameClose"
+  >
+    <view class="deviceName">
+      <view>
+        <text class="deviceName-title text-md" append="tree">
+          {{ l('info.terminal.name') }}
+        </text>
+      </view>
+      <view class="deviceName-input m-v-xl">
+        <u--input
+          :placeholder="l('info.input.terminal.name')"
+          border="surround"
+          v-model="currentDeviceName"
+        ></u--input>
+      </view>
+      <u-button type="primary" :text="l('common.confirm')" @click="setTerminalName"></u-button>
+    </view>
+  </u-popup>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesFunc/deviceInfo/index
+ * 反编译自 webpack 模块 641（nvue 编译空间）
+ * async/await 还原: 3 个已转换
+ * 变量 i 在内层被重新声明，保留短名以维持遮蔽语义
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import i from '@/.unpacked/nvue/23.js';
+import mod5 from '@/.unpacked/nvue/5.js';
+import * as mod25 from 'vuex';
+import * as mod166 from '../../common/utils.nvue.js';
+import mod15 from '../../common/config.nvue.js';
+"use strict";
+var c = getApp().globalData, m = {
+  data: function () {
+    return {
+      cdn: mod15.cdn,
+      primaryColor: mod15.primaryColor,
+      deviceName: "",
+      currentDeviceName: "",
+      terminalIconInfo: {
+        id: 0,
+        iconType: 0,
+        code: "",
+        iconName: ""
+      },
+      terminalIconShow: false,
+      terminalNameShow: false,
+      lbsStatus: false
+    };
+  },
+  onShow: function () {
+    this.fetchData();
+  },
+  computed: {
+    ...mod25.mapGetters(["selectedTerminal", "appConfig", "terminalFuncs"]),
+    ...mod25.mapState("device", ["deviceIcons"]),
+    genAddress: function () {
+      return (this.selectedTerminal ? this.selectedTerminal.TextLocation : this.l("common.get.locate")) || this.l("common.get.locate-fail");
+    },
+    terminalIcon: function () {
+      return ("").concat(this.cdn, "/ikon/device/").concat(this.terminalIconInfo.code, "-1.png");
+    },
+    wireless: function () {
+      return mod15.wirelessDevice.includes(this.selectedTerminal.terminalTypeDisplayName);
+    }
+  },
+  methods: {
+    ...mod25.mapActions("device", ["SetDeviceInfo", "GetDeviceInfo", "SetTerminalFilter"]),
+    l: function (e) {
+      return c.$t(e);
+    },
+    gotoPages: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    },
+    bStateHangle: function (e, t) {
+      return mod166.batteryStateHangle(e, t);
+    },
+    fetchData: function () {
+      var e = this;
+      return (async function () {
+        var n, r, i;
+        (n = await e.GetDeviceInfo({
+          deviceID: e.selectedTerminal.id
+        })).succeeded && (e.deviceName = e.currentDeviceName = n.data.terminalName, e.lbsStatus = 1 == n.data.lbs, r = e.deviceIcons.find(function (e) {
+          return e.id == n.data.iconType;
+        }), i = r ? {
+          id: r.id,
+          iconType: r.id,
+          iconName: r.name,
+          code: r.code
+        } : {
+          id: 1,
+          iconType: 1,
+          iconName: "\u9ed8\u8ba4",
+          code: "default"
+        }, e.terminalIconInfo = i);
+      })();
+    },
+    copy: function (e) {
+      uni.setClipboardData({
+        data: e,
+        showToast: false,
+        success: function () {
+          mod166.qzwlToast("\u5185\u5bb9\u5df2\u590d\u5236");
+        }
+      });
+    },
+    setTerminalName: function () {
+      (this.terminalNameShow = false, this.putDeviceInfo({
+        terminalId: this.selectedTerminal.id,
+        deviceName: this.currentDeviceName ? this.currentDeviceName.trim() : this.currentDeviceName
+      }));
+    },
+    terminalNameClose: function () {
+      (this.terminalNameShow = false, this.fetchData());
+    },
+    putDeviceInfo: function (e) {
+      var t = this;
+      return (async function () {
+        (await t.SetDeviceInfo(e)).succeeded && (mod166.qzwlToast(t.l("common.save.success"), "none"), t.fetchData());
+      })();
+    },
+    lbsStateChange: function (e) {
+      var t = this;
+      return (async function () {
+        var r;
+        ((r = await t.SetTerminalFilter({
+          terminalId: t.selectedTerminal.id,
+          Lbs: e ? 1 : 2
+        })).succeeded && mod166.qzwlToast(e ? t.l("info.no.filter.lbs") : t.l("info.ilter.lbs"), "none"), r.succeeded || (t.lbsStatus = !e));
+      })();
+    }
+  }
+};
+export default m;
+
+</script>
+
+<style scoped>
+/* #ifdef APP-PLUS */
+.deviceName {
+  padding-top: 60rpx;
+  padding-right: 50rpx;
+  padding-bottom: 100rpx;
+  padding-left: 50rpx;
+}
+
+.but {
+  width: 88rpx;
+  height: 40rpx;
+  background-color: #ffffff;
+  border-width: 2rpx;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/* #endif */
+/* #ifdef H5 */
+.deviceName {
+  padding-top: 8vw;
+  padding-right: 6.6667vw;
+  padding-bottom: 13.3333vw;
+  padding-left: 6.6667vw;
+}
+
+.but {
+  width: 11.7333vw;
+  height: 5.3333vw;
+  background-color: #ffffff;
+  border-width: 0.2667vw;
+  border-style: solid;
+  border-color: #6081c7;
+  border-radius: 1.0667vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/* #endif */
+</style>

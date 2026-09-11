@@ -1,0 +1,206 @@
+<template>
+<scroll-view
+  style="flex-direction: column"
+  :scrollY="true"
+  :showScrollbar="true"
+  :enableBackToTop="true"
+  bubble="true"
+>
+  <view class="u-page">
+    <view class="bg-white br-md main">
+      <view>
+        <u--input :placeholder="l('common.tel')" v-model="userPhone"></u--input>
+      </view>
+      <view class="m-t-lg">
+        <u--input type="code" :placeholder="l('common.code')" v-model="code">
+          <template slot="suffix">
+            <u-code
+              ref="ztxCode"
+              :keepRunning="true"
+              uniqueKey="page-a"
+              seconds="60"
+              :changeText="l('common.x.get.code')"
+              :startText="l('common.get.code')"
+              :endText="l('common.anew.code')"
+              @change="codeTimeChange"
+              @start="disabled = true"
+              @end="disabled = false"
+            ></u-code>
+            <u--text type="primary" :text="codeTime" @click="getSmsCode"></u--text>
+          </template>
+        </u--input>
+      </view>
+      <view class="m-t-lg">
+        <u--input type="password" :placeholder="l('common.new.pwd')" v-model="userPwd"></u--input>
+      </view>
+      <view class="m-t-lg flex-row justify-end">
+        <text class="text text-primary" append="tree" @click="back">
+          {{ l('common.Return.signin') }}
+        </text>
+      </view>
+    </view>
+    <view class="m-t-xl">
+      <u-button
+        type="primary"
+        size="large"
+        shape="circle"
+        :text="l('common.resetting')"
+        @click="forgotPassWord"
+      ></u-button>
+    </view>
+    <verificationCode
+      v-if="imgCaptchaShow"
+      ref="imgCaptchaRef"
+      :phoneNumber="userPhone"
+      @imgCaptchaChange="imgCaptchaChange"
+      @smsCodeChange="smsCodeChange"
+    ></verificationCode>
+  </view>
+</scroll-view>
+</template>
+
+<script>
+/*
+ * 页面: pagesCore/login/find-pas
+ * 反编译自 webpack 模块 730（nvue 编译空间）
+ * async/await 还原: 0 个已转换, 2 个含条件跳转/try-catch 保持状态机原样
+ */
+import mod22 from '@/.unpacked/nvue/22.js'
+import mod23 from '@/.unpacked/nvue/23.js'
+import mod5 from '@/.unpacked/nvue/5.js'
+import * as mod25 from 'vuex'
+import * as mod166 from '../../common/utils.nvue.js'
+import mod368 from '../../components/verificationCode/verificationCode.nvue'
+
+"use strict";
+var c, m = getApp().globalData, f = {
+  components: {
+    verificationCode: mod368
+  },
+  data: function () {
+    return {
+      userPhone: "",
+      userPwd: "",
+      code: "",
+      codeTime: "",
+      disabled: false,
+      imgCaptchaShow: false
+    };
+  },
+  onUnload: function () {
+    clearInterval(c);
+  },
+  methods: {
+    ...mod25.mapActions("account", ["ResetPassword"]),
+    l: function (e) {
+      return m.$t(e);
+    },
+    codeTimeChange: function (e) {
+      this.codeTime = e;
+    },
+    imgCaptchaChange: function (e) {
+      this.imgCaptchaShow = e;
+    },
+    smsCodeChange: function () {
+      (mod166.qzwlToast(m.$t("common.code.sent"), "none"), this.$refs.ztxCode.start(), this.imgCaptchaShow = false);
+    },
+    getSmsCode: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.please.tel"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (e.$refs.ztxCode.canGetCode) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.operation"), "none"));
+            case 6:
+              e.imgCaptchaShow = true;
+            case 7:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    forgotPassWord: function () {
+      var e = this;
+      return mod23(mod22.mark(function t() {
+        return mod22.wrap(function (t) {
+          for (; ; ) switch (t.prev = t.next) {
+            case 0:
+              if (e.userPhone.trim() && e.userPwd.trim() && e.code.trim()) {
+                t.next = 2;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.content"), "none"));
+            case 2:
+              if (uni.$u.test.mobile(e.userPhone)) {
+                t.next = 4;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.please.valid.mobile.tel"), "none"));
+            case 4:
+              if (uni.$u.test.rangeLength(e.code, [4, 6])) {
+                t.next = 6;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.please.valid.mobile.code"), "none"));
+            case 6:
+              if (uni.$u.test.rangeLength(e.userPwd, [6, 20])) {
+                t.next = 8;
+                break;
+              }
+              return t.abrupt("return", mod166.qzwlToast(m.$t("common.please.pwd.num"), "none"));
+            case 8:
+              return (t.next = 10, e.ResetPassword({
+                phoneNumber: e.userPhone.trim(),
+                code: e.code.trim(),
+                password: e.userPwd.trim()
+              }));
+            case 10:
+              t.sent.succeeded && (mod166.qzwlToast(m.$t("common.resettingting.successful"), "none"), c = setTimeout(function () {
+                uni.navigateBack();
+              }, 1500));
+            case 12:
+            case "end":
+              return t.stop();
+          }
+        }, t);
+      }))();
+    },
+    back: function () {
+      uni.navigateBack();
+    },
+    gotoPage: function (e) {
+      uni.navigateTo({
+        url: e
+      });
+    }
+  }
+};
+export default f;
+
+</script>
+
+<style scoped>
+.main {
+  padding-top: 15;
+  padding-right: 15;
+  padding-bottom: 15;
+  padding-left: 15;
+}
+</style>

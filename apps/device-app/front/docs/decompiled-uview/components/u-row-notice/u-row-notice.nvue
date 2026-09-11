@@ -1,0 +1,177 @@
+<template>
+<view class="u-notice" @click="clickHandler">
+  <slot name="icon">
+    <view v-if="icon" class="u-notice__left-icon">
+      <u-icon :name="icon" :color="color" size="19"></u-icon>
+    </view>
+  </slot>
+  <view ref="u-notice__content" class="u-notice__content">
+    <view ref="u-notice__content__text" class="u-notice__content__text" :style="[animationStyle]">
+      <text v-for="(t, r) in innerText" :key="r" :style="[textStyle]" append="tree">
+        {{ t }}
+      </text>
+    </view>
+  </view>
+  <view v-if="['link', 'closable'].includes(mode)" class="u-notice__right-icon">
+    <u-icon v-if="'link' === mode" name="arrow-right" :size="17" :color="color"></u-icon>
+    <u-icon v-if="'closable' === mode" name="close" :size="16" :color="color" @click="close"></u-icon>
+  </view>
+</view>
+</template>
+
+<script>
+/*
+ * 组件: uRowNotice
+ * 反编译自 webpack 模块 557（nvue 编译空间）
+ * async/await 还原: 2 个已转换
+ * 已剥离 webpack 的 global 注入包装（保留了 1 个注入参数的绑定）
+ */
+import mod22 from '@/.unpacked/nvue/22.js';
+import mod23 from '@/.unpacked/nvue/23.js';
+import mod931 from '@/.unpacked/nvue/931.js';
+"use strict";
+var e = require("@/.unpacked/nvue/222.js").default;
+var s = e("animation"), d = e("dom"), u = {
+  name: "u-row-notice",
+  mixins: [uni.$u.mpMixin, uni.$u.mixin, mod931],
+  data: function () {
+    return {
+      animationDuration: "0",
+      animationPlayState: "paused",
+      nvueInit: true,
+      show: true
+    };
+  },
+  watch: {
+    text: {
+      immediate: true,
+      handler: function (e, t) {
+        (this.nvueInit = true, uni.$u.test.string(e) || uni.$u.error("noticebar\u7ec4\u4ef6direction\u4e3arow\u65f6\uff0c\u8981\u6c42text\u53c2\u6570\u4e3a\u5b57\u7b26\u4e32\u5f62\u5f0f"));
+      }
+    },
+    fontSize: function () {
+      this.nvueInit = true;
+    },
+    speed: function () {
+      this.nvueInit = true;
+    }
+  },
+  computed: {
+    textStyle: function () {
+      var e = {};
+      return (e.color = this.color, e.fontSize = uni.$u.addUnit(this.fontSize), e);
+    },
+    animationStyle: function () {
+      var e = {};
+      return (e.animationDuration = this.animationDuration, e.animationPlayState = this.animationPlayState, e);
+    },
+    innerText: function () {
+      for (var e = [], t = this.text.split(""), n = 0; n < t.length; n += 20) e.push(t.slice(n, n + 20).join(""));
+      return e;
+    }
+  },
+  mounted: function () {
+    var e = this, t = getCurrentPages(), n = t[t.length - 1].$getAppWebview();
+    (n.addEventListener("hide", function () {
+      e.webviewHide = true;
+    }), n.addEventListener("show", function () {
+      e.webviewHide = false;
+    }), this.init());
+  },
+  methods: {
+    init: function () {
+      (this.nvue(), uni.$u.test.string(this.text) || uni.$u.error("noticebar\u7ec4\u4ef6direction\u4e3arow\u65f6\uff0c\u8981\u6c42text\u53c2\u6570\u4e3a\u5b57\u7b26\u4e32\u5f62\u5f0f"));
+    },
+    vue: function () {
+      return (async function () {})();
+    },
+    nvue: function () {
+      var e = this;
+      return (async function () {
+        var n, r;
+        e.nvueInit = false;
+        n = 0;
+        r = 0;
+        await uni.$u.sleep();
+        r = (await e.getNvueRect("u-notice__content__text")).width;
+        (n = (await e.getNvueRect("u-notice__content")).width, s.transition(e.$refs["u-notice__content__text"], {
+          styles: {
+            transform: ("translateX(").concat(n, "px)")
+          }
+        }, function () {
+          !e.stopAnimation && e.loopAnimation(r, n);
+        }));
+      })();
+    },
+    loopAnimation: function (e, t) {
+      var n = this;
+      s.transition(this.$refs["u-notice__content__text"], {
+        styles: {
+          transform: ("translateX(-").concat(e, "px)")
+        },
+        duration: (t + e) / uni.$u.getPx(this.speed) * 1e3,
+        delay: 10
+      }, function () {
+        s.transition(n.$refs["u-notice__content__text"], {
+          styles: {
+            transform: ("translateX(").concat(n.stopAnimation ? 0 : t, "px)")
+          }
+        }, function () {
+          n.stopAnimation || (n.nvueInit ? n.nvue() : n.loopAnimation(e, t));
+        });
+      });
+    },
+    getNvueRect: function (e) {
+      var t = this;
+      return new Promise(function (n) {
+        d.getComponentRect(t.$refs[e], function (e) {
+          n(e.size);
+        });
+      });
+    },
+    clickHandler: function (e) {
+      this.$emit("click");
+    },
+    close: function () {
+      this.$emit("close");
+    }
+  },
+  beforeDestroy: function () {
+    this.stopAnimation = true;
+  }
+};
+export default u;
+
+</script>
+
+<style scoped>
+.u-notice {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-notice__left-icon {
+  align-items: center;
+  margin-right: 5;
+}
+
+.u-notice__right-icon {
+  margin-left: 5;
+  align-items: center;
+}
+
+.u-notice__content {
+  text-align: right;
+  flex: 1;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.u-notice__content__text {
+  font-size: 14;
+  color: #f9ae3d;
+  flex-direction: row;
+}
+</style>
